@@ -16,7 +16,7 @@ struct product
 typedef struct product* product;
 
 //crea un nuovo prodotto
-int create_product(product* new_product, char name[20], char type[20], float buyprice, char condition[]);
+int create_product(product* new_product, char new_name[], char new_type[], char new_condition[], float new_buy_price);
 
 //elimina un prodotto liberandone l'area di memoria nell'heap
 int delete_product(product* product_todelete);
