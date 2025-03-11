@@ -11,7 +11,7 @@ struct product
     char product_type[20]; //tipologia del prodotto es: console, videogioco, francobollo, figurina
     char product_condition[20];    //descrizione delle condizioni del prodotto es: ottime, discrete, usurato, nuovo
     float product_buyprice;   //prezzo di acquisto del prodotto    
-}
+};
 
 typedef struct product* product;
 
