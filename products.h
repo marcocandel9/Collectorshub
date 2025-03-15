@@ -15,7 +15,7 @@ typedef struct products* products;
 
 int create_products_list(products* head);
 
-int insert_product(products* products_list, struct product myproduct);
+int insert_product(products* products_list_head, char new_name[], char new_type[], char new_condition[], float new_buy_price);
 
 
 
