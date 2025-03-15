@@ -14,7 +14,10 @@ int create_products_list(products* head){
     return 0;
 }
 
-//Inserisce un nuovo prodotto nella lista, prende in ingresso il puntatore passato come riferimento alla lista prodotti e il contenuto informativo del nuovo prodotto, ritorna 1 in caso di errori, 0 altrimenti (INSERIMENTO DUPLICATI CONTEMPLATO!)
+//Inserisce un nuovo prodotto nella lista, prende in ingresso il puntatore passato come riferimento alla lista prodotti e il contenuto informativo del nuovo prodotto, 
+//ritorna 1 in caso di errori di allocazione memoria
+//ritorna 2 in caso di inserimento di duplicato
+//0 altrimenti 
 int insert_product(products* products_list_head, char new_name[], char new_type[], char new_condition[], float new_buy_price){
     
     // Creo il nuovo nodo per il nuovo prodotto
@@ -40,10 +43,22 @@ int insert_product(products* products_list_head, char new_name[], char new_type[
     products q = *products_list_head;
     char product_name[20];
 
-    // Itera fino a trovare il punto di inserimento (ordinamento crescente) (Duplicati contemplati)
+    // Itera fino a trovare il punto di inserimento (ordinamento crescente) (Duplicati NON CONSENTITI)
     while(q != NULL){
         get_product_name(q->product_elem, product_name);
         int caso = strcmp(new_name, product_name);
+
+        // CONTROLLO DUPLICATI: IMPOSTATO SU NON CONSENTITI
+
+        //se le stringhe sono equivalenti, ritorna 2! DUPLICATI NON CONSENTITI //È possibile CONSENTIRE I DUPLICATI RIMUOVENDO LE SEGUENTI 4 LINEE DI CODICE
+        if(caso == 0){
+            free(new_product_node);
+            return 2;
+        }
+
+        //CONTROLLO DUPLICATI: IMPOSTATO SU NON CONSENTITI
+
+
         if(caso < 0) { // se new_name è "minore" alfabeticamente, interrompi (N.B: r punta ancora a NULL nel caso in cui questa sia la prima iterazione)
              break;
         }
@@ -51,6 +66,9 @@ int insert_product(products* products_list_head, char new_name[], char new_type[
         q = q->next;
     }
     
+    // Se non è stato trovato alcun nodo (q==NULL), restituisci un errore
+    if(q == NULL) return 1;
+
     // Caso 1 inserimento: se r è NULL, significa inserimento in testa
     if(r == NULL){
         new_product_node->next = *products_list_head;
@@ -62,4 +80,50 @@ int insert_product(products* products_list_head, char new_name[], char new_type[
     
     return 0;
 }
+
+//Prende in ingresso: puntatore testa passato per riferimento, array di caratteri del nome dell'elemento da ricercare ed eliminare
+//Restituisce 0 in caso di Success
+//Restituisce 1 se la lista è vuota
+//Restituisce 2 se non è stato trovato l'elemento
+//NB Cancella solo sulla base del nome, se disattivo il controllo di evitamento dei duplicati nella funzione insert product non posso selezionare quale dei duplicati eliminare
+
+int delete_product(products* products_list_head, char key_name []){
+
+    //Lista vuota: ritorno 1
+    if(*products_list_head == NULL) return 1;
+
+    //Puntatori di appoggio per scorrere la lista ordinata
+    products r = NULL;
+    products q = *products_list_head;
+    char product_name[20];
+
+    while(q != NULL){
+        get_product_name(q->product_elem, product_name);
+        int is_not_equal = strcmp(key_name, product_name);
+    
+        if(is_not_equal == 0){
+            break;
+        }
+        r = q;
+        q = q->next;
+    }
+
+    // Se non è stato trovato alcun nodo (q==NULL), restituisci 1
+    if(q == NULL)
+        return 2; 
+
+    //Caso 1 : cancellazione testa, traslo la lista di un nodo in avanti
+    if(r==NULL){
+        *(products_list_head) = q->next;
+
+        //dealloco il nodo contenete il prodotto che si desidera eliminare
+        free(q); 
+    } else { //Caso 2, cancellazione intermedia o al più in coda (Se è in coda, q == NULL!)
+        ( r -> next ) = ( q -> next );
+        free(q); //dealloco il nodo
+    }
+    return 0; //Success
+
+}
+
 
