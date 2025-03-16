@@ -14,6 +14,10 @@ int create_products_list(products* head){
     return 0;
 }
 
+
+
+
+
 //Inserisce un nuovo prodotto nella lista, prende in ingresso il puntatore passato come riferimento alla lista prodotti e il contenuto informativo del nuovo prodotto, 
 //ritorna 1 in caso di errori di allocazione memoria
 //ritorna 2 in caso di inserimento di duplicato
@@ -81,15 +85,19 @@ int insert_product(products* products_list_head, char new_name[], char new_type[
     return 0;
 }
 
+
+
+
+
 //Prende in ingresso: puntatore testa passato per riferimento, array di caratteri del nome dell'elemento da ricercare ed eliminare
 //Restituisce 0 in caso di Success
 //Restituisce 1 se la lista è vuota
 //Restituisce 2 se non è stato trovato l'elemento
 //NB Cancella solo sulla base del nome, se disattivo il controllo di evitamento dei duplicati nella funzione insert product non posso selezionare quale dei duplicati eliminare
 
-int delete_product(products* products_list_head, char key_name []){
+int remove_product(products* products_list_head, char key_name []){
 
-    //Lista vuota: ritorno 1
+    //Lista vuota: Restituisce 1
     if(*products_list_head == NULL) return 1;
 
     //Puntatori di appoggio per scorrere la lista ordinata
@@ -110,20 +118,127 @@ int delete_product(products* products_list_head, char key_name []){
 
     // Se non è stato trovato alcun nodo (q==NULL), restituisci 1
     if(q == NULL)
-        return 2; 
+        return 1; 
 
     //Caso 1 : cancellazione testa, traslo la lista di un nodo in avanti
     if(r==NULL){
         *(products_list_head) = q->next;
 
         //dealloco il nodo contenete il prodotto che si desidera eliminare
-        free(q); 
+
+        //Richiamo la funzione delete product per deallocare il prodotto allocato dinamicamente
+        delete_product(&(q->product_elem)); //Dealloca la memoria della struttura prodotto
+        free(q); //Dealloca la memoria della struttura Products contenente il puntatore a nodo che dopo delete product puntava a NULL
+
     } else { //Caso 2, cancellazione intermedia o al più in coda (Se è in coda, q == NULL!)
         ( r -> next ) = ( q -> next );
-        free(q); //dealloco il nodo
+        delete_product(&(q->product_elem)); //Dealloca la memoria della struttura prodotto
+        free(q); //Dealloca la memoria della struttura Products contenente il puntatore a nodo che dopo delete product puntava a NULL
     }
     return 0; //Success
+}
 
+
+
+
+
+/*
+Funzione che ricerca un elemento nella lista ORDINATA.
+
+Prende in ingresso il puntatore alla testa della lista passato come copia, l'array di caratteri
+
+Restituisce 0 se l'elemento esiste
+Restituisce 1 altrimenti
+*/
+
+int exist_sorted(products products_list_head, char key_name[]){
+
+    //Lista vuota: ritorno 1
+    if(products_list_head == NULL) return 1;
+
+    char product_name[20];
+    int found;
+
+    while(products_list_head != NULL){ //l'iterazione termina quando si raggiunge la fine della lista o quando si incontra un prodotto con nome alfabeticamente maggiore di quello ricercato
+        get_product_name((products_list_head->product_elem),product_name);
+        found = strcmp(key_name,product_name);
+        
+        if(found == 0) return 0; //Trovato, restituisce 0
+        
+        // Se il nome cercato è alfabeticamente minore (cioè, strcmp restituisce un valore negativo),
+        // significa che il prodotto corrente ha un nome maggiore e quindi il prodotto non esiste nella lista.
+        if(found < 0) break;
+
+        products_list_head = products_list_head -> next;
+    }
+
+    return 1; // non è stata trovata una corrispondenza
+}
+
+
+
+
+
+/*
+Funzione che ricerca un elemento nella lista ORDINATA e ne restituisce un puntatore product del prodotto
+
+Prende in ingresso il puntatore alla testa della lista passato come copia, l'array di caratteri del nome del prodotto ricercato
+
+Restituisce il puntatore product al prodotto se l'elemento è trovato
+Restituisce NULL se l'elemento non è stato trovato
+*/
+
+product search_product(products products_list_head, char key_name[]){
+    
+    
+}
+
+
+
+
+
+/*
+Funzione che ricerca un elemento nella lista ORDINATA, ne modifica il contenuto del prodotto nel nodo
+
+Prende in ingresso il puntatore alla testa della lista passato per riferimento, il nome dell'elemento da modificare,
+le variabili del contenuto informativo della Struct Prodotto
+
+Restituisce 0 se la modifica va a buon fine
+Restituisce 1 se l'elemento non è stato trovato
+*/
+int modify_product(products* products_list_head, char key_name[], char new_name[], char new_type[], char new_condition[], float new_buy_price){
+
+    //Lista vuota: restituisce 1
+    if(*products_list_head == NULL) return 1;
+
+    //Puntatori di appoggio per scorrere la lista
+    products r = NULL;
+    products q = *products_list_head;
+    char product_name[20];
+    int found;
+
+    //Ricerca e modifica dell'elemento
+    while(q != NULL){
+        get_product_name(q->product_elem,product_name);
+        found = strcmp(key_name,product_name);
+
+        if(found == 0) break; //Trovato, esci dal ciclo while
+
+        if(found < 0) return 1; //Non è stata trovata una corrispondenza nella lista, ritorna 1 (ELEMENT NOT FOUND)
+
+        r = q;
+        q = q -> next;
+    }
+
+    //Caso 1: non è stato trovato l'elemento cercato. N.B in questo caso q punta alla coda della lista che è NULL
+    if(q == NULL) return 1;
+
+    //Caso 2: è stato trovato l'elemento cercato, modifico il nodo in questione
+    strcpy(q->product_elem->product_name , new_name);
+    strcpy(q->product_elem->product_type , new_type);
+    strcpy(q->product_elem->product_condition , new_condition);
+    q->product_elem->product_buyprice = new_buy_price;
+    return 0; //Success
 }
 
 

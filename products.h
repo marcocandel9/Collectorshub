@@ -17,11 +17,11 @@ int create_products_list(products* head);
 
 int insert_product(products* products_list_head, char new_name[], char new_type[], char new_condition[], float new_buy_price);
 
-int delete_product(products* products_list_head, char key_name []);
+int remove_product(products* products_list_head, char key_name []);
 
+int exist_sorted(products products_list_head, char key_name[]);
 
-
-
+int modify_product(products* products_list_head, char key_name[], char new_name[], char new_type[], char new_condition[], float new_buy_price);
 
 
 
