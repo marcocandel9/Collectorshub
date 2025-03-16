@@ -5,6 +5,7 @@
 #include "products.h"
 
 
+
 //funzione che crea una nuova lista prodotti a partire dal suo primo elemento
 //prende in ingresso un puntatore passato per riferimento (products è stato definito con la typdef come un puntatore)
 int create_products_list(products* head){
@@ -22,7 +23,7 @@ int create_products_list(products* head){
 //ritorna 1 in caso di errori di allocazione memoria
 //ritorna 2 in caso di inserimento di duplicato
 //0 altrimenti 
-int insert_product(products* products_list_head, char new_name[], char new_type[], char new_condition[], float new_buy_price){
+int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
     
     // Creo il nuovo nodo per il nuovo prodotto
     products new_product_node = (products)malloc(sizeof(struct products));
@@ -45,7 +46,7 @@ int insert_product(products* products_list_head, char new_name[], char new_type[
 
     products r = NULL;
     products q = *products_list_head;
-    char product_name[20];
+    char product_name[MAX_STR_LEN];
 
     // Itera fino a trovare il punto di inserimento (ordinamento crescente) (Duplicati NON CONSENTITI)
     while(q != NULL){
@@ -96,7 +97,7 @@ Restituisce 1 se la lista è vuota
 Restituisce 2 se non è stato trovato l'elemento
 NB Cancella solo sulla base del nome, se disattivo il controllo di evitamento dei duplicati nella funzione insert product non posso selezionare quale dei duplicati eliminare
 */
-int remove_product(products* products_list_head, char key_name []){
+int remove_product(products* products_list_head, char key_name [MAX_STR_LEN]){
 
     //Lista vuota: Restituisce 1
     if(*products_list_head == NULL) return 1;
@@ -104,7 +105,7 @@ int remove_product(products* products_list_head, char key_name []){
     //Puntatori di appoggio per scorrere la lista ordinata
     products r = NULL;
     products q = *products_list_head;
-    char product_name[20];
+    char product_name[MAX_STR_LEN];
 
     while(q != NULL){
         get_product_name(q->product_elem, product_name);
@@ -152,12 +153,12 @@ Restituisce 0 se l'elemento esiste
 Restituisce 1 altrimenti
 */
 
-int exist_sorted(products products_list_head, char key_name[]){
+int exist_sorted(products products_list_head, char key_name[MAX_STR_LEN]){
 
     //Lista vuota: ritorno 1
     if(products_list_head == NULL) return 1;
 
-    char product_name[20];
+    char product_name[MAX_STR_LEN];
     int found;
 
     while(products_list_head != NULL){ //l'iterazione termina quando si raggiunge la fine della lista o quando si incontra un prodotto con nome alfabeticamente maggiore di quello ricercato
@@ -189,9 +190,9 @@ Restituisce il puntatore product al prodotto se l'elemento è trovato
 Restituisce NULL se l'elemento non è stato trovato
 */
 
-product search_product(products products_list_head, char key_name[]){
+product search_product(products products_list_head, char key_name[MAX_STR_LEN]){
 
-    char product_name[20];
+    char product_name[MAX_STR_LEN];
     int found;
 
     //Se l'elemento è stato trovato, lo ricerca e lo restituisce
@@ -221,7 +222,7 @@ le variabili del contenuto informativo della Struct Prodotto
 Restituisce 0 se la modifica va a buon fine
 Restituisce 1 se l'elemento non è stato trovato
 */
-int modify_product(products* products_list_head, char key_name[], char new_name[], char new_type[], char new_condition[], float new_buy_price){
+int modify_product(products* products_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
 
     //Lista vuota: restituisce 1
     if(*products_list_head == NULL) return 1;
@@ -229,7 +230,7 @@ int modify_product(products* products_list_head, char key_name[], char new_name[
     //Puntatori di appoggio per scorrere la lista
     products r = NULL;
     products q = *products_list_head;
-    char product_name[20];
+    char product_name[MAX_STR_LEN];
     int found;
 
     //Ricerca e modifica dell'elemento
@@ -267,7 +268,7 @@ Prende in ingresso il puntatore alla testa della lista passato per copia e l'arr
 Restituisce 1 se il prodotto non è stato trovato
 Restituisce 0 se il prodotto è stato trovato e ne stampa il contenuto informativo
 */
-int search_and_print_product(products products_list_head, char key_name[]){
+int search_and_print_product(products products_list_head, char key_name[MAX_STR_LEN]){
 
     product myproduct = search_product(products_list_head, key_name);
     int result = print_product(myproduct);

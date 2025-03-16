@@ -7,7 +7,9 @@
 //prende in ingresso un puntatore ad una struct product passato per riferimento, lo alloca dinamicamente nell'heap e lo popola
 //NB come parametro della funzione non passo un doppio puntatore perchè product è già definito in product.h come un puntatore, quindi 
 //in questo caso scrivendo product* sto passando il puntatore come riferimento (puntatore a puntatore o indirizzo del puntatore)
-int create_product(product* new_product, char new_name[], char new_type[], char new_condition[], float new_buy_price){
+
+
+int create_product(product* new_product, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
     (*new_product) = (struct product*)malloc(sizeof(struct product));
     if (*new_product == NULL)
         return 1; //errore di allocazione del nuovo nodo prodotto
@@ -39,7 +41,7 @@ int delete_product(product* product_todelete){
 //Prendono in ingresso il puntatore passato come copia e l'array di caratteri (quindi il puntatore all'array),, restituisce 0 se è success, 1 altrimenti
 //La funzione get_product_price ha come parametro formale in ingresso il puntatore a float
 
-int get_product_name(product myproduct, char myproduct_name[]){
+int get_product_name(product myproduct, char myproduct_name[MAX_STR_LEN]){
     
     //controlla se il puntatore a product è null, ritorna in tal caso senza restituire nulla
     if(myproduct==NULL)
@@ -50,7 +52,7 @@ int get_product_name(product myproduct, char myproduct_name[]){
     return 0; //success
 }
 
-int get_product_type(product myproduct, char myproduct_type[]){
+int get_product_type(product myproduct, char myproduct_type[MAX_STR_LEN]){
     
     //controlla se il puntatore a product è null, ritorna in tal caso senza restituire nulla
     if(myproduct==NULL)
@@ -61,7 +63,7 @@ int get_product_type(product myproduct, char myproduct_type[]){
     return 0; //success
 }
 
-int get_product_condition(product myproduct, char myproduct_condition[]){
+int get_product_condition(product myproduct, char myproduct_condition[MAX_STR_LEN]){
     
     //controlla se il puntatore a product è null, ritorna in tal caso senza restituire nulla
     if(myproduct==NULL)
@@ -87,7 +89,7 @@ int get_product_buyprice(product myproduct, float* myproduct_buyprice){
 //funzioni setter
 
 //ricevere in ingresso il puntatore passato per copia e il contenuto informativo da aggiornare; ritorna 0 se success, 1 altrimenti
-int set_product_name(product myproduct, char new_name[]){
+int set_product_name(product myproduct, char new_name[MAX_STR_LEN]){
 
     //controlla se il puntatore punti a null, in tal caso ritorna 1
     if((myproduct) == NULL)
@@ -99,7 +101,7 @@ int set_product_name(product myproduct, char new_name[]){
     return 0; //success
 }
 
-int set_product_type(product myproduct, char new_type[]){
+int set_product_type(product myproduct, char new_type[MAX_STR_LEN]){
 
     //controlla se il puntatore punti a null, in tal caso ritorna 1
     if((myproduct) == NULL)
@@ -111,7 +113,7 @@ int set_product_type(product myproduct, char new_type[]){
     return 0; //success
 }
 
-int set_product_condition(product myproduct, char new_condition[]){
+int set_product_condition(product myproduct, char new_condition[MAX_STR_LEN]){
 
     //controlla se il puntatore punti a null, in tal caso ritorna 1
     if((myproduct) == NULL)
@@ -142,9 +144,9 @@ int print_product(product myproduct){
     if (myproduct == NULL)
         return 1;
     
-    char product_name[20];
-    char product_type[20];
-    char product_condition[20];
+    char product_name[MAX_STR_LEN];
+    char product_type[MAX_STR_LEN];
+    char product_condition[MAX_STR_LEN];
     float product_buyprice;
 
     get_product_name(myproduct, product_name);
