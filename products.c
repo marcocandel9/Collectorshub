@@ -189,8 +189,22 @@ Restituisce NULL se l'elemento non è stato trovato
 */
 
 product search_product(products products_list_head, char key_name[]){
-    
-    
+
+    char product_name[20];
+    int found;
+
+    //Se l'elemento è stato trovato, lo ricerca e lo restituisce
+    while(products_list_head != NULL) {
+        get_product_name((products_list_head->product_elem),product_name);
+        found = strcmp(key_name,product_name);
+
+        if(found == 0) return products_list_head->product_elem; //Se trova la corrispondenza restituisce il puntatore alla struct Product
+
+        products_list_head = products_list_head -> next;
+    }
+
+    return NULL; //Restituisce un puntatore a null nel caso negativo
+
 }
 
 
@@ -241,4 +255,51 @@ int modify_product(products* products_list_head, char key_name[], char new_name[
     return 0; //Success
 }
 
+
+
+
+/*
+Funzione che cerca un singolo prodotto e ne printa il contenuto informativo
+
+Prende in ingresso il puntatore alla testa della lista passato per copia e l'array di caratteri del nome del prodotto da ricercare
+
+Restituisce 1 se il prodotto non è stato trovato
+Restituisce 0 se il prodotto è stato trovato e ne stampa il contenuto informativo
+*/
+int search_and_print_product(products products_list_head, char key_name[]){
+
+    product myproduct = search_product(products_list_head, key_name);
+    int result = print_product(myproduct);
+    if(result == 1) return 1; //myproduct è un puntatore a NULL, il prodotto non è stato trovato, resituisce 1
+    return 0; //Success
+
+}
+
+
+
+
+/*
+Funzione che stampa l'intera lista dei prodotti.
+
+Prende in ingresso il puntatore alla testa della lista passato come copia 
+
+Restituisce 1 se la lista è vuota
+Restituisce 0 se va a buon fine e stampa i contenuti informativi di ciascun prodotto presente in ciascun nodo
+*/
+int print_products(products products_list_head){
+    
+    //Controlla se la lista è vuota
+    if(products_list_head == NULL) return 1; 
+
+    //Puntatore di appoggio per scorrere la lista
+    products q = products_list_head;
+
+    while(q != NULL){
+        print_product(q->product_elem);
+        printf("\n");
+        q = q -> next;
+    }
+
+    return 0; //Success
+}
 

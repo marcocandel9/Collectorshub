@@ -21,9 +21,13 @@ int remove_product(products* products_list_head, char key_name []);
 
 int exist_sorted(products products_list_head, char key_name[]);
 
+product search_product(products products_list_head, char key_name[]);
+
 int modify_product(products* products_list_head, char key_name[], char new_name[], char new_type[], char new_condition[], float new_buy_price);
 
+int search_and_print_product(products products_list_head, char key_name[]);
 
+int print_products(products products_list_head);
 
 
 
