@@ -89,12 +89,13 @@ int insert_product(products* products_list_head, char new_name[], char new_type[
 
 
 
-//Prende in ingresso: puntatore testa passato per riferimento, array di caratteri del nome dell'elemento da ricercare ed eliminare
-//Restituisce 0 in caso di Success
-//Restituisce 1 se la lista è vuota
-//Restituisce 2 se non è stato trovato l'elemento
-//NB Cancella solo sulla base del nome, se disattivo il controllo di evitamento dei duplicati nella funzione insert product non posso selezionare quale dei duplicati eliminare
-
+/*
+Prende in ingresso: puntatore testa passato per riferimento, array di caratteri del nome dell'elemento da ricercare ed eliminare
+Restituisce 0 in caso di Success
+Restituisce 1 se la lista è vuota
+Restituisce 2 se non è stato trovato l'elemento
+NB Cancella solo sulla base del nome, se disattivo il controllo di evitamento dei duplicati nella funzione insert product non posso selezionare quale dei duplicati eliminare
+*/
 int remove_product(products* products_list_head, char key_name []){
 
     //Lista vuota: Restituisce 1
