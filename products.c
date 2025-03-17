@@ -249,11 +249,11 @@ int modify_product(products* products_list_head, char key_name[MAX_STR_LEN], cha
     //Caso 1: non è stato trovato l'elemento cercato. N.B in questo caso q punta alla coda della lista che è NULL
     if(q == NULL) return 1;
 
-    //Caso 2: è stato trovato l'elemento cercato, modifico il nodo in questione
-    strcpy(q->product_elem->product_name , new_name);
-    strcpy(q->product_elem->product_type , new_type);
-    strcpy(q->product_elem->product_condition , new_condition);
-    q->product_elem->product_buyprice = new_buy_price;
+    //Caso 2: è stato trovato l'elemento cercato, modifico il nodo in questione utilizzando i setter di product.h
+    set_product_name(q->product_elem , new_name);
+    set_product_type(q->product_elem, new_type);
+    set_product_condition(q->product_elem , new_condition);
+    set_product_buyprice(q->product_elem, new_buy_price);
     return 0; //Success
 }
 
