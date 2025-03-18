@@ -22,10 +22,14 @@ int create_product(product* new_product, char new_name[MAX_STR_LEN], char new_ty
     return 0; //success
 }
 
+
+
+
+
 //Prende in ingresso il puntatore al puntatore di una struct product, ritorna 0 dopo l'eliminazione
 int delete_product(product* product_todelete){
 
-    //controllo sul puntatore passato per riferimento. Se tale puntatore, dereferenziato, punta a NULL, ritorna 1
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
     if ((*product_todelete)==NULL)
         return 1; 
     
@@ -37,13 +41,17 @@ int delete_product(product* product_todelete){
     return 0; 
 }
 
+
+
+
+
 //Funzioni getter
 //Prendono in ingresso il puntatore passato come copia e l'array di caratteri (quindi il puntatore all'array),, restituisce 0 se è success, 1 altrimenti
 //La funzione get_product_price ha come parametro formale in ingresso il puntatore a float
 
 int get_product_name(product myproduct, char myproduct_name[MAX_STR_LEN]){
     
-    //controlla se il puntatore a product è null, ritorna in tal caso senza restituire nulla
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
     if(myproduct==NULL)
         return 1; 
     
@@ -52,9 +60,13 @@ int get_product_name(product myproduct, char myproduct_name[MAX_STR_LEN]){
     return 0; //success
 }
 
+
+
+
+
 int get_product_type(product myproduct, char myproduct_type[MAX_STR_LEN]){
     
-    //controlla se il puntatore a product è null, ritorna in tal caso senza restituire nulla
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
     if(myproduct==NULL)
         return 1; 
     
@@ -63,9 +75,13 @@ int get_product_type(product myproduct, char myproduct_type[MAX_STR_LEN]){
     return 0; //success
 }
 
+
+
+
+
 int get_product_condition(product myproduct, char myproduct_condition[MAX_STR_LEN]){
     
-    //controlla se il puntatore a product è null, ritorna in tal caso senza restituire nulla
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
     if(myproduct==NULL)
         return 1; 
     
@@ -74,9 +90,13 @@ int get_product_condition(product myproduct, char myproduct_condition[MAX_STR_LE
     return 0; //success
 }
 
+
+
+
+
 int get_product_buyprice(product myproduct, float* myproduct_buyprice){
     
-    //controlla se il puntatore a product è null, ritorna in tal caso senza restituire nulla
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
     if(myproduct==NULL)
         return 1;
         
@@ -86,12 +106,15 @@ int get_product_buyprice(product myproduct, float* myproduct_buyprice){
 }
 
 
+
+
+
 //funzioni setter
 
-//ricevere in ingresso il puntatore passato per copia e il contenuto informativo da aggiornare; ritorna 0 se success, 1 altrimenti
+//riceve in ingresso il puntatore passato per copia e il contenuto informativo da aggiornare; ritorna 0 se success, 1 altrimenti
 int set_product_name(product myproduct, char new_name[MAX_STR_LEN]){
 
-    //controlla se il puntatore punti a null, in tal caso ritorna 1
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
     if((myproduct) == NULL)
         return 1;
     
@@ -101,9 +124,13 @@ int set_product_name(product myproduct, char new_name[MAX_STR_LEN]){
     return 0; //success
 }
 
+
+
+
+
 int set_product_type(product myproduct, char new_type[MAX_STR_LEN]){
 
-    //controlla se il puntatore punti a null, in tal caso ritorna 1
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
     if((myproduct) == NULL)
         return 1;
     
@@ -113,9 +140,13 @@ int set_product_type(product myproduct, char new_type[MAX_STR_LEN]){
     return 0; //success
 }
 
+
+
+
+
 int set_product_condition(product myproduct, char new_condition[MAX_STR_LEN]){
 
-    //controlla se il puntatore punti a null, in tal caso ritorna 1
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
     if((myproduct) == NULL)
         return 1;
     
@@ -124,14 +155,56 @@ int set_product_condition(product myproduct, char new_condition[MAX_STR_LEN]){
     return 0; //success
 }
 
+
+
+
+
+/*
+Funzione che modifica il contenuto informativo del prodotto. Se la stringa passata come parametro è vuota, allora non modifica 
+quel contenuto informativo
+
+Prende in ingresso il puntatore passato come riferimento al prodotto, le stringhe del contenuto informativo del prodotto
+
+Restituisce 1 se il puntatore al prodotto è non esistente o non valido
+Restituisce 0 se la modifica avviene con esito positivo
+*/
+int modify_product(product* myproduct, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
+
+    // Controlla se il puntatore al prodotto è NULL
+    if (*myproduct == NULL)
+    return 1;  // Prodotto non esistente o non valido
+
+    // Se new_name non è vuoto, modifica il nome del prodotto
+    if (new_name[0] != '\0') 
+        strcpy((*myproduct)->product_name, new_name);
+    
+    // Se new_type non è vuoto, modifica il tipo del prodotto
+    if (new_type[0] != '\0') 
+        strcpy((*myproduct)->product_type, new_type);
+    
+    // Se new_condition non è vuoto, modifica la condizione del prodotto
+    if (new_condition[0] != '\0') 
+        strcpy((*myproduct)->product_condition, new_condition);
+
+    // Se new_buy_price è valido (diverso da un valore sentinella come -1.0f), modifica il prezzo d'acquisto
+    if (new_buy_price != -1.0f)  // Supponiamo che -1.0f sia il valore sentinella
+        (*myproduct)->product_buyprice = new_buy_price;
+
+    return 0;  // Successo
+}
+
+
+
+
+
 //il float new_buyprice a differenza della funzione getter è passato come copia perchè non deve essere modificato 
 int set_product_buyprice(product myproduct, float new_buyprice){
 
-    //controlla se il puntatore punti a null, in tal caso ritorna 1
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
     if((myproduct) == NULL)
         return 1;
     
-    //aggiorna il contenuto informativo 
+    //Aggiorna il contenuto informativo 
     myproduct->product_buyprice = new_buyprice;
 
     return 0; //success
@@ -140,9 +213,8 @@ int set_product_buyprice(product myproduct, float new_buyprice){
 //ritorna 1 se il puntatore punta NULL, printa altrimenti i contenuti informativi da lui puntati.
 int print_product(product myproduct){
 
-    //se il puntatore non punta a nulla, ritorna
-    if (myproduct == NULL)
-        return 1;
+    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
+    if (myproduct == NULL) return 1;
     
     char product_name[MAX_STR_LEN];
     char product_type[MAX_STR_LEN];

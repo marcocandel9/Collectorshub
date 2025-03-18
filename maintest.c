@@ -5,39 +5,59 @@
 #include "products.h"
 
 int main() {
-    char product_name[] = "Xbox360";
-    char type[] = "Console";
-    char condition [] = "Usata";
-    float buyprice = 58.9;
+
+    //Creo una nuova lista prodotti e aggiungo un nuovo prodotto
+    products Nuova_lista;
+    create_products_list(&(Nuova_lista));
+
+    char product_name1[MAX_STR_LEN] = "Xbox360";
+    char type1[MAX_STR_LEN] = "Console";
+    char condition1 [MAX_STR_LEN] = "Usata";
+    float buyprice1 = 58.9;
+
+    insert_product(&(Nuova_lista),product_name1,type1, condition1, buyprice1);
 
 
-
-    products Nuova_lista = NULL;
-    insert_product(&(Nuova_lista),product_name,type, condition, buyprice);
-
-
-    char product_name2[] = "ETB trainer box";
-    char type2[] = "Pokemon";
-    char condition2 [] = "Usata";
+    char product_name2[MAX_STR_LEN] = "ETB trainer box";
+    char type2[MAX_STR_LEN] = "Pokemon";
+    char condition2 [MAX_STR_LEN] = "Usata";
     float buyprice2 = 10000;
     insert_product(&(Nuova_lista),product_name2,type2, condition2, buyprice2);
 
-    char product_name3[] = "Autobot";
-    char type3[] = "Trasformers";
-    char condition3 [] = "Nuovo di zecca";
-    float buyprice3 = 100010;
+    //Stampo la lista dei prodotti( ne conterrà due )
+    print_products(Nuova_lista);
+
+    printf("Controllo rimozione prodotti\n");
+    //Rimuovo dei prodotti dalla lista
+    remove_product(&(Nuova_lista), product_name1);
+
+    printf(" Adesso la lista sarà composta da un solo prodotto:\n");
+    print_products(Nuova_lista);
+
+    printf(" Controllo cosa succede quando rimuovo tutti i prodotti dalla lista e la printo:\n");
+    remove_product(&(Nuova_lista), product_name2);
+    
+    //dovrebbe stampare 1 cioè lista vuota
+    printf("%d\n",print_products(Nuova_lista));
+
+    char product_name3[MAX_STR_LEN] = "TEST PRODOTTO 3";
+    char type3[MAX_STR_LEN] = "TEST";
+    char condition3 [MAX_STR_LEN] = "TEST";
+    float buyprice3 = 0;
     insert_product(&(Nuova_lista),product_name3,type3, condition3, buyprice3);
     print_products(Nuova_lista);
 
-    printf("breakpoint1\n");
-    remove_product(&(Nuova_lista), product_name3);
+    printf("\n\ncontrollo della ricerca e modifica di un prodotto\n\n");
+
+    char product_name3_modified[MAX_STR_LEN] = "TEST PRODOTTO 3_mod";
+    char type3_modified[MAX_STR_LEN] = ""; // questo campo non deve essere modificato
+    char condition3_modified [MAX_STR_LEN] = "";
+    float buyprice3_modified = -1.0f; //Questo campo non può essere modificato
+
+    search_and_modify_product(&(Nuova_lista),product_name3,product_name3_modified,type3_modified,condition3_modified, buyprice3_modified);
+
     print_products(Nuova_lista);
 
-    char prodotto[] = " ";
-    printf("breakpoint2\n");
-    int result = remove_product(&(Nuova_lista) , prodotto);
-    printf("%d \n",result);
-
-    printf("breakpoint3\n");
-    print_products(Nuova_lista);
+    
+  
 }

@@ -6,23 +6,27 @@
 
 
 
-//funzione che crea una nuova lista prodotti a partire dal suo primo elemento
+//Crea una nuova lista prodotti VUOTA (Puntatore a NULL)
 //prende in ingresso un puntatore passato per riferimento (products è stato definito con la typdef come un puntatore)
 int create_products_list(products* head){
     
-    //imposta i nuovi puntatori a testa a NULL
-    *head = NULL;
-    return 0;
+    (*head) = NULL;
+    return 0; //Success
+
 }
 
 
 
 
+/*
+Inserisce un nuovo prodotto nella lista. 
+Prende in ingresso il puntatore passato come riferimento alla lista prodotti e il contenuto informativo del nuovo prodotto, 
 
-//Inserisce un nuovo prodotto nella lista, prende in ingresso il puntatore passato come riferimento alla lista prodotti e il contenuto informativo del nuovo prodotto, 
-//ritorna 1 in caso di errori di allocazione memoria
-//ritorna 2 in caso di inserimento di duplicato
-//0 altrimenti 
+Restituisce:
+- 1 in caso di errori di allocazione memoria
+- 2 in caso di inserimento di duplicato
+- 0 Se inserisce il prodotto con esito positivo 
+*/
 int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
     
     // Creo il nuovo nodo per il nuovo prodotto
@@ -51,7 +55,13 @@ int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], cha
     // Itera fino a trovare il punto di inserimento (ordinamento crescente) (Duplicati NON CONSENTITI)
     while(q != NULL){
         get_product_name(q->product_elem, product_name);
+
+        //strcmp restituisce:
+        // - un valore negativo se new_name è alfabeticamente inferiore al nome del prodotto -> devo interrompere lo scorrimento e inserire il nodo
+        // - 0 se key_name == product_name
+        // - un valore positivo se new_name è alfabeticamente superiore al nome del prodotto -> devo continuare a scorrere la lista
         int caso = strcmp(new_name, product_name);
+
 
         // CONTROLLO DUPLICATI: IMPOSTATO SU NON CONSENTITI
 
@@ -64,15 +74,13 @@ int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], cha
         //CONTROLLO DUPLICATI: IMPOSTATO SU NON CONSENTITI
 
 
-        if(caso < 0) { // se new_name è "minore" alfabeticamente, interrompi (N.B: r punta ancora a NULL nel caso in cui questa sia la prima iterazione)
+        if(caso < 0) { // se new_name è "minore" alfabeticamente, interrompi lo scorrimento (N.B: r punta ancora a NULL nel caso in cui questa sia la prima iterazione)
              break;
         }
         r = q;
         q = q->next;
     }
     
-    // Se non è stato trovato alcun nodo (q==NULL), restituisci un errore
-    if(q == NULL) return 1;
 
     // Caso 1 inserimento: se r è NULL, significa inserimento in testa
     if(r == NULL){
@@ -219,10 +227,12 @@ Funzione che ricerca un elemento nella lista ORDINATA, ne modifica il contenuto 
 Prende in ingresso il puntatore alla testa della lista passato per riferimento, il nome dell'elemento da modificare,
 le variabili del contenuto informativo della Struct Prodotto
 
-Restituisce 0 se la modifica va a buon fine
-Restituisce 1 se l'elemento non è stato trovato
+Restituisce:
+- 0 se la modifica va a buon fine
+- 2 se l'elemento non è stato trovato
+- 3 se l'elemento non è valido (errore nella modifica del prodotto)
 */
-int modify_product(products* products_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
+int search_and_modify_product(products* products_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
 
     //Lista vuota: restituisce 1
     if(*products_list_head == NULL) return 1;
@@ -236,26 +246,31 @@ int modify_product(products* products_list_head, char key_name[MAX_STR_LEN], cha
     //Ricerca e modifica dell'elemento
     while(q != NULL){
         get_product_name(q->product_elem,product_name);
+
+        //strcmp restituisce:
+        // - un valore negativo se key_name è alfabeticamente inferiore al nome del prodotto -> devo continuare a cercare
+        // - 0 se key_name == product_name
+        // - un valore positivo se key_name è alfabeticamente superiore al nome del prodotto -> devo interrompere la ricerca
         found = strcmp(key_name,product_name);
 
         if(found == 0) break; //Trovato, esci dal ciclo while
 
-        if(found < 0) return 1; //Non è stata trovata una corrispondenza nella lista, ritorna 1 (ELEMENT NOT FOUND)
+        if(found > 0) return 2; //Non è stata trovata una corrispondenza nella lista, ritorna 2 (ELEMENT NOT FOUND)
 
         r = q;
         q = q -> next;
     }
 
     //Caso 1: non è stato trovato l'elemento cercato. N.B in questo caso q punta alla coda della lista che è NULL
-    if(q == NULL) return 1;
+    if(q == NULL) return 2;
 
-    //Caso 2: è stato trovato l'elemento cercato, modifico il nodo in questione utilizzando i setter di product.h
-    set_product_name(q->product_elem , new_name);
-    set_product_type(q->product_elem, new_type);
-    set_product_condition(q->product_elem , new_condition);
-    set_product_buyprice(q->product_elem, new_buy_price);
-    return 0; //Success
+    //Caso 2: è stato trovato l'elemento cercato, modifico il nodo in questione utilizzando la funzione modify_product di product.h
+    //N.B modify product, se riceve in ingresso  stringhe vuote o un valore di float pari a quello sentinella (-1.0f), non modifica quel contenuto del prodotto
+    int result = modify_product(&(q->product_elem), new_name, new_type, new_condition, new_buy_price);
+    if (result == 1) return 3; //Se modify product restituisce 0, success, altrimenti restituisce 3 (Errore modifica del prodotto) prodotto non esistente o non valido
+        return 0; //Success
 }
+
 
 
 
@@ -265,8 +280,9 @@ Funzione che cerca un singolo prodotto e ne printa il contenuto informativo
 
 Prende in ingresso il puntatore alla testa della lista passato per copia e l'array di caratteri del nome del prodotto da ricercare
 
-Restituisce 1 se il prodotto non è stato trovato
-Restituisce 0 se il prodotto è stato trovato e ne stampa il contenuto informativo
+Restituisce:
+- 1 se il prodotto non è stato trovato
+- 0 se il prodotto è stato trovato e ne stampa il contenuto informativo
 */
 int search_and_print_product(products products_list_head, char key_name[MAX_STR_LEN]){
 
@@ -285,8 +301,9 @@ Funzione che stampa l'intera lista dei prodotti.
 
 Prende in ingresso il puntatore alla testa della lista passato come copia 
 
-Restituisce 1 se la lista è vuota
-Restituisce 0 se va a buon fine e stampa i contenuti informativi di ciascun prodotto presente in ciascun nodo
+Restituisce:
+- 1 se la lista è vuota
+- 0 se va a buon fine e stampa i contenuti informativi di ciascun prodotto presente in ciascun nodo
 */
 int print_products(products products_list_head){
     

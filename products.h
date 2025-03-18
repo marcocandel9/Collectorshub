@@ -23,7 +23,7 @@ int exist_sorted(products products_list_head, char key_name[MAX_STR_LEN]);
 
 product search_product(products products_list_head, char key_name[MAX_STR_LEN]);
 
-int modify_product(products* products_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price);
+int search_and_modify_product(products* products_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price);
 
 int search_and_print_product(products products_list_head, char key_name[MAX_STR_LEN]);
 

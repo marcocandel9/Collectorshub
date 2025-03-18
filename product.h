@@ -38,6 +38,8 @@ int set_product_condition(product myproduct, char new_condition[MAX_STR_LEN]);
 
 int set_product_buyprice(product myproduct, float new_buyprice);
 
+int modify_product(product* myproduct, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price);
+
 int print_product(product myproduct);
 
 #endif
