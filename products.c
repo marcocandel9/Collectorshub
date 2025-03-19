@@ -23,27 +23,27 @@ Prende in ingresso il puntatore passato come riferimento alla lista prodotti e i
 
 Restituisce:
 - 1 in caso di errori di allocazione memoria
-- 2 in caso di inserimento di duplicato
+- 2 in caso di inserimento di duplicato (DUPLICATI NON CONSENTITI)
 - 0 Se inserisce il prodotto con esito positivo 
 */
 int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
     
     // Creo il nuovo nodo per il nuovo prodotto
-    products new_product_node = (products)malloc(sizeof(struct products));
-    if(new_product_node == NULL) return 1; // errore di allocazione
+    products new_products_node = (products)malloc(sizeof(struct products));
+    if(new_products_node == NULL) return 1; // errore di allocazione
     
     // Popolo il nuovo nodo
-    int result = create_product(&(new_product_node->product_elem), new_name, new_type, new_condition, new_buy_price);
+    int result = create_product(&(new_products_node->product_elem), new_name, new_type, new_condition, new_buy_price);
     if(result == 1) {
-        free(new_product_node);
+        free(new_products_node);
         return 1; // errore nella creazione del prodotto
     }
 
     // Inserimento ordinato
     // Se la lista è vuota, inserisco in testa
     if(*products_list_head == NULL) {
-        new_product_node->next = NULL;
-        *products_list_head = new_product_node;
+        new_products_node->next = NULL;
+        *products_list_head = new_products_node;
         return 0;
     }
 
@@ -57,7 +57,7 @@ int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], cha
 
         //strcmp restituisce:
         // - un valore negativo se new_name è alfabeticamente inferiore al nome del prodotto -> devo interrompere lo scorrimento e inserire il nodo
-        // - 0 se key_name == product_name
+        // - 0 se new_name == product_name
         // - un valore positivo se new_name è alfabeticamente superiore al nome del prodotto -> devo continuare a scorrere la lista
         int caso = strcmp(new_name, product_name);
 
@@ -66,7 +66,7 @@ int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], cha
 
         //se le stringhe sono equivalenti, ritorna 2! DUPLICATI NON CONSENTITI //È possibile CONSENTIRE I DUPLICATI RIMUOVENDO LE SEGUENTI 4 LINEE DI CODICE
         if(caso == 0){
-            free(new_product_node);
+            free(new_products_node);
             return 2;
         }
 
@@ -83,11 +83,11 @@ int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], cha
 
     // Caso 1 inserimento: se r è NULL, significa inserimento in testa
     if(r == NULL){
-        new_product_node->next = *products_list_head;
-        *products_list_head = new_product_node;
+        new_products_node->next = *products_list_head;
+        *products_list_head = new_products_node;
     } else {  //Caso 2 inserimento: intermedio o al più in coda (Se è in coda, q == NULL!)
-        r->next = new_product_node;
-        new_product_node->next = q;
+        r->next = new_products_node;
+        new_products_node->next = q;
     }
     
     return 0;

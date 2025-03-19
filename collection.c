@@ -186,6 +186,31 @@ int get_collection_type(collection my_collection, char my_type[MAX_STR_LEN]){
 
 
 
+
+/*
+Elimina una collezione liberandone l'area di memoria riservata ad essa nell'heap
+
+Prende in ingresso il puntatore alla collezione passato come riferimento
+
+Restituisce:
+- 1 Se il puntatore alla collezione è NULL (Collezione non inizializzata o non valida)
+- 0 Se tutto va a buon fine
+*/
+int delete_collection(collection* my_collection){
+
+    //Se il puntatore alla struct collection punta ad 1, restituisce 1 (Collezione non inizializzata o non valida)
+    if((*my_collection) == NULL) return 1;
+
+    //Libera la memoria allocata per la struct collection
+    free((*my_collection));
+
+    //Imposta il puntatore a NULL per rimuovere la condizione di dangling pointer (Puntatore ad un'area di memoria deferenziata e quindi non definita)
+    (*my_collection) = NULL;
+    return 0; //Success
+}
+
+
+
 /*
 Printa il nome e il tipo della collezione
 

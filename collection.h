@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "products.h"
-
 #ifndef COLLECTION_H
 #define COLLECTION_H
 
@@ -27,6 +23,8 @@ int modify_collection(collection* my_collection, char new_name[MAX_STR_LEN], cha
 int get_collection_name(collection my_collection, char my_name[MAX_STR_LEN]);
 
 int get_collection_type(collection my_collection, char my_type[MAX_STR_LEN]);
+
+int delete_collection(collection* my_collection);
 
 int print_collection(collection my_collection);
 
