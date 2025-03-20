@@ -106,3 +106,115 @@ int insert_collection(collections* collections_list_head, char new_name[MAX_STR_
 
 }
 
+
+
+
+
+/*
+Cerca una collezione e ne modifica nome e tipo. Se gli array di caratteri passati in ingresso sono vuoti, allora non modifica quel campo informativo
+
+Restituisce:
+- 1 Se la lista collezioni è vuota o non valida (Nessuna collezione da modificare)
+- 2 Se non è stata trovata una corrispondenza con il nome della collezione passato in ingresso
+- 0 Se tutto va a buon fine
+
+*/
+int search_and_mofify_collection(collections* collections_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
+
+    //Puntatore alla testa della lista collezioni uguale a 1 -> Lista vuota , restitusisce 1
+    if(*collections_list_head==NULL) return 1;
+
+    //Inizializzo le variabili di appoggio utili alla ricerca ordinata nella lista e alla modifica della collezione
+    collections q = *collections_list_head; //Puntatore di appoggio per lo scorrimento della lista 
+    char collection_name[MAX_STR_LEN];
+    int found;
+
+    //Ricerco e modifico l'elemento
+    while(q != NULL){
+        get_collection_name(q->collection_elem,collection_name);
+
+        //strcmp restituisce:
+        // - un valore negativo se key_name è alfabeticamente inferiore al nome della collezione-> devo interrompere la ricerca
+        // - 0 se key_name == product_name
+        // - un valore positivo se key_name è alfabeticamente superiore al nome della collezione -> devo continuare a cercare
+        found = strcmp(key_name,collection_name);
+
+        if(found == 0) break; //Name match, interrompo la ricerca
+
+        if(found < 0) return 2; //Non è stata trovata una corrispondenza nella lista, restituisci 2 (COLLEZIONE NOT FOUND)
+
+        q = q -> next;
+    }
+
+    //Caso 1: q ha raggiunto la coda della lista e non è stato trovata la collezione cercata. Restituisci 2
+    if(q==NULL) return 2;
+
+    //Caso 2: è stata trovata la collezione cercata, modifico il nodo in questione utilizzando la funzione modify_collection di collection_h
+    //N.B modify collection, se riceve stringhe vuote in ingresso, non modifica quel contenuto informativo della collezione
+    int result = modify_collection(&(q->collection_elem),new_name, new_type);
+    if(result == 1) return 3; //Se modify collection restituisce 0, success, altrimenti restituisce 3 (Errore modifica della collezione) collezione non esistente o non valida
+
+    return 0; //Success
+}
+
+
+
+
+
+/*
+Funzione che cerca una collezione sulla base del nome e la rimuove dalla lista
+Prende in ingresso il puntatore alla testa della lista collezioni passato come riferimento e l'array di caratteri del nome della collezione da ricercare ed eliminare
+
+Restituisce:
+- 1 Se la lista collezioni è vuota o non valida
+- 
+*/
+int remove_collection(collections* collections_list_head, char key_name[MAX_STR_LEN]){
+
+    //Puntatore alla testa della lista collezioni uguale a 1 -> Lista vuota , restitusisce 1
+    if(*collections_list_head == NULL) return 1;
+
+    //Puntatori di appoggio per scorrere la lista ordinata
+    collections r = NULL;
+    collections q = *collections_list_head;
+    char collection_name[MAX_STR_LEN];
+
+    while(q != NULL){
+        get_collection_name(q->collection_elem,collection_name);
+
+        //strcmp restituisce:
+        // - un valore negativo se key_name è alfabeticamente inferiore al nome della collezione-> devo interrompere la ricerca
+        // - 0 se key_name == product_name
+        // - un valore positivo se key_name è alfabeticamente superiore al nome della collezione -> devo continuare a cercare
+        int is_equal = strcmp(key_name,collection_name);
+
+        if(is_equal==0) break; //Collezione da eliminare trovata interrompo la ricerca
+
+        if(is_equal < 0) return 2; //Collezione non trovata, interrompo la ricerca e restituisco 2
+
+        //Incremento i puntatori
+        r = q;
+        q = q->next;
+    }
+
+    //Se lo scorrimento è giunto fino alla fine della lista, non è stato trovato nessuna collezione corrispondente, restituisco 1
+    if(q == NULL) return 2;
+
+    //Caso 1: cancellazione testa, traslo la testa della lista un nodo avanti
+    if(r == NULL){
+        *collections_list_head = (*collections_list_head) -> next;
+
+        //dealloco il nodo contenente la collezione che desidero eliminare
+
+        //Richiamo la funzione delete collection per deallocare la collezione allocata dinamicamente
+        delete_collection(&(q->collection_elem)); //Dealloca la memoria della struct collection
+        free(q); //Dealloco la memoria della struttura collections 
+    } else {  //Caso 2 cancellazione intermedia o alpiù in coda
+         
+        (r -> next) = (q -> next);
+        delete_collection(&(q->collection_elem)); 
+        free(q);
+    }
+
+    return 0; //Success
+}

@@ -98,10 +98,15 @@ int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], cha
 
 
 /*
+Funzione che effettua una ricerca ORDINATA del prodotto sulla base del suo nome e lo rimuove dalla lista
+
 Prende in ingresso: puntatore testa passato per riferimento, array di caratteri del nome dell'elemento da ricercare ed eliminare
-Restituisce 0 in caso di Success
-Restituisce 1 se la lista è vuota
-Restituisce 2 se non è stato trovato l'elemento
+
+Restituisce:
+- 0 in caso di Success
+- 1 Se la lista prodotti è vuota o non valida
+- 2 Se non è stato trovato l'elemento prodotto con il nome desiderato
+
 NB Cancella solo sulla base del nome, se disattivo il controllo di evitamento dei duplicati nella funzione insert product non posso selezionare quale dei duplicati eliminare
 */
 int remove_product(products* products_list_head, char key_name [MAX_STR_LEN]){
@@ -116,33 +121,41 @@ int remove_product(products* products_list_head, char key_name [MAX_STR_LEN]){
 
     while(q != NULL){
         get_product_name(q->product_elem, product_name);
-        int is_not_equal = strcmp(key_name, product_name);
+
+        //strcmp restituisce:
+        // - un valore negativo se key_name è alfabeticamente inferiore al nome del prodotto -> devo interrompere la ricerca
+        // - 0 se key_name == product_name
+        // - un valore positivo se key_name è alfabeticamente superiore al nome del prodotto -> devo continuare a cercare
+        int is_equal = strcmp(key_name, product_name);
     
-        if(is_not_equal == 0){
+        if(is_equal == 0){
             break;
         }
+
+        if(is_equal < 0) return 2; //Prodotto non trovato, interrompo la ricerca e restituisco 2
+
+        //Incremento i puntatori    
         r = q;
         q = q->next;
     }
 
-    // Se non è stato trovato alcun nodo (q==NULL), restituisci 1
-    if(q == NULL)
-        return 1; 
+    // Se lo scorrimento è giunto fino alla fine della lista, non ho trovato nessun prodotto corrispondente, restituisco 1
+    if(q == NULL) return 2;
 
-    //Caso 1 : cancellazione testa, traslo la lista di un nodo in avanti
+    //Caso 1 : cancellazione testa, traslo la lista un nodo in avanti
     if(r==NULL){
-        *(products_list_head) = q->next;
+        *(products_list_head) = (*products_list_head) -> next;
 
         //dealloco il nodo contenete il prodotto che si desidera eliminare
 
         //Richiamo la funzione delete product per deallocare il prodotto allocato dinamicamente
         delete_product(&(q->product_elem)); //Dealloca la memoria della struttura prodotto
-        free(q); //Dealloca la memoria della struttura Products contenente il puntatore a nodo che dopo delete product puntava a NULL
+        free(q); //Dealloca la memoria della struttura Products 
 
     } else { //Caso 2, cancellazione intermedia o al più in coda (Se è in coda, q == NULL!)
         ( r -> next ) = ( q -> next );
         delete_product(&(q->product_elem)); //Dealloca la memoria della struttura prodotto
-        free(q); //Dealloca la memoria della struttura Products contenente il puntatore a nodo che dopo delete product puntava a NULL
+        free(q); //Dealloca la memoria della struttura Products 
     }
     return 0; //Success
 }
@@ -227,17 +240,17 @@ Prende in ingresso il puntatore alla testa della lista passato per riferimento, 
 le variabili del contenuto informativo della Struct Prodotto
 
 Restituisce:
-- 0 se la modifica va a buon fine
-- 2 se l'elemento non è stato trovato
+- 1 Se la lista prodotti è vuota o non valida (Nessun prodotto da modificare)
+- 2 Se non è stata trovata una corrispondenza con il nome del prodotto passato in ingresso
 - 3 se l'elemento non è valido (errore nella modifica del prodotto)
+- 0 Se tutto va a buon fine
 */
 int search_and_modify_product(products* products_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
 
     //Lista vuota: restituisce 1
     if(*products_list_head == NULL) return 1;
 
-    //Puntatori di appoggio per scorrere la lista
-    products r = NULL;
+    //Puntatore di appoggio per scorrere la lista
     products q = *products_list_head;
     char product_name[MAX_STR_LEN];
     int found;
@@ -247,16 +260,15 @@ int search_and_modify_product(products* products_list_head, char key_name[MAX_ST
         get_product_name(q->product_elem,product_name);
 
         //strcmp restituisce:
-        // - un valore negativo se key_name è alfabeticamente inferiore al nome del prodotto -> devo continuare a cercare
+        // - un valore negativo se key_name è alfabeticamente inferiore al nome del prodotto -> devo interrompere la ricerca
         // - 0 se key_name == product_name
-        // - un valore positivo se key_name è alfabeticamente superiore al nome del prodotto -> devo interrompere la ricerca
+        // - un valore positivo se key_name è alfabeticamente superiore al nome del prodotto -> devo continuare a cercare
         found = strcmp(key_name,product_name);
 
         if(found == 0) break; //Trovato, esci dal ciclo while
 
-        if(found > 0) return 2; //Non è stata trovata una corrispondenza nella lista, ritorna 2 (ELEMENT NOT FOUND)
+        if(found < 0) return 2; //Non è stata trovata una corrispondenza nella lista, Restituisci 2 (PRODUCT NOT FOUND)
 
-        r = q;
         q = q -> next;
     }
 
@@ -267,7 +279,8 @@ int search_and_modify_product(products* products_list_head, char key_name[MAX_ST
     //N.B modify product, se riceve in ingresso  stringhe vuote o un valore di float pari a quello sentinella (-1.0f), non modifica quel contenuto del prodotto
     int result = modify_product(&(q->product_elem), new_name, new_type, new_condition, new_buy_price);
     if (result == 1) return 3; //Se modify product restituisce 0, success, altrimenti restituisce 3 (Errore modifica del prodotto) prodotto non esistente o non valido
-        return 0; //Success
+    
+    return 0; //Success
 }
 
 
