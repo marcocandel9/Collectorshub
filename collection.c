@@ -27,8 +27,8 @@ int create_collection(collection* new_collection, char new_name[MAX_STR_LEN], ch
         return 1; //errore di allocazione della nuova struct collection
 
     ///setter
-    set_collection_name((*new_collection),new_name);
-    set_collection_type((*new_collection),new_type);
+    set_collection_name(new_collection,new_name);
+    set_collection_type(new_collection,new_type);
     (*new_collection) -> products_list_head = NULL;
 
     return 0; //Success
@@ -45,7 +45,7 @@ Prende in ingresso un puntatore passato per riferimento ad una struct collection
 Restituisce 1 in caso di puntatore a NULL o non valido
 Restituisce 0 se tutto va a buon fine
 */
-int set_collection_name(collection* my_collection, char new_name[MAX_STR_LEN]){
+int  set_collection_name(collection* my_collection, char new_name[MAX_STR_LEN]){
 
     //Controlla se il puntatore alla collezione è NULL, restituisce 1 se lo è (collezione non esistente o non valida)
     if(*my_collection == NULL) return 1; 
@@ -94,13 +94,13 @@ Restituisce:
 - 1 Se la collezione non è stata ancora creta (PUNTATORE A NULL)
 - 0 Se l'inserimento va a buon fine
 */
-int insert_collection_list(collection* my_collection, products new_products_list_head){
+int insert_collection_list(collection* my_collection, products* new_products_list_head){
 
     // La collezione non è stata ancora creata, restituisci 1
     if((*my_collection) == NULL) return 1;
 
     // Aggancia la nuova lista prodotti (già creata altrove, anche vuota)
-    (*my_collection)->products_list_head = new_products_list_head;
+    (*my_collection)->products_list_head = *(new_products_list_head);
 
     return 0; // Success
 }
@@ -126,11 +126,11 @@ int modify_collection(collection* my_collection, char new_name[MAX_STR_LEN], cha
 
     // Se new_name non è vuoto, modifica il nome della collezione
     if(new_name[0] != '\0')
-        set_collection_name(*my_collection, new_name);
+        set_collection_name(my_collection, new_name);
 
     // Se new_type non è vuoto, modifica il tipo della collezione
     if(new_type[0] != '\0')
-        set_collection_type(*my_collection, new_type);
+        set_collection_type(my_collection, new_type);
     
     return 0; //Success
 }
@@ -208,6 +208,8 @@ int delete_collection(collection* my_collection){
     (*my_collection) = NULL;
     return 0; //Success
 }
+
+
 
 
 

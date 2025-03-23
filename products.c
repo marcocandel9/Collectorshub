@@ -327,7 +327,6 @@ int print_products(products products_list_head){
 
     while(q != NULL){
         print_product(q->product_elem);
-        printf("\n");
         q = q -> next;
     }
 

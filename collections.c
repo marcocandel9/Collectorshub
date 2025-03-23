@@ -37,7 +37,7 @@ Restituisce:
 int insert_collection(collections* collections_list_head, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
 
     //Alloco il nuovo nodo della lista collezioni
-    collections new_collections_node = (collections*)malloc(sizeof(struct collections)); 
+    collections new_collections_node = (collections)malloc(sizeof(struct collections)); 
         if(new_collections_node == NULL) return 1; //Restituisce 1 in caso di errori di allocazione
 
     //Popolo il nuovo nodo della lista collezioni
@@ -119,7 +119,7 @@ Restituisce:
 - 0 Se tutto va a buon fine
 
 */
-int search_and_mofify_collection(collections* collections_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
+int search_and_modify_collection(collections* collections_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
 
     //Puntatore alla testa della lista collezioni uguale a 1 -> Lista vuota , restitusisce 1
     if(*collections_list_head==NULL) return 1;
@@ -217,4 +217,30 @@ int remove_collection(collections* collections_list_head, char key_name[MAX_STR_
     }
 
     return 0; //Success
+}
+
+
+
+
+
+/*
+Stampa il nome ed il tipo delle collezioni della lista collezioni
+
+Prende in ingresso il puntantore alla lista della testa passato come riferimento
+
+Restituisce:
+- 1 In casi di lista collezioni non valida o vuota
+- 0 In caso di Successo
+*/
+int print_collections(collections collections_list_head){
+
+    //Puntatore alla testa della lista collezioni uguale a 1 -> Lista vuota , restitusisce 1
+    if(collections_list_head == NULL) return 1;
+
+    //Altrimenti stampa la lista
+    while(collections_list_head != NULL){
+        print_collection((collections_list_head)->collection_elem);
+        collections_list_head = collections_list_head->next;
+    }
+    return 0; //Success, lista printata
 }

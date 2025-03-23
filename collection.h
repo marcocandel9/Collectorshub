@@ -16,7 +16,7 @@ int set_collection_name(collection* my_collection, char new_name[MAX_STR_LEN]);
 
 int set_collection_type(collection* my_collection, char new_type[MAX_STR_LEN]);
 
-int insert_collection_list(collection* my_collection, products new_products_list_head);
+int insert_collection_list(collection* my_collection, products* new_products_list_head);
 
 int modify_collection(collection* my_collection, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]);
 

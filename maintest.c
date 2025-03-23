@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "product.h"
-#include "products.h"
+#include "collections.h"
 
 int main() {
 
@@ -59,5 +58,31 @@ int main() {
     print_products(Nuova_lista);
 
     
+    //TEST COLLEZIONI
+
+    char my_collection1_name[MAX_STR_LEN] = "Collezione di marco";
+    char my_collection1_type[MAX_STR_LEN] = "Carte Collezionabili";
+    char my_collection1modified_name[MAX_STR_LEN] = "Coll. 1 di Marco";
+    char empty[MAX_STR_LEN] = "";
   
+    collections collezioni = NULL;
+
+    insert_collection(&(collezioni), my_collection1_name, my_collection1_type);
+    remove_collection(&(collezioni),my_collection1_name);
+    print_collections(collezioni);
+    printf("breakpoint stampa lista con una sola collezione\n");
+
+    char my_collection2_name[MAX_STR_LEN] = "Carte pokemon";
+    char my_collection2_type[MAX_STR_LEN] = "Carte collezionabili";
+    insert_collection(&(collezioni), my_collection2_name, my_collection2_type);
+    print_collections(collezioni);
+
+    search_and_modify_collection(&(collezioni), my_collection2_name,my_collection1modified_name, empty);
+    printf("breakpoint 2: search and modify\n");
+    print_collections(collezioni);
+
+
+    printf("breakpoint 3: aggiunta seconda collezione\n");
+    insert_collection(&(collezioni),my_collection1_name,my_collection2_type);
+    print_collections(collezioni);
 }

@@ -29,14 +29,14 @@ int create_product(product* new_product, char new_name[MAX_STR_LEN], char new_ty
 //Prende in ingresso il puntatore al puntatore di una struct product, ritorna 0 dopo l'eliminazione
 int delete_product(product* product_todelete){
 
-    //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
+    //Restituisce 1 se il puntatore al prodotto punta a NULL (prodotto non esistente o non valido)
     if ((*product_todelete)==NULL)
         return 1; 
     
     //libera la memoria nell'heap puntata dal puntatore
     free(*product_todelete);
 
-    //il puntatore adesso punterà a NULL
+    //Imposta il puntatore a NULL per rimuovere la condizione di dangling pointer (Puntatore ad un'area di memoria deferenziata e quindi non definita)
     *product_todelete=NULL;
     return 0; 
 }
