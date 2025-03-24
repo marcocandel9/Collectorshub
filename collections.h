@@ -23,4 +23,8 @@ int search_and_modify_collection(collections* collections_list_head, char key_na
 
 int print_collections(collections collections_list_head);
 
+int free_collections(collections* collections_list_head);
+
+int insert_sorted_products_list(collections* collections_list_head, char key_name[MAX_STR_LEN], products* products_list_head);
+
 #endif

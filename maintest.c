@@ -84,5 +84,18 @@ int main() {
 
     printf("breakpoint 3: aggiunta seconda collezione\n");
     insert_collection(&(collezioni),my_collection1_name,my_collection2_type);
+
+
+
+    print_collections(collezioni);
+
+    insert_sorted_products_list(&collezioni, my_collection1_name, &Nuova_lista);
+    printf("\n La precedente collezione contiene i seguenti prodotti: \n");
+    print_products(Nuova_lista);
+
+    
+    
+    printf("\n Libero tutte le collezioni e stampo niente: \n");
+    free_collections(&(collezioni));
     print_collections(collezioni);
 }

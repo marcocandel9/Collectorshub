@@ -308,6 +308,7 @@ int search_and_print_product(products products_list_head, char key_name[MAX_STR_
 
 
 
+
 /*
 Funzione che stampa l'intera lista dei prodotti.
 
@@ -319,7 +320,7 @@ Restituisce:
 */
 int print_products(products products_list_head){
     
-    //Controlla se la lista è vuota
+    //Puntatore alla testa della lista == NULL -> Lista vuota, restituisce 1
     if(products_list_head == NULL) return 1; 
 
     //Puntatore di appoggio per scorrere la lista
@@ -333,3 +334,38 @@ int print_products(products products_list_head){
     return 0; //Success
 }
 
+
+
+
+
+/*
+Funzione che libera totalmente la lista prodotti
+
+Prende in ingresso il puntatore alla testa della lista passato per riferimento (che viene inizializzato a NULL dopo lo svuotamento)
+
+Restituisce:
+- 1 Se la lista prodotti è vuota 
+- 0 Se la liberazione della lista va a buon fine
+*/
+int free_products(products* products_list_head){
+
+    //Puntatore alla testa della lista == NULL -> Lista vuota, restituisce 1
+    if(*products_list_head == NULL) return 1;
+
+    //Puntatore di appoggio per scorrere la lista
+    products r = NULL;
+    products q = *products_list_head;
+
+    //Ciclo while che elimina (dealloca) ogni elemento struct prodotto di ciascun nodo della lista prodotti. 
+    while(q != NULL){
+        r = q;
+        q = q -> next;
+        delete_product(&(r->product_elem));  //Dealloca lo struct prodotto del nodo in questione
+        free(r);                             //Dealloca lo struct products (l'intero nodo)
+    } 
+
+    *products_list_head = NULL; //azzero la testa della lista
+
+    return 0; //Success
+
+}

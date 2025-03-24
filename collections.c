@@ -121,7 +121,7 @@ Restituisce:
 */
 int search_and_modify_collection(collections* collections_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
 
-    //Puntatore alla testa della lista collezioni uguale a 1 -> Lista vuota , restitusisce 1
+    //Puntatore alla testa della lista collezioni uguale a NULL -> Lista vuota , restitusisce 1
     if(*collections_list_head==NULL) return 1;
 
     //Inizializzo le variabili di appoggio utili alla ricerca ordinata nella lista e alla modifica della collezione
@@ -171,7 +171,7 @@ Restituisce:
 */
 int remove_collection(collections* collections_list_head, char key_name[MAX_STR_LEN]){
 
-    //Puntatore alla testa della lista collezioni uguale a 1 -> Lista vuota , restitusisce 1
+    //Puntatore alla testa della lista collezioni uguale a NULL -> Lista vuota , restitusisce 1
     if(*collections_list_head == NULL) return 1;
 
     //Puntatori di appoggio per scorrere la lista ordinata
@@ -234,7 +234,7 @@ Restituisce:
 */
 int print_collections(collections collections_list_head){
 
-    //Puntatore alla testa della lista collezioni uguale a 1 -> Lista vuota , restitusisce 1
+     //Puntatore alla testa della lista collezioni uguale a NULL -> Lista vuota , restitusisce 1
     if(collections_list_head == NULL) return 1;
 
     //Altrimenti stampa la lista
@@ -243,4 +243,86 @@ int print_collections(collections collections_list_head){
         collections_list_head = collections_list_head->next;
     }
     return 0; //Success, lista printata
+}
+
+
+
+
+/*
+Libera completamente la lista delle collezioni
+
+Prende in ingresso li puntatore alla lista delle collezioni passato per riferimento (che viene inizializzato a NULL dopo lo svuotamento)
+
+Restituisce:
+- 1 In caso di lista vuota
+- 0 In caso di success
+*/
+int free_collections(collections* collections_list_head){
+
+    //Puntatore alla testa della lista collezioni uguale a NULL -> Lista vuota , restitusisce 1
+    if(*collections_list_head == NULL) return 1;
+
+    //Puntatori di appoggio per scorrere la lista
+    collections r = NULL;
+    collections q = *collections_list_head;
+
+    while(q != NULL){
+        r = q;
+        delete_collection(&(r->collection_elem));
+        free(r);
+        q = q -> next;
+    }
+
+    //Azzero il puntatore alla lista
+    *collections_list_head = NULL;
+
+    return 0; //Success
+}
+
+
+
+
+
+/*
+Inserisce la lista dei prodotti alla desiderata collezione della lista collezioni con INSERIMENTO ORDINATO ALFABETICO sulla base del NOME DELLA COLLEZIONE
+
+Prende in ingresso il puntatore alla testa della lista collezioni passato per riferimento, il nome della collezione da ricercare a cui inserire la lista prodotti, e il 
+puntatore alla testa della lista prodotti da inserire
+
+Restituisce:
+- 1 Se la lista delle collezioni è VUOTA
+- 2 Se non è stata trovata la collezione ricercata
+*/
+int insert_sorted_products_list(collections* collections_list_head, char key_name[MAX_STR_LEN], products* products_list_head){
+
+    //Puntatore alla testa della lista collezioni uguale a NULL -> Lista vuota, restituisce 1
+    if(*collections_list_head == NULL) return 1;
+
+    //Puntatore di appoggio per scorrere la lista collezioni
+    collections q = *collections_list_head;
+    char collection_name[MAX_STR_LEN];
+
+    //Ricerca ordinata sulla base del nome della collezione (array di caratteri key_name)
+    while(q != NULL){
+        get_collection_name(q->collection_elem,collection_name);
+
+        //strcmp restituisce:
+        // - un valore negativo se key_name è alfabeticamente inferiore al nome della collezione-> devo interrompere la ricerca
+        // - 0 se key_name == product_name
+        // - un valore positivo se key_name è alfabeticamente superiore al nome della collezione -> devo continuare a cercare
+        int is_equal = strcmp(key_name,collection_name);
+
+        if(is_equal == 0) break; //Corrispondenza trovata, esco dal ciclo while di ricerca ordinata
+
+        if(is_equal < 0) return 2; //Collezione non trovata, restituisci 2
+        
+        //Incremento il puntatore di appoggio
+        q = q->next;
+    }
+
+    //se q == NULL, lo scorrimento ha giunto la coda della lista senza trovare una corrispondenza, restituisco 2 (Collezione cercata non trovata nella lista)
+    if(q == NULL) return 2;
+
+    insert_products_list(&(q->collection_elem),products_list_head);
+    return 0; //Success
 }

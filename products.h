@@ -29,6 +29,8 @@ int search_and_print_product(products products_list_head, char key_name[MAX_STR_
 
 int print_products(products products_list_head);
 
+int free_products(products* products_list_head);
+
 
 
 
