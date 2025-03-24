@@ -40,18 +40,18 @@ int create_collection(collection* new_collection, char new_name[MAX_STR_LEN], ch
 /*
 Setta un nuovo nome alla collezione
 
-Prende in ingresso un puntatore passato per riferimento ad una struct collection e il nuovo nome della collezione
+Prende in ingresso un puntatore passato per valore ad una struct collection e il nuovo nome della collezione
 
 Restituisce 1 in caso di puntatore a NULL o non valido
 Restituisce 0 se tutto va a buon fine
 */
-int  set_collection_name(collection* my_collection, char new_name[MAX_STR_LEN]){
+int  set_collection_name(collection my_collection, char new_name[MAX_STR_LEN]){
 
     //Controlla se il puntatore alla collezione è NULL, restituisce 1 se lo è (collezione non esistente o non valida)
-    if(*my_collection == NULL) return 1; 
+    if(my_collection == NULL) return 1; 
 
     //Setta il nome della collezione
-    strcpy((*my_collection)->collection_name,new_name);
+    strcpy(my_collection->collection_name,new_name);
     
     //Success
     return 0; 
@@ -64,18 +64,18 @@ int  set_collection_name(collection* my_collection, char new_name[MAX_STR_LEN]){
 /*
 Setta un nuovo tipo alla collezione
 
-Prende in ingresso un puntatore passato per riferimento ad una struct collection e il nuovo tipo della collezione
+Prende in ingresso un puntatore passato per valore ad una struct collection e il nuovo tipo della collezione
 
 Restituisce 1 in caso di puntatore a NULL o non valido
 Restituisce 0 se tutto va a buon fine
 */
-int set_collection_type(collection* my_collection, char new_type[MAX_STR_LEN]){
+int set_collection_type(collection my_collection, char new_type[MAX_STR_LEN]){
 
     //Controlla se il puntatore alla collezione è NULL, restituisce 1 se lo è (collezione non esistente o non valida)
-    if(*my_collection == NULL) return 1; 
+    if(my_collection == NULL) return 1; 
 
-    //Setta il nome della collezione
-    strcpy((*my_collection)->collection_type,new_type);
+    //Setta il tipo della collezione
+    strcpy(my_collection->collection_type,new_type);
     
     //Success
     return 0; 
@@ -86,7 +86,7 @@ int set_collection_type(collection* my_collection, char new_type[MAX_STR_LEN]){
 
 
 /*
-Aggiunge una NUOVA (sarà inizialmente quindi vuota) lista prodotti alla collezione 
+Aggiunge una lista prodotti alla collezione 
 
 Prende in ingresso il puntatore alla collezione passato per riferimento e il puntatore alla testa della lista prodotti passato per riferimento
 
@@ -94,7 +94,7 @@ Restituisce:
 - 1 Se la collezione non è stata ancora creta (PUNTATORE A NULL)
 - 0 Se l'inserimento va a buon fine
 */
-int insert_collection_list(collection* my_collection, products* new_products_list_head){
+int insert_products_list(collection* my_collection, products* new_products_list_head){
 
     // La collezione non è stata ancora creata, restituisci 1
     if((*my_collection) == NULL) return 1;
@@ -119,10 +119,10 @@ int insert_collection_list(collection* my_collection, products* new_products_lis
  - 1 Se la collezione non è stata ancora creata (PUNTATORE A NULL)
  - 0 Se la modifica va a buon fine
 */
-int modify_collection(collection* my_collection, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
+int modify_collection(collection my_collection, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
     
     // La collezione non è stata ancora creata o non è valida, restituisci 1
-    if((*my_collection) == NULL) return 1;
+    if(my_collection == NULL) return 1;
 
     // Se new_name non è vuoto, modifica il nome della collezione
     if(new_name[0] != '\0')
@@ -188,7 +188,7 @@ int get_collection_type(collection my_collection, char my_type[MAX_STR_LEN]){
 
 
 /*
-Elimina una collezione liberandone l'area di memoria riservata ad essa nell'heap
+Elimina una collezione liberandone l'area di memoria riservata alla lista dei prodotti associata alla collezione e la struct collection stessa
 
 Prende in ingresso il puntatore alla collezione passato come riferimento
 
@@ -201,7 +201,8 @@ int delete_collection(collection* my_collection){
     //Se il puntatore alla struct collection punta ad 1, restituisce 1 (Collezione non inizializzata o non valida)
     if((*my_collection) == NULL) return 1;
 
-    //Libera la memoria allocata per la struct collection
+    //Libera la memoria allocata per la lista prodotti associati alla collezione
+    free_products(&(*my_collection)->products_list_head);
     free((*my_collection));
 
     //Imposta il puntatore a NULL per rimuovere la condizione di dangling pointer (Puntatore ad un'area di memoria deferenziata e quindi non definita)
