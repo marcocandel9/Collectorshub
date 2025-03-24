@@ -151,7 +151,7 @@ int search_and_modify_collection(collections* collections_list_head, char key_na
 
     //Caso 2: è stata trovata la collezione cercata, modifico il nodo in questione utilizzando la funzione modify_collection di collection_h
     //N.B modify collection, se riceve stringhe vuote in ingresso, non modifica quel contenuto informativo della collezione
-    int result = modify_collection(&(q->collection_elem),new_name, new_type);
+    int result = modify_collection((q->collection_elem),new_name, new_type);
     if(result == 1) return 3; //Se modify collection restituisce 0, success, altrimenti restituisce 3 (Errore modifica della collezione) collezione non esistente o non valida
 
     return 0; //Success

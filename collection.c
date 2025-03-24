@@ -27,8 +27,8 @@ int create_collection(collection* new_collection, char new_name[MAX_STR_LEN], ch
         return 1; //errore di allocazione della nuova struct collection
 
     ///setter
-    set_collection_name(new_collection,new_name);
-    set_collection_type(new_collection,new_type);
+    set_collection_name(*new_collection,new_name);
+    set_collection_type(*new_collection,new_type);
     (*new_collection) -> products_list_head = NULL;
 
     return 0; //Success
