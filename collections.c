@@ -1,8 +1,5 @@
 //LISTA COLLEZIONI CON LOGICA DI ORDINAMENTO ALFABETICO IN BASE AL NOME DELLA COLLEZIONE. NON ACCETTA DUPLICATI.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "collections.h"
 
 

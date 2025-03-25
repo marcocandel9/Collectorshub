@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "product.h"
 //La direttiva #include "product.h" dice al preprocessore di inserire il contenuto del file product.h prima della compilazione.
 
