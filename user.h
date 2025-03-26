@@ -9,24 +9,63 @@
 struct user{
     char username[MAX_STR_LEN];
     char password[MAX_STR_LEN];
+    user_role role;
 };
+
+/*definizione tipo di dato enum per il ruolo di ciascun utente
+Un utente BASE (USER) può solo accedere al menù di base, menù nel quale sarà possibile:
+- Creare e modificare le proprie collezioni
+- Creare e modificare i propri prodotti per ciascuna collezione
+- Modificare username e password 
+- cancellare il proprio profilo utente
+
+Un utente ADMIN può accedere al menù ADMIN, menù nel quale sarà possibile: 
+- Aggiungere o rimuovere utenti dalla lista utenti
+- Promuovere utenti base ad ADMIN (Ma non superuser)
+
+Un utente SUPERUSER può accedere al menù SUPERUSER, menù nel quale sarà possibile:
+- Avere pieno controllo di tutti gli utenti (promozione ad admin o superuser, eliminazione)
+- Cancellazione della lista collezioni di ciascun utente
+- Cancellazione della lista prodotti di ciascuna collezione di ciascun utente
+
+*/
+typedef enum {
+    USER,
+    ADMIN,
+    SUPERUSER,
+} user_role;
+
 
 typedef struct user* user;
 
-int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN]);
+//Lista dei simboli ammessi per la validazione della password (modificabile)
+//il prefisso extern permette alla variabile costante di essere utilizzata in moduli esterni rispetto user.h
+extern const char allowed_symbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+
+int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN], user_role new_user_role);
+
+int check_user_privilege(user_role my_user_role, user_role new_user);
 
 int validate_password(char password[MAX_STR_LEN]);
-
-int modify_credentials(user my_user, char my_username[MAX_STR_LEN], char my_password[MAX_STR_LEN]);
-
-int get_username(user my_user, char my_username[MAX_STR_LEN]);
-
-int get_password(user my_user, char my_password[MAX_STR_LEN]);
 
 int set_username(user my_user, char new_username[MAX_STR_LEN]);
 
 int set_password(user my_user, char new_password[MAX_STR_LEN]);
 
+int modify_credentials(user my_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN]);
+
+int get_username(user my_user, char my_username[MAX_STR_LEN]);
+
+int get_password(user my_user, char my_password[MAX_STR_LEN]);
+
+int delete_user(user* my_user); 
+
+int set_admin(user my_user);
+
+int set_superuser(user my_user);
+
 int save_credentials(user my_user);
+
+
 
 #endif
