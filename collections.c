@@ -91,8 +91,8 @@ int insert_collection(collections* collections_list_head, char new_name[MAX_STR_
     //Inserisco il nuovo nodo nella posizione trovata
     //Caso 1:  (inserimento TESTA) (non mi sono mosso dal primo elemento, r punta a NULL e q punta al primo nodo della lista) (Devo aggiornare la testa)
     if(r == NULL) {
-        new_collections_node -> next = *(collections_list_head);
-        *(collections_list_head) = new_collections_node; //Aggiorno la testa
+        new_collections_node -> next = (*collections_list_head);
+        (*collections_list_head) = new_collections_node; //Aggiorno la testa
     
     } else {     //Caso 2: Inserimento intermedio o alpiù in coda (N.B se inserisco in coda q == NULL)
         r->next = new_collections_node;
@@ -100,7 +100,6 @@ int insert_collection(collections* collections_list_head, char new_name[MAX_STR_
     }
 
     return 0; //Success
-
 }
 
 
@@ -181,7 +180,7 @@ int remove_collection(collections* collections_list_head, char key_name[MAX_STR_
 
         //strcmp restituisce:
         // - un valore negativo se key_name è alfabeticamente inferiore al nome della collezione-> devo interrompere la ricerca
-        // - 0 se key_name == product_name
+        // - 0 se key_name == collection_name
         // - un valore positivo se key_name è alfabeticamente superiore al nome della collezione -> devo continuare a cercare
         int is_equal = strcmp(key_name,collection_name);
 
@@ -265,9 +264,9 @@ int free_collections(collections* collections_list_head){
 
     while(q != NULL){
         r = q;
+        q = q -> next;
         delete_collection(&(r->collection_elem));
         free(r);
-        q = q -> next;
     }
 
     //Azzero il puntatore alla lista
@@ -305,7 +304,7 @@ int insert_sorted_products_list(collections* collections_list_head, char key_nam
 
         //strcmp restituisce:
         // - un valore negativo se key_name è alfabeticamente inferiore al nome della collezione-> devo interrompere la ricerca
-        // - 0 se key_name == product_name
+        // - 0 se key_name == collection_name
         // - un valore positivo se key_name è alfabeticamente superiore al nome della collezione -> devo continuare a cercare
         int is_equal = strcmp(key_name,collection_name);
 

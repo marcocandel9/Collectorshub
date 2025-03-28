@@ -30,7 +30,8 @@ int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_passwor
     
     set_username(*new_user,new_username);
     set_password(*new_user,new_password);
-    (*new_user) -> role = new_user_role;
+    set_user_role(*new_user, new_user_role);
+    (*new_user) ->collections_list_head = NULL;
 
     return 0; //Success
 }
@@ -167,6 +168,45 @@ int set_password(user my_user, char new_password[MAX_STR_LEN]){
 
 
 /*
+Imposta un nuovo ruolo alla struct utente
+
+Restituisce
+- 1 Se l'utente non è stato ancora inizializzato (puntatore a NULL)
+- 0 Se tutto va a buon fine
+*/
+int set_user_role(user my_user, user_role new_user_role){
+
+    if(my_user == NULL) return 1; //utente non inizializzato
+
+    my_user ->role = new_user_role;
+
+    return 0; //Success
+}
+
+
+
+
+
+/*
+Aggancia una nuova lista collezioni all'utente
+
+Restituisce:
+- 1 Se l'utente è non esistente o non ancora inizializzato
+*/
+int insert_user_collections_list(user* my_user, collections new_collections_list_head){
+
+    if(*my_user == NULL) return 1; //Utente non esistente o non ancora inizializzato
+
+    (*my_user)->collections_list_head = new_collections_list_head;
+    return 0; //Success
+
+}
+
+
+
+
+
+/*
 Modifica le credenziali di un utente già esistente, dopo aver validato la nuova password
 
 Restituisce:
@@ -182,6 +222,7 @@ int modify_credentials(user my_user, char new_username[MAX_STR_LEN], char new_pa
     if(new_password[0] != '\0'){
         int is_valid = validate_password(new_password);
         if(is_valid == 1) return 2; //Password non valida
+        set_password(my_user, new_password);
     }
     
     if(new_username[0] != '\0'){
@@ -236,7 +277,7 @@ int get_password(user my_user, char my_password[MAX_STR_LEN]){
 
 
 /*
-Dealloca la memoria riservata ad un utente, cancellandolo e impostanto il suo puntatore a NULL
+Dealloca la memoria riservata ad un utente e a tutte le sue strutture dati associate, cancellandolo e impostanto il suo puntatore a NULL
 
 Restituisce:
 - 1 Se l'utente non è stato ancora inizializzato e quindi non esiste (puntatore a null)
@@ -246,6 +287,9 @@ int delete_user(user* my_user){
     
     if(*my_user == NULL) return 1;
 
+    //dealloco gerarchicamente tutte le strutture dati inferiori a user (collezioni, prodotti)
+    free_collections(&((*my_user)->collections_list_head));
+
     free(*my_user);
 
     *my_user = NULL;
@@ -253,33 +297,3 @@ int delete_user(user* my_user){
     return 0;
 }
 
-
-/*
-Imposta il ruolo di un utente ad ADMIN
-
-Restituisce:
-- 1 Se l'utente non è stato ancora inizializzato e quindi non esiste (puntatore a NULL)
-- 0 Se tutto va a buon fine
-*/
-int set_admin(user my_user){
-    if(my_user == NULL) return 1;
-
-    my_user->role = ADMIN;
-}
-
-
-
-
-
-/*
-Imposta il ruolo di un utente a SUPERUSER
-
-Restituisce:
-- 1 Se l'utente non è stato ancora inizializzato e quindi non esiste (puntatore a NULL)
-- 0 Se tutto va a buon fine
-*/
-int set_superuser(user my_user){
-    if(my_user == NULL) return 1;
-
-    my_user->role = SUPERUSER;
-}

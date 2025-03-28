@@ -10,6 +10,7 @@ struct user{
     char username[MAX_STR_LEN];
     char password[MAX_STR_LEN];
     user_role role;
+    collections collections_list_head;
 };
 
 /*definizione tipo di dato enum per il ruolo di ciascun utente
@@ -52,6 +53,10 @@ int set_username(user my_user, char new_username[MAX_STR_LEN]);
 
 int set_password(user my_user, char new_password[MAX_STR_LEN]);
 
+int set_user_role(user my_user, user_role new_user_role);
+
+int insert_user_collections_list(user* my_user, collections new_collections_list_head);
+
 int modify_credentials(user my_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN]);
 
 int get_username(user my_user, char my_username[MAX_STR_LEN]);
@@ -59,10 +64,6 @@ int get_username(user my_user, char my_username[MAX_STR_LEN]);
 int get_password(user my_user, char my_password[MAX_STR_LEN]);
 
 int delete_user(user* my_user); 
-
-int set_admin(user my_user);
-
-int set_superuser(user my_user);
 
 int save_credentials(user my_user);
 
