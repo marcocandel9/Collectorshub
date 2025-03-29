@@ -202,7 +202,7 @@ int delete_collection(collection* my_collection){
     if((*my_collection) == NULL) return 1;
 
     //Libera la memoria allocata per la lista prodotti associati alla collezione
-    free_products(&(*my_collection)->products_list_head);
+    free_products(&((*my_collection)->products_list_head));
     free((*my_collection));
 
     //Imposta il puntatore a NULL per rimuovere la condizione di dangling pointer (Puntatore ad un'area di memoria deferenziata e quindi non definita)
