@@ -2,9 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "collections.h"
+#include "ascii_graphics.h"
 
 int main() {
 
+
+    login_menu();
+    user_menu();
+/*
     //Creo una nuova lista prodotti e aggiungo un nuovo prodotto
     products Nuova_lista;
     create_products_list(&(Nuova_lista));
@@ -98,4 +103,6 @@ int main() {
     printf("\n Libero tutte le collezioni e stampo niente: \n");
     free_collections(&(collezioni));
     print_collections(collezioni);
+
+    */
 }

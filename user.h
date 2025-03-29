@@ -6,12 +6,6 @@
 #include <ctype.h>        
 
 
-struct user{
-    char username[MAX_STR_LEN];
-    char password[MAX_STR_LEN];
-    user_role role;
-    collections collections_list_head;
-};
 
 /*definizione tipo di dato enum per il ruolo di ciascun utente
 Un utente BASE (USER) può solo accedere al menù di base, menù nel quale sarà possibile:
@@ -35,6 +29,17 @@ typedef enum {
     ADMIN,
     SUPERUSER,
 } user_role;
+
+
+
+struct user{
+    char username[MAX_STR_LEN];
+    char password[MAX_STR_LEN];
+    user_role role;
+    collections collections_list_head;
+};
+
+
 
 
 typedef struct user* user;
