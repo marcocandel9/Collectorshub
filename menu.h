@@ -24,9 +24,13 @@ int user_menu();
 
 int collection_menu();
 
-int superuser_menu();
+int products_menu();
 
 int admin_menu();
+
+int superuser_menu();
+
+
 
 
 

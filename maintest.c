@@ -9,6 +9,9 @@ int main() {
 
     login_menu();
     user_menu();
+    collection_menu();
+    products_menu();
+    admin_menu();
 /*
     //Creo una nuova lista prodotti e aggiungo un nuovo prodotto
     products Nuova_lista;

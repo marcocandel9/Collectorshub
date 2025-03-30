@@ -42,6 +42,9 @@ int login_menu(){
     printf("                                                                            1) Login\n");
     printf("                                                                            2) Registrazione\n");
     printf("                                                                            3) Esci\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
     
 
     //Ciclo do/while che richiede un input dall'utente che sia un intero corrispondente ad una delle opzioni ( 1 - 3 ).
@@ -77,6 +80,7 @@ Restituisce:
 - 1 Se l'utente desidera accedere al menù collezioni
 - 2 Se l'utente desidera modificare le sue credenziali
 - 3 Se l'utente desidera cancellarsi dal sistema in via definitiva
+- 4 per effettuare il log-out
 
 */
 int user_menu(){
@@ -95,15 +99,174 @@ int user_menu(){
     printf("                                                                            1) Accedi al menu' collezioni\n");
     printf("                                                                            2) Modifica le tue credenziali\n");
     printf("                                                                            3) Cancella il tuo utente (DEFINITIVO!)\n");
+    printf("                                                                            4) Esci (log-out) \n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
     
 
     do{
         input_validity = scanf("%d",&scelta);
         if(input_validity != 1){
-            printf("Input invalido, inserisci un intero da 1 a 3 per selezionare l'opzione desiderata.\n");
+            printf("Input invalido, inserisci un intero da 1 a 4 per selezionare l'opzione desiderata.\n");
             while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-        } else if (scelta > 3 || scelta < 1){
-            printf("Opzione non valida, seleziona una delle 3 opzioni.\n");
+        } else if (scelta > 4 || scelta < 1){
+            printf("Opzione non valida, seleziona una delle 4 opzioni.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+            input_validity = 0;
+        }
+    } while (input_validity != 1);
+
+    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    return scelta;
+}
+
+
+
+
+
+/*
+Implementa l'I/O del menù collezione
+
+Restituisce:
+- 1 Se l'utente desidera visualizzare le proprie collezioni
+- 2 Se l'utente desidera accedere ad una collezione
+- 3 Se l'utente desidera  Modificare il nome/tipologia di una collezione
+- 4 Se l'utente desidera cancellare definitivamente una collezione
+- 5 Se l'utente desidera cancellare definitivamente tutte le sue collezioni
+- 6 Per tornare al menù utente
+
+*/
+int collection_menu(){
+
+    clear_screen();
+
+    int scelta = 0;
+    char ch; // Variabile per resettare il buffer stdin
+    int input_validity; //Variabile per verificare la validità dell'input inserito
+
+    printf(ANSI_COLOR_RED ANSI_BOLD);
+    collection_menu_header();
+    printf(ANSI_COLOR_RESET);
+    printf("                                                                            Benvenuto/a nel menu' collezione!\n\n" BOLD_OFF);
+    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
+    printf("                                                                            1) Visualizza le tue collezioni\n");
+    printf("                                                                            2) Accedi ad una collezione\n");
+    printf("                                                                            3) Modifica il nome/tipologia di una collezione\n");
+    printf("                                                                            4) Cancella definitivamente una collezione\n");
+    printf("                                                                            5) Cancella definitivamente tutte le collezioni\n");
+    printf("                                                                            6) Torna al menu' utente\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    do{
+        input_validity = scanf("%d",&scelta);
+        if(input_validity != 1){
+            printf("Input invalido, inserisci un intero da 1 a 6 per selezionare l'opzione desiderata.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+        } else if (scelta > 6 || scelta < 1){
+            printf("Opzione non valida, seleziona una delle 6 opzioni.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+            input_validity = 0;
+        }
+    } while (input_validity != 1);
+
+    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    return scelta;
+}
+
+
+
+
+
+/*
+Implementa l'I/O del menù prodotti
+
+Restituisce:
+- 1 Se l'utente desidera visualizzare tutti i prodotti della collezione
+- 2 Se l'utente desidera cercare e modificare un prodotto
+- 3 Se l'utente desidera cancellare definitivamente un prodotto
+- 4 Se l'utente desidera cancellare definitivamente tutti i prodotti della collezione
+- 5 Se l'utente desidera tornare al menù collezioni
+*/
+int products_menu(){
+
+    clear_screen();
+
+    int scelta = 0;
+    char ch; // Variabile per resettare il buffer stdin
+    int input_validity; //Variabile per verificare la validità dell'input inserito
+
+    printf(ANSI_COLOR_RED ANSI_BOLD);
+    products_menu_header();
+    printf(ANSI_COLOR_RESET);
+    printf("                                                                            Benvenuto/a nel menu' prodotti!\n\n" BOLD_OFF);
+    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
+    printf("                                                                            1) Visualizza tutti i prodotti della collezione\n");
+    printf("                                                                            2) Cerca e modifica un prodotto\n");
+    printf("                                                                            3) Cerca e cancella definitivamente un prodotto\n");
+    printf("                                                                            4) Cancella definitivamente tutti i prodotti\n");
+    printf("                                                                            5) Torna al menu' collezioni \n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    do{
+        input_validity = scanf("%d",&scelta);
+        if(input_validity != 1){
+            printf("Input invalido, inserisci un intero da 1 a 5 per selezionare l'opzione desiderata.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+        } else if (scelta > 5 || scelta < 1){
+            printf("Opzione non valida, seleziona una delle 5 opzioni.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+            input_validity = 0;
+        }
+    } while (input_validity != 1);
+
+    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    return scelta;
+}
+
+
+
+
+/*
+Implementa l'I/O del menù Admin
+
+Restituisce:
+- 1 Se l'admin desidera visualizzare tutti gli utenti della lista utenti
+- 2 Se l'admin desidera cancellare definitivamente un utente
+- 3 Se l'admin desidera promuovere un utente base ad Admin
+- 4 Se l'admin desidera accedere al menù collezioni
+- 5 Se l'admin desidera effettuare il log - out (torna al menù login)
+*/
+int admin_menu(){
+
+    clear_screen();
+
+    int scelta = 0;
+    char ch; // Variabile per resettare il buffer stdin
+    int input_validity; //Variabile per verificare la validità dell'input inserito
+
+    printf(ANSI_COLOR_RED ANSI_BOLD);
+    admin_menu_header();
+    printf(ANSI_COLOR_RESET);
+    printf("                                                                            Benvenuto/a nel menu' ADMIN!\n\n" BOLD_OFF);
+    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
+    printf("                                                                            1) Visualizza tutti gli utenti\n");
+    printf("                                                                            2) Cancella definitivamente un utente\n");
+    printf("                                                                            3) Promuovi ad Admin un utente\n");
+    printf("                                                                            4) Accedi al menu' collezioni\n");
+    printf("                                                                            5) Esci (log-out)\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    do{
+        input_validity = scanf("%d",&scelta);
+        if(input_validity != 1){
+            printf("Input invalido, inserisci un intero da 1 a 5 per selezionare l'opzione desiderata.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+        } else if (scelta > 5 || scelta < 1){
+            printf("Opzione non valida, seleziona una delle 5 opzioni.\n");
             while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
             input_validity = 0;
         }

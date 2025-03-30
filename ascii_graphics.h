@@ -8,8 +8,17 @@
 //Stampa a schermo "Collectors Hub" in Ascii Art
 void collectors_hub_header();
 
-//Stampa a schermo "User Menu" in Acii Art
+//Stampa a schermo "User Menu" in Ascii Art
 void user_menu_header();
+
+//Stampa a schermo "Collection Menu" in Ascii art
+void collection_menu_header(); 
+
+void products_menu_header();
+
+void admin_menu_header();
+
+void superuser_menu_header();
 
 
 #endif
