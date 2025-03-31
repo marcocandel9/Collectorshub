@@ -279,3 +279,153 @@ int admin_menu(){
 
 
 
+/*
+Implementa l'I/O del menù Superuser
+
+Restituisce:
+- 1 Se il superuser desidera visualizzare tutti gli utenti della lista utenti
+- 2 Se il superuser desidera cancellare definitivamente un utente
+- 3 Se il superuser desidera mmodificare il ruolo di un utente
+- 4 Se il superuser desidera accedere al menu'globale di un utente, per poter visualizzare/modificare/cancellare i suoi dati
+- 5 Se il superuser desidera effettuare il log - out (torna al menù login)
+*/
+int superuser_menu(){
+
+    clear_screen();
+
+    int scelta = 0;
+    char ch; // Variabile per resettare il buffer stdin
+    int input_validity; //Variabile per verificare la validità dell'input inserito
+
+    printf(ANSI_COLOR_RED ANSI_BOLD);
+    superuser_menu_header();
+    printf(ANSI_COLOR_RESET);
+    printf("                                                                            Benvenuto/a nel menu' SUPERUSER!\n\n" BOLD_OFF);
+    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
+    printf("                                                                            1) Visualizza tutti gli utenti\n");
+    printf("                                                                            2) Cancella definitivamente un utente\n");
+    printf("                                                                            3) Modifica ruolo di un utente\n");
+    printf("                                                                            4) Seleziona un utente ed accedi al suo menu' globale \n");
+    printf("                                                                            5) Esci (log-out)\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    do{
+        input_validity = scanf("%d",&scelta);
+        if(input_validity != 1){
+            printf("Input invalido, inserisci un intero da 1 a 5 per selezionare l'opzione desiderata.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+        } else if (scelta > 5 || scelta < 1){
+            printf("Opzione non valida, seleziona una delle 5 opzioni.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+            input_validity = 0;
+        }
+    } while (input_validity != 1);
+
+    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    return scelta;
+}
+
+
+
+
+
+/*
+Implementa l'I/O del SOTTO menù collezioni di un utente (RISERVATO ALLA GESTIONE DI UN SUPERUSER)
+
+Restituisce:
+- 1 Se il superuser desidera visualizzare tutte le collezioni di un utente
+- 2 Se il superuser desidera modificare una collezione di un utente
+- 3 Se il superuser desidera eliminare una collezione dell'utente
+- 4 Se il superuser desidera eliminare tutte le collezioni dell'utente
+- 5 Se il superuser desidera accedere ad una collezione dell'utente
+- 6 Se desidera ritornare al menù superuser
+*/
+int superuser_collections_submenu(){
+
+    clear_screen();
+
+    int scelta = 0;
+    char ch; // Variabile per resettare il buffer stdin
+    int input_validity; //Variabile per verificare la validità dell'input inserito
+
+    printf(ANSI_COLOR_RED ANSI_BOLD);
+    superuser_menu_header();
+    printf(ANSI_COLOR_RESET);
+    printf("                                                                            Benvenuto/a nel menu' SU di gestione dei prodotti della collezione utente!\n\n" BOLD_OFF);
+    printf("                                                                            Cosa desideri fare con questo utente:\n");
+    printf("                                                                            1) Visualizza tutte le sue collezioni\n");
+    printf("                                                                            2) Modifica una collezione\n");
+    printf("                                                                            3) Elimina definitivamente una collezione\n");
+    printf("                                                                            4) Elimina definitivamente tutte le sue collezioni \n");
+    printf("                                                                            5) Accedi ad una sua collezione\n");
+    printf("                                                                            6) Ritorna al menu' superuser\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    do{
+        input_validity = scanf("%d",&scelta);
+        if(input_validity != 1){
+            printf("Input invalido, inserisci un intero da 1 a 6 per selezionare l'opzione desiderata.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+        } else if (scelta > 6 || scelta < 1){
+            printf("Opzione non valida, seleziona una delle 6 opzioni.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+            input_validity = 0;
+        }
+    } while (input_validity != 1);
+
+    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    return scelta;
+}
+
+
+
+
+
+/*
+Implementa l'I/O del SOTTO menù prodotti di un utente (RISERVATO ALLA GESTIONE DI UN SUPERUSER)
+
+Restituisce:
+- 1 Se il superuser desidera visualizzare tutti i prodotti della collezione dell'utente
+- 2 Se il superuser desidera modificare un prodotto dell'utente
+- 3 Se il superuser desidera eliminare un prodotto dell'utente
+- 4 Se il superuser desidera eliminare tutti i prodotto della collezione dell'utente
+- 5 Se il superuser desidera accedere ritornare al sotto menù SU collezioni
+*/
+int superuser_products_submenu(){
+
+    clear_screen();
+
+    int scelta = 0;
+    char ch; // Variabile per resettare il buffer stdin
+    int input_validity; //Variabile per verificare la validità dell'input inserito
+
+    printf(ANSI_COLOR_RED ANSI_BOLD);
+    superuser_menu_header();
+    printf(ANSI_COLOR_RESET);
+    printf("                                                                            Benvenuto/a nel menu' SU di gestione dei prodotti della collezione utente!\n\n" BOLD_OFF);
+    printf("                                                                            Cosa desideri fare con questo utente:\n");
+    printf("                                                                            1) Visualizza tutti i prodotti della collezione dell'utente\n");
+    printf("                                                                            2) Modifica un prodotto\n");
+    printf("                                                                            3) Elimina definitivamente un prodotto\n");
+    printf("                                                                            4) Elimina definitivamente tutti i prodotti \n");
+    printf("                                                                            5) Ritorna al sotto-menu' collezioni\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    do{
+        input_validity = scanf("%d",&scelta);
+        if(input_validity != 1){
+            printf("Input invalido, inserisci un intero da 1 a 5 per selezionare l'opzione desiderata.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+        } else if (scelta > 5 || scelta < 1){
+            printf("Opzione non valida, seleziona una delle 5 opzioni.\n");
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+            input_validity = 0;
+        }
+    } while (input_validity != 1);
+
+    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    return scelta;
+}

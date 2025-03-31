@@ -12,6 +12,9 @@ int main() {
     collection_menu();
     products_menu();
     admin_menu();
+    superuser_menu();
+    superuser_collections_submenu();
+    superuser_products_submenu();
 /*
     //Creo una nuova lista prodotti e aggiungo un nuovo prodotto
     products Nuova_lista;

@@ -30,6 +30,10 @@ int admin_menu();
 
 int superuser_menu();
 
+int superuser_collections_submenu();
+
+int superuser_products_submenu();
+
 
 
 
