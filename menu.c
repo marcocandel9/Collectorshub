@@ -16,6 +16,38 @@ void clear_screen(){
 
 
 
+/*
+Prende in ingresso due valori minimi min e max, e implementa il controllo dell'input inserito dall'utente. Se l'utente inserisce un valore non compreso fra min e max o un valore non corrispondente ad un intero, richiede nuovamente l'input.abort
+
+Restituisce l'input corretto inserito dall'utente
+*/
+int get_valid_input(int min, int max){
+
+
+    int scelta, input_validity;
+    char ch;
+
+    do {
+        printf("\n");
+        input_validity = scanf("%d",&scelta);
+        
+        if(input_validity != 1){ //input non valido, non è stato inserito un numero da int min a int max
+            printf("Input invalido, inserisci un intero da %d a %d per selezionare l'opzione desiderata.\n", min, max);
+            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+        } else if (scelta < min || scelta > max){
+            printf("Opzione non valida, seleziona una delle %d opzioni.\n", max);
+            while((ch= getchar()) != '\n' && ch != EOF); //buffer reset
+            input_validity = 0; //Ripete il ciclo 
+        }
+
+        } while (input_validity != 1);
+    
+    while((ch= getchar()) != '\n' && ch != EOF); //buffer reset
+    return scelta;
+}
+
+
+
 
 
 /*
@@ -31,8 +63,7 @@ int login_menu(){
     clear_screen();
 
     int scelta = 0;
-    char ch; //Variabile per resettare il buffer stdin
-    int input_validity; //variabile per verificare la validità dell'input inserito
+    int min = 1, max = 3;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     collectors_hub_header();
@@ -46,26 +77,7 @@ int login_menu(){
     printf("\n");
     printf("\n");
     
-
-    //Ciclo do/while che richiede un input dall'utente che sia un intero corrispondente ad una delle opzioni ( 1 - 3 ).
-    //Se l'utente inserisce dei caratteri, il ciclo invita a inserire un intero.
-    //Se l'utente inserisce un intero non presente tra le opzioni, il ciclo invita a inserire un'opzione valida
-    do {
-        printf("\n");
-        input_validity = scanf("%d",&scelta);
-        
-        if(input_validity != 1){ //input non valido, non è stato inserito un numero da 1 a 3
-            printf("Input invalido, inserisci un intero da 1 a 3 per selezionare l'opzione desiderata.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-        } else if (scelta < 1 || scelta > 3){
-            printf("Opzione non valida, seleziona una delle 3 opzioni.\n");
-            while((ch= getchar()) != '\n' && ch != EOF); //buffer reset
-            input_validity = 0; //Ripete il ciclo 
-        }
-
-        } while (input_validity != 1);
-        
-    while((ch= getchar()) != '\n' && ch != EOF); //buffer reset
+    scelta = get_valid_input(min, max);
     return scelta;
 }
 
@@ -87,9 +99,7 @@ int user_menu(){
 
     clear_screen();
 
-    int scelta = 0;
-    char ch; //Variabile per resettare il buffer stdin
-    int input_validity; //variabile per verificare la validità dell'input inserito
+    int scelta = 0, min = 1, max = 4;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     user_menu_header();
@@ -105,19 +115,7 @@ int user_menu(){
     printf("\n");
     
 
-    do{
-        input_validity = scanf("%d",&scelta);
-        if(input_validity != 1){
-            printf("Input invalido, inserisci un intero da 1 a 4 per selezionare l'opzione desiderata.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-        } else if (scelta > 4 || scelta < 1){
-            printf("Opzione non valida, seleziona una delle 4 opzioni.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-            input_validity = 0;
-        }
-    } while (input_validity != 1);
-
-    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    scelta = get_valid_input(min,max);
     return scelta;
 }
 
@@ -141,9 +139,7 @@ int collection_menu(){
 
     clear_screen();
 
-    int scelta = 0;
-    char ch; // Variabile per resettare il buffer stdin
-    int input_validity; //Variabile per verificare la validità dell'input inserito
+    int scelta = 0, min = 1, max = 6;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     collection_menu_header();
@@ -159,19 +155,8 @@ int collection_menu(){
     printf("\n");
     printf("\n");
     printf("\n");
-    do{
-        input_validity = scanf("%d",&scelta);
-        if(input_validity != 1){
-            printf("Input invalido, inserisci un intero da 1 a 6 per selezionare l'opzione desiderata.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-        } else if (scelta > 6 || scelta < 1){
-            printf("Opzione non valida, seleziona una delle 6 opzioni.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-            input_validity = 0;
-        }
-    } while (input_validity != 1);
 
-    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    scelta = get_valid_input(min,max);
     return scelta;
 }
 
@@ -193,9 +178,7 @@ int products_menu(){
 
     clear_screen();
 
-    int scelta = 0;
-    char ch; // Variabile per resettare il buffer stdin
-    int input_validity; //Variabile per verificare la validità dell'input inserito
+    int scelta = 0, min = 1, max = 5;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     products_menu_header();
@@ -210,19 +193,8 @@ int products_menu(){
     printf("\n");
     printf("\n");
     printf("\n");
-    do{
-        input_validity = scanf("%d",&scelta);
-        if(input_validity != 1){
-            printf("Input invalido, inserisci un intero da 1 a 5 per selezionare l'opzione desiderata.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-        } else if (scelta > 5 || scelta < 1){
-            printf("Opzione non valida, seleziona una delle 5 opzioni.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-            input_validity = 0;
-        }
-    } while (input_validity != 1);
 
-    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    scelta = get_valid_input(min,max);
     return scelta;
 }
 
@@ -243,9 +215,7 @@ int admin_menu(){
 
     clear_screen();
 
-    int scelta = 0;
-    char ch; // Variabile per resettare il buffer stdin
-    int input_validity; //Variabile per verificare la validità dell'input inserito
+    int scelta = 0, min = 1, max = 5;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     admin_menu_header();
@@ -260,19 +230,9 @@ int admin_menu(){
     printf("\n");
     printf("\n");
     printf("\n");
-    do{
-        input_validity = scanf("%d",&scelta);
-        if(input_validity != 1){
-            printf("Input invalido, inserisci un intero da 1 a 5 per selezionare l'opzione desiderata.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-        } else if (scelta > 5 || scelta < 1){
-            printf("Opzione non valida, seleziona una delle 5 opzioni.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-            input_validity = 0;
-        }
-    } while (input_validity != 1);
 
-    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+
+    scelta = get_valid_input(min,max);
     return scelta;
 }
 
@@ -286,16 +246,14 @@ Restituisce:
 - 1 Se il superuser desidera visualizzare tutti gli utenti della lista utenti
 - 2 Se il superuser desidera cancellare definitivamente un utente
 - 3 Se il superuser desidera mmodificare il ruolo di un utente
-- 4 Se il superuser desidera accedere al menu'globale di un utente, per poter visualizzare/modificare/cancellare i suoi dati
+- 4 Se il superuser desidera accedere al menu' collezioni di un utente, per poter visualizzare/modificare/cancellare le sue collezioni
 - 5 Se il superuser desidera effettuare il log - out (torna al menù login)
 */
 int superuser_menu(){
 
     clear_screen();
 
-    int scelta = 0;
-    char ch; // Variabile per resettare il buffer stdin
-    int input_validity; //Variabile per verificare la validità dell'input inserito
+    int scelta = 0, min = 1, max = 5;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     superuser_menu_header();
@@ -305,24 +263,13 @@ int superuser_menu(){
     printf("                                                                            1) Visualizza tutti gli utenti\n");
     printf("                                                                            2) Cancella definitivamente un utente\n");
     printf("                                                                            3) Modifica ruolo di un utente\n");
-    printf("                                                                            4) Seleziona un utente ed accedi al suo menu' globale \n");
+    printf("                                                                            4) Seleziona un utente ed accedi al suo menu' collezioni \n");
     printf("                                                                            5) Esci (log-out)\n");
     printf("\n");
     printf("\n");
     printf("\n");
-    do{
-        input_validity = scanf("%d",&scelta);
-        if(input_validity != 1){
-            printf("Input invalido, inserisci un intero da 1 a 5 per selezionare l'opzione desiderata.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-        } else if (scelta > 5 || scelta < 1){
-            printf("Opzione non valida, seleziona una delle 5 opzioni.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-            input_validity = 0;
-        }
-    } while (input_validity != 1);
 
-    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    scelta = get_valid_input(min,max);
     return scelta;
 }
 
@@ -345,9 +292,7 @@ int superuser_collections_submenu(){
 
     clear_screen();
 
-    int scelta = 0;
-    char ch; // Variabile per resettare il buffer stdin
-    int input_validity; //Variabile per verificare la validità dell'input inserito
+    int scelta = 0, min = 1, max = 6;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     superuser_menu_header();
@@ -363,19 +308,8 @@ int superuser_collections_submenu(){
     printf("\n");
     printf("\n");
     printf("\n");
-    do{
-        input_validity = scanf("%d",&scelta);
-        if(input_validity != 1){
-            printf("Input invalido, inserisci un intero da 1 a 6 per selezionare l'opzione desiderata.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-        } else if (scelta > 6 || scelta < 1){
-            printf("Opzione non valida, seleziona una delle 6 opzioni.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-            input_validity = 0;
-        }
-    } while (input_validity != 1);
 
-    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    scelta = get_valid_input(min,max);
     return scelta;
 }
 
@@ -397,9 +331,7 @@ int superuser_products_submenu(){
 
     clear_screen();
 
-    int scelta = 0;
-    char ch; // Variabile per resettare il buffer stdin
-    int input_validity; //Variabile per verificare la validità dell'input inserito
+    int scelta = 0, min = 1, max = 5;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     superuser_menu_header();
@@ -414,18 +346,7 @@ int superuser_products_submenu(){
     printf("\n");
     printf("\n");
     printf("\n");
-    do{
-        input_validity = scanf("%d",&scelta);
-        if(input_validity != 1){
-            printf("Input invalido, inserisci un intero da 1 a 5 per selezionare l'opzione desiderata.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-        } else if (scelta > 5 || scelta < 1){
-            printf("Opzione non valida, seleziona una delle 5 opzioni.\n");
-            while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
-            input_validity = 0;
-        }
-    } while (input_validity != 1);
 
-    while((ch = getchar()) != '\n' && ch != EOF); //Buffer reset
+    scelta = get_valid_input(min,max);
     return scelta;
 }
