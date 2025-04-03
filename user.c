@@ -81,8 +81,6 @@ Verifica che la password abbia le seguenti caratteristiche:
 
 Utilizza la libreria <ctype.h> per il controllo dei singoli caratteri
 
-
-
 Restituisce:
 - 1 Se la password non è valida
 - 0 Se la password è validata con successo

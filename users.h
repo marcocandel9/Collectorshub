@@ -46,6 +46,18 @@ int insert_sorted_user_collections(users* users_list_head, char key_username[MAX
 
 
 /*
+Cerca un utente nella lista utenti sulla base del suo username e restituisce 0 se è presente
+
+Restituisce:
+- 1 Se la lista utenti è vuota
+- 2 Se non è stata trovata una corrispondenza
+- 0 Se l'utente è stato trovato
+*/
+int user_exists(users users_list_head, char key_username[MAX_STR_LEN]);
+
+
+
+/*
 Cerca un utente nella lista utenti sulla base del suo username e ne restituisce un puntatore alla struct utente
 
 Restituisce:

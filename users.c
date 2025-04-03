@@ -196,6 +196,48 @@ int search_user(users users_list_head, char key_username[MAX_STR_LEN], user* my_
 
 
 /*
+Cerca un utente nella lista utenti sulla base del suo username e restituisce 0 se è presente
+
+Restituisce:
+- 1 Se la lista utenti è vuota
+- 2 Se non è stata trovata una corrispondenza
+- 0 Se l'utente è stato trovato
+*/
+int user_exists(users users_list_head, char key_username[MAX_STR_LEN]){
+
+    if(users_list_head == NULL) return 1; //Lista utenti vuota o non inizializzata restituisci 1
+
+    //Puntatore di appoggio per scorrere la lista utenti
+    users q = users_list_head;
+    char my_username[MAX_STR_LEN];
+
+    //Ricerca ordinata sulla base del nome utente (array di caratteri key_username)
+    while(q != NULL){
+        get_username(q->user_elem,my_username); 
+
+        //strcmp restituisce:
+        // - un valore negativo se key_username è alfabeticamente inferiore al nome dell'utente -> devo interrompere la ricerca
+        // - 0 se key_username == username
+        // - un valore positivo se key_username è alfabeticamente superiore al nome dell'utente -> devo continuare a cercare
+        int is_equal = strcmp(key_username,my_username);
+
+        if(is_equal == 0) break; //Corrispondenza trovata, esco dal ciclo while
+
+        if(is_equal < 0) return 2; //Utente non trovato, restituisci 2
+
+        q= q-> next;
+    }
+
+    if(q == NULL) return 2; //Se arrivo alla coda della lista, q sarà uguale a NULL, restituisco 2 (Utente non trovato)
+
+    return 0; //Success
+}
+
+
+
+
+
+/*
 Cerca un user da eliminare dalla lista utenti e lo rimuove, deallocando gerarchicamente tutte le strutture dati a lui associate
 
 Restituisce: 
