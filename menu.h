@@ -1,6 +1,5 @@
 #ifndef MENU_H
 #define MENU_H
-#include "users.h"
 #include "ascii_graphics.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -16,6 +15,8 @@
 
 
 void clear_screen();
+
+int get_valid_input(int min, int max);
 
 //Definizione della funzione per il menù principale
 int login_menu();

@@ -1,6 +1,6 @@
 #include "user.h"
 
-
+const char allowed_symbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
 
 /* 
@@ -191,11 +191,11 @@ Aggancia una nuova lista collezioni all'utente
 Restituisce:
 - 1 Se l'utente è non esistente o non ancora inizializzato
 */
-int insert_user_collections_list(user* my_user, collections new_collections_list_head){
+int insert_user_collections_list(user my_user, collections new_collections_list_head){
 
-    if(*my_user == NULL) return 1; //Utente non esistente o non ancora inizializzato
+    if(my_user == NULL) return 1; //Utente non esistente o non ancora inizializzato
 
-    (*my_user)->collections_list_head = new_collections_list_head;
+    (my_user)->collections_list_head = new_collections_list_head;
     return 0; //Success
 
 }

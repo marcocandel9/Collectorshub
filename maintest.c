@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "collections.h"
-#include "ascii_graphics.h"
+#include "users_system.h"
+#include "menu.h"
 
 int main() {
 
@@ -15,6 +15,12 @@ int main() {
     superuser_menu();
     superuser_collections_submenu();
     superuser_products_submenu();
+
+    users nuova_lista = NULL;
+
+    sys_register_user(&(nuova_lista));
+    
+
 /*
     //Creo una nuova lista prodotti e aggiungo un nuovo prodotto
     products Nuova_lista;

@@ -44,9 +44,6 @@ struct user{
 
 typedef struct user* user;
 
-//Lista dei simboli ammessi per la validazione della password (modificabile)
-//il prefisso extern permette alla variabile costante di essere utilizzata in moduli esterni rispetto user.h
-extern const char allowed_symbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
 int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN], user_role new_user_role);
 
@@ -60,7 +57,7 @@ int set_password(user my_user, char new_password[MAX_STR_LEN]);
 
 int set_user_role(user my_user, user_role new_user_role);
 
-int insert_user_collections_list(user* my_user, collections new_collections_list_head);
+int insert_user_collections_list(user my_user, collections new_collections_list_head);
 
 int modify_credentials(user my_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN]);
 
