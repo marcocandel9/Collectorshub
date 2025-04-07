@@ -4,36 +4,6 @@
 
 
 
-void str_len_control(char string_to_input[MAX_STR_LEN]){
-    
-    //Inizializzo la variabile per lo svuotamento del buffer I/O Stdin
-    char ch;
-    //array di caratteri temporaneo di dimensione sempre maggiore a MAX STR LEN utile al controllo dell'immissione di stringhe di dimensioni superiori a quella massima
-    char temp[MAX_STR_LEN + 2]; 
-    int temp_size = MAX_STR_LEN;
-
-
-    //il ciclo while esce esclusivamente quando l'utente immette una stringa inferiore a 20 caratteri
-    while(temp_size >= MAX_STR_LEN){
-
-        scanf("%21s",temp);
-
-        //strlen restituisce il numero di caratteri presenti nella stringa, terminatore escluso (es. ciao\0 restituisce )
-        temp_size = strlen(temp);
-
-        //se temp size è minore uguale a 19 (numero massimo consentito) può avvenire la modifica
-        if(temp_size <= 19) {
-            while((ch= getchar()) != '\n' && ch != EOF); //buffer reset
-            strcpy(string_to_input,temp);
-            return;
-        }
-
-        printf("La stringa inserita eccede il numero di caratteri consentito. Riprova. \n\n");
-        while((ch= getchar()) != '\n' && ch != EOF); //buffer reset
-    }
-}
-
-
 
 
 
@@ -44,12 +14,19 @@ Implementa l'I/O per la registrazione di un nuovo utente. Chiede in input da tas
 
 Restituisce:
 - un puntatore al nuovo utente creato
-- un puntatore a NULL nel caso in cui la registrazione venga annullata dall'utente
+- un puntatore a NULL nel caso in cui la registrazione venga annullata dall'utente o ci siano problemi di lettura del buffer stdin
 */
 user sys_register_user(users* users_list_head){
 
     int is_valid;
     int username_available = 0;
+
+    //variabile per lo svuotamento del buffer stdin
+    char ch;
+
+    //stringa e int di controllo per la stringa immessa in input dall'utente 
+    char buffer[MAX_STR_LEN + 10];
+    int buffer_len;
 
     char new_username[MAX_STR_LEN];
     char new_password[MAX_STR_LEN];
@@ -59,22 +36,83 @@ user sys_register_user(users* users_list_head){
 
     
 
-    //LOGICA INSERIMENTO USERNAME IN INPUT
+    //LOGICA INSERIMENTO USERNAME IN INPUT (NB FGETS SVUOTA AUTOMATICAMENTE IL BUFFER DOPO L'INPUT)
     while(username_available == 0){
 
-        printf("Inserisci il tuo nuovo username. (Massimo 19 caratteri consentiti, spazi non consentiti)\n");
-        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n");
+        printf("\n\nInserisci il tuo nuovo username. (Massimo 19 caratteri consentiti, minimo 6, spazi non consentiti)\n");
+        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n\n");
 
-        
-        //La funzione str_len_control si occupa dell'immissione della stringa in output e del controllo dei caratteri massimi inseriti.
-        str_len_control(new_username);
-        
-
-        //Se la stringa inserita è VUOTA, annullo la registrazione
-        if(strlen(new_username) == 0){
-            return NULL; //ritorno NULL ed esco dalla funzione di registrazione
+        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
+            //errore di lettura, restituisco un puntatore a NULL
+            return NULL;
         }
 
+        buffer_len = strlen(buffer); 
+        //BUGFIX ADDITION
+        //SE L'UTENTE INSERIVA UNA STRINGA MOLTO LUNGA, VENIVA ACCETTATA! Ciò è dovuto al comportamento di fgets, che
+        //se riceve una stringa di dimensioni superiori alla dimensione massima del buffer (MAX_STR_LEN+10-1 caratteri)
+        //TRONCA LA PRIMA PARTE LASCIANDO SOLTANTO LA SECONDA CHE PUÒ ESSERE DI DIMENSIONI INFERIORI A 19.
+        //Nel caso in cui avvenga il troncamento l'ultimo carattere non sarà quello di newline.
+        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
+            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer (questa volta è necessario, perchè in caso
+                                                          //di troncamento il buffer di input conterrà i caratteri residui, compreso
+                                                          //il carattere di newline non letto.
+            printf("Input troppo lungo! Riprova. \n");
+            continue; //Ricomincio il ciclo while
+        }
+
+
+
+        //esempio input fgets: l'utente immette: "prova" e preme invio, il buffer conterrà:
+        // 'p','r','o','v','a','\n','\0'//
+        //è necessario rimuovere il carattere di newline
+         //strlen conterà da 1 (p) a '\n' restituendo 6
+
+        //Rimouvo il carattere di newline dalla stringa ottenuta in input nel buffer
+        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
+            //sostituisco il carattere di newline con il terminatore di stringa
+            buffer[buffer_len - 1] = '\0';
+            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
+            buffer_len = buffer_len - 1;
+        }
+
+
+        //Controlli sull'input immesso dall'utente
+
+        //l'utente ha immesso invio, vuole annullare la registrazione
+        if(buffer_len == 0){
+            printf("\n");
+            return NULL; //restituisco un puntatore a NULL ed esco dalla funzione
+        }
+
+        //controllo lunghezza username, se inferiore a 6 caratteri riprovo
+        if(buffer_len < 6){
+            printf("Username troppo corto. Minimo 6 caratteri consentiti. Riprova.\n");
+            continue; //riparte il ciclo while
+        }
+
+        if(buffer_len > 19){
+            printf("Username troppo lungo. Massimo 19 caratteri consentiti. Riprova.\n");
+            continue; //riparte il ciclo while
+        }
+
+        //controllo siano presenti degli spazi
+        bool has_space = false;
+        for (int i = 0; i < buffer_len; i++) {
+            if (isspace((unsigned char)buffer[i])) {  // cast a unsigned char per sicurezza
+            has_space = true;
+            break;
+        }
+        }
+        if (has_space) {
+        printf("Spazi non consentiti. Riprova.\n");
+        continue;  // Riparte il ciclo while per l'username
+        }
+
+        //Se la stringa ha superato i vari step di controllo, non contenendo cioè spazi, avendo una lunghezza compresa
+        //fra minimo 6 massimo 19 caratteri, procedo al controllo dell'esistenza all'interno della lista utenti (username non disponibile)
+
+        strcpy(new_username,buffer);
 
         //Controllo che l'utente non sia già presente nella lista utenti (DUPLICATI NON CONSENTITI)
         username_available = user_exists(*users_list_head,new_username); 
@@ -93,29 +131,60 @@ user sys_register_user(users* users_list_head){
 
     //LOGICA INSERIMENTO PASSWORD IN INPUT
     do{
-        printf("Inserisci la tua nuova password. (Massimo 19 caratteri consentiti)\n)");
-        printf("   La password deve contenere:\n");
+        printf("Inserisci la tua nuova password. (Massimo 19 caratteri consentiti)\n\n");
+        printf("La password deve contenere:\n");
         printf(" - Almeno 8 caratteri \n" );
         printf(" - Almeno una maiuscola \n");
         printf(" - Almeno una minuscola \n");
-        printf(" - Almeno un numero \n ");
-        printf(" - Almeno un simbolo (SPAZI ESCLUSI)\n)");
-        printf(" - PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n)");
+        printf(" - Almeno un numero \n");
+        printf(" - Almeno un simbolo (SPAZI ESCLUSI)\n");
+        printf(" - PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n\n");
 
-        //Immissione nuova password in input e controllo della lunghezza dei caratteri massima
-        str_len_control(new_password);
-
-
-        //Se l'utente inserisce una stringa vuota, annullo la registrazione e restituisco un puntatore a NULL
-        if(strlen(new_password) == 0){
+        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
+            //errore di lettura, restituisco un puntatore a NULL
             return NULL;
         }
 
+        //esempio input fgets: l'utente immette: "prova" e preme invio, il buffer conterrà:
+        // 'p','r','o','v','a','\n','\0'//
+        //è necessario rimuovere il carattere di newline
+
+        //Rimouvo il carattere di newline dalla stringa ottenuta in input nel buffer
+        //strlen conterà da 1 (p) a '\n' restituendo 6
+        buffer_len = strlen(buffer);
+        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
+            //sostituisco il carattere di newline con il terminatore di stringa
+            buffer[buffer_len - 1] = '\0';
+            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
+            buffer_len = buffer_len - 1;
+        }
+
+
+        //Controlli sull'input immesso dall'utente
+
+        //l'utente ha immesso invio, vuole annullare la registrazione
+        if(buffer_len == 0){
+            printf("\n");
+            return NULL; //restituisco un puntatore a NULL ed esco dalla funzione
+        }
+
+
+        if(buffer_len > 19){
+            printf("Password troppo lunga. Massimo 19 caratteri consentiti. Riprova.\n");
+            continue; //riparte il ciclo while
+        }
+
+        
         //Controllo che la password rispetti i requisiti del sistema definiti in validate_password di user.h
-        is_valid = validate_password(new_password);
+        is_valid = validate_password(buffer);
 
         if(is_valid == 1){
-            printf("La password inserita non e' valida.\n");
+            printf("La password inserita non e' valida. Riprova.\n");
+        };
+
+        //altrimenti accetto la nuova password
+        if(is_valid == 0){
+            strcpy(new_password,buffer);
         };
     }
     while(is_valid != 0);
@@ -146,15 +215,14 @@ user sys_login_user(users* users_list_head){
     char my_username[MAX_STR_LEN];
     int valid_username = 1;
 
-    //
+    
 
-    printf("Inserisci il tuo username:\n");
-    scanf("20s",my_username);
+    printf("Inserisci il tuo username. \n");
+    printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n");
 
-    //
+    
 
     valid_username = user_exists(users_list_head,my_username);
-
 
 }
 */
