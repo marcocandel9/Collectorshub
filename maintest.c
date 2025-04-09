@@ -6,7 +6,7 @@
 
 int main() {
 
-/*
+
     login_menu();
     user_menu();
     collection_menu();
@@ -15,7 +15,7 @@ int main() {
     superuser_menu();
     superuser_collections_submenu();
     superuser_products_submenu();
-*/
+
     users nuova_lista = NULL;
 
     sys_register_user(&(nuova_lista));
