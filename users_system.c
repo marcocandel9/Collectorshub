@@ -377,4 +377,183 @@ user sys_login_user(users* users_list_head){
 }
 
 
+
+
+
+
+/*
+Implementa l'I/O Per la modifica delle credenziali di un utente. 
+RICHIEDE: 
+Il puntatore passato per riferimento all'utente GIÀ LOGGATO
+Il puntatore alla testa della lista utenti
+
+Restituisce:
+= 0 Se tutto va a buon fine
+- 1 Se l'utente annulla la modifica o in caso di errore del buffer di input
+*/
+int sys_modify_credentials(user* my_user, users users_list_head){
+
+    //char per lo svuotamento del buffer
+    char ch; 
+    char buffer[MAX_STR_LEN+10];
+    int buffer_len;
+ 
+ 
+    int valid_username;
+    int valid_password;
+
+    char user_username[MAX_STR_LEN];
+    char user_password[MAX_STR_LEN];
+
+    //copio le stringhe username e password dell'utente passato in ingresso nelle variabili temporanee valid_username e valid_password utilizzate per l'autenticazione
+    get_password(*my_user, user_username);
+    get_username(*my_user, user_password);
+
+    while(1){
+
+        printf("Per annullare la modifica delle tue credenziali, immetti una stringa vuota. \n\n");
+        printf("Inserisci la tua password per procedere con il cambiamento delle credenziali. \n\n");
+
+        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
+            //errore di lettura, restituisco un puntatore a NULL
+            return 1;
+        }
+
+        buffer_len=strlen(buffer);
+
+
+        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
+            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer 
+            printf("Input troppo lungo! Riprova. \n");
+            continue; //Ricomincio il ciclo while
+        }
+
+
+        //rimouvo il carattere di newline
+        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
+            //sostituisco il carattere di newline con il terminatore di stringa
+            buffer[buffer_len - 1] = '\0';
+            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
+            buffer_len = buffer_len - 1;
+        }
+
+        //se l'utente immette una stringa vuota, la funzione esce e restitusice 1.
+        if(buffer_len == 0){
+            return 1;
+        }
+
+         //controllo lunghezza password
+
+         if(buffer_len < 6){
+            printf("Password troppo corta. Minimo 6 caratteri consentiti. Riprova.\n");
+            continue; //riparte il ciclo while
+        }
     
+        if(buffer_len > 19){
+            printf("Password troppo lunga. Massimo 19 caratteri consentiti. Riprova.\n");
+            continue; //riparte il ciclo while
+        }
+
+
+        //superato il controllo di validità della stringa, confronto con la password dell'utente.
+        valid_password = strcmp(user_password,buffer);
+
+        //Se la password è valida, esco dal ciclo while
+        if(valid_password == 0){
+            printf("Password verificata con successo! \n");
+            break;
+        } else {         //Altrimenti, riparte il ciclo while e l'utente riprova l'inserimento della password
+            printf("Password invalida. Riprova.\n");
+            continue;
+        }
+    }
+
+    //Se la password è stata verificata con successo, procedo alla modifica delle credenziali
+
+    while(1){
+
+        printf("Inserisci il tuo nuovo Username. \n\n");
+        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA MODIFICA DELLE CREDENZIALI.\n");
+
+        if(fgets(buffer,sizeof(buffer),stdin) == NULL){
+            return 1; //Errore di lettura del buffer, restituisco 1
+        }
+
+        buffer_len = strlen(buffer);
+
+        //Controllo input troppo lungo -> troncato -> ricomincio il ciclo while
+        if(buffer_len > 0 && buffer[buffer_len - 1] != '\n'){
+            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer (questa volta è necessario, perchè in caso
+            //di troncamento il buffer di input conterrà i caratteri residui, compreso
+            //il carattere di newline
+            printf("Input troppo lungo! Riprova. \n");
+            continue; //Ricomincio il ciclo while
+            }
+        
+        
+        //Rimouvo il carattere di newline dalla stringa ottenuta in input nel buffer
+        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
+            //sostituisco il carattere di newline con il terminatore di stringa
+            buffer[buffer_len - 1] = '\0';
+            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
+            buffer_len = buffer_len - 1;
+        }
+
+        if(buffer_len == 0){
+            return 1; //L'utente ha inserito una stringa vuota. Restituisco 1 ed esco dalla funzione.
+        }
+
+        //controllo lunghezza username, se inferiore a 6 caratteri riprovo
+        if(buffer_len < 6){
+            printf("Username troppo corto. Minimo 6 caratteri consentiti. Riprova.\n");
+            continue; //riparte il ciclo while
+            }
+            
+        if(buffer_len > 19){
+            printf("Username troppo lungo. Massimo 19 caratteri consentiti. Riprova.\n");
+            continue; //riparte il ciclo while
+            }
+
+
+
+        ////BLOCCO DI CONTROLLO SULL'USERNAME INSERITO DALL'UTENTE////
+
+        //Controllo che l'utente abbia inserito un username differente da quello già esistente
+        int is_equal = strcmp(buffer,user_username);
+        //Username uguale, ricomincio il ciclo while
+        if(is_equal == 0){ 
+            printf("Inserisci un'username differente rispetto quello precedente. \n");
+            continue;
+        }
+
+        //Controllo che l'username richiesto dall'utente non sia già presente all'interno della lista utenti.
+        int is_new = user_exists(users_list_head, buffer);
+
+        //Se l'username è già utilizzato, riparte il ciclo while.
+        if(is_new == 0){
+            printf("Username non disponibile. Riprova. \n");
+            continue;
+        }
+
+        ////CONTROLLO USERNAME EFFETTUATO////
+
+        ////BLOCCO DI CONTROLLO PASSWORD////
+
+
+            //wip//
+
+
+        }
+
+
+
+    }
+
+     
+    
+
+    
+ 
+
+
+
