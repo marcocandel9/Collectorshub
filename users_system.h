@@ -29,6 +29,14 @@ Implementa l'I/O per la modifica credenziali di un utente.
 */
 int sys_modify_credentials(users* users_list_head, user user_to_modify);
 
+
+/*
+Implementa l'I/O Per la SOLA modifica dell'username.
+*/
+int sys_modify_username();
+
+
+
 /*
 Implementa l'I/O per l'eliminazione di un utente
 */
