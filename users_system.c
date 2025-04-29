@@ -391,7 +391,7 @@ Restituisce:
 - 0 Se tutto va a buon fine
 - 1 Se l'utente annulla la modifica o in caso di errore del buffer di input
 */
-int sys_modify_credentials(user* my_user, users users_list_head){
+int sys_modify_credentials(user* my_user, users* users_list_head){
 
     //char per lo svuotamento del buffer
     char ch; 
@@ -474,13 +474,96 @@ int sys_modify_credentials(user* my_user, users users_list_head){
 
 }
 
+
+
+
+
 /*
-Implementa l'I/O per l'eliminazione di un utente
+Implementa l'I/O per l'eliminazione di un utente, richiede in ingresso la stringa del nome utente attuale dell'utente e la lista degli utenti
+Restituisce:
+-1 In caso di errori di lettura del buffer di input
+-2 In caso di annullamento dell'operazione da parte dell'utente
+-3 In caso di errori di modifica dell'utente nella struttura dati
+-0 Se tutto va a buon fine
 */
-int sys_modify_username(user my_user){
+int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_head){
 
-    printf("Inserisci il tuo nuovo username, (Massimo 19 caratteri consentiti, minimo 6, spazi non consentiti)\n");
+    //char per lo svuotamento del buffer
+    char ch; 
 
+    char buffer[MAX_STR_LEN+10];
+    char empty[0] = "";
+
+    
+    int buffer_len;
+
+    int valid_username;
+
+    while(1){
+
+        printf("Inserisci il tuo nuovo username. \n\n");
+        printf("Per annullare la modifica del tuo username, immetti una stringa vuota. \n\n");
+        
+
+        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
+            //errore di lettura, restituisco un puntatore a NULL
+            return 1;
+        }
+
+        buffer_len=strlen(buffer);
+
+
+        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
+            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer 
+            printf("Input troppo lungo! Riprova. \n");
+            continue; //Ricomincio il ciclo while
+        }
+
+
+        //rimouvo il carattere di newline
+        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
+            //sostituisco il carattere di newline con il terminatore di stringa
+            buffer[buffer_len - 1] = '\0';
+            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
+            buffer_len = buffer_len - 1;
+        }
+
+        //se l'utente immette una stringa vuota, la funzione esce e restitusice 2.
+        if(buffer_len == 0){
+            return 2;
+        }
+
+         //controllo lunghezza username
+         if(buffer_len < 6){
+            printf("Username troppo corto. Minimo 6 caratteri consentiti. Riprova.\n");
+            continue; //riparte il ciclo while
+        }
+    
+        if(buffer_len > 19){
+            printf("Username troppo lungo. Massimo 19 caratteri consentiti. Riprova.\n");
+            continue; //riparte il ciclo while
+        }
+
+        //utilizzo la funzione user_exists per cercare il nome utente in lista. Se il nome utente è disponibile, proseguo alla modifica dell'username, altrimenti riprovo
+        valid_username = user_exists(users_list_head,buffer);
+        if(valid_username  == 0){
+            printf("Il nume utente non è disponibile. Riprova.\n");
+            continue;
+        }
+
+        //chiamo la funzione search_and_modify_user_Credentials per modificarne l'username.
+        int result = search_and_modify_user_credentials(users_list_head, current_username, buffer, empty);
+
+        if(result == 0){
+            break;
+        }
+
+        //altrimenti restituisco errore di modifica dell'utente in lista.
+        return 3;
+    }
+
+    //Tutto è andato a buon fine
+    return 0;
 
 }
     

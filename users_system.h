@@ -27,13 +27,13 @@ user sys_login_user(users* users_list_head);
 /*
 Implementa l'I/O per la modifica credenziali di un utente.
 */
-int sys_modify_credentials(users* users_list_head, user user_to_modify);
+int sys_modify_credentials(user* my_user, users* users_list_head);
 
 
 /*
 Implementa l'I/O Per la SOLA modifica dell'username.
 */
-int sys_modify_username();
+int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_head);
 
 
 
