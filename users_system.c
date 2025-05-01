@@ -399,8 +399,8 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
     int buffer_len;
  
  
-    int valid_username;
-    int valid_password;
+    int auth_username;
+    int auth_password;
 
     char user_username[MAX_STR_LEN];
     char user_password[MAX_STR_LEN];
@@ -456,10 +456,10 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
 
 
         //superato il controllo di validità della stringa, confronto con la password dell'utente.
-        valid_password = strcmp(user_password,buffer);
+        auth_password = strcmp(user_password,buffer);
 
         //Se la password è valida, esco dal ciclo while
-        if(valid_password == 0){
+        if(auth_password == 0){
             printf("Password verificata con successo! \n");
             break;
         } else {         //Altrimenti, riparte il ciclo while e l'utente riprova l'inserimento della password
@@ -479,12 +479,13 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
 
 
 /*
-Implementa l'I/O per l'eliminazione di un utente, richiede in ingresso la stringa del nome utente attuale dell'utente e la lista degli utenti
-Restituisce:
--1 In caso di errori di lettura del buffer di input
--2 In caso di annullamento dell'operazione da parte dell'utente
--3 In caso di errori di modifica dell'utente nella struttura dati
--0 Se tutto va a buon fine
+Implementa l'I/O per la modifica dell'username di un utente, richiede in ingresso la stringa del nome utente attuale dell'utente e la lista degli utenti
+    Restituisce:
+        1 In caso di errori di lettura del buffer di input
+        2 In caso di annullamento dell'operazione da parte dell'utente
+        3 In caso di errori di modifica dell'utente nella struttura dati
+        0 Se tutto va a buon fine
+    N.B: La stringa current_username, nel caso di effettuata modifica, viene modificata con il nuovo nome utente inserito dall'user da terminale.
 */
 int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_head){
 
@@ -492,9 +493,7 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
     char ch; 
 
     char buffer[MAX_STR_LEN+10];
-    char empty[0] = "";
 
-    
     int buffer_len;
 
     int valid_username;
@@ -552,7 +551,7 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
         }
 
         //chiamo la funzione search_and_modify_user_Credentials per modificarne l'username.
-        int result = search_and_modify_user_credentials(users_list_head, current_username, buffer, empty);
+        int result = search_and_modify_user_credentials(users_list_head, current_username, buffer, "");
 
         if(result == 0){
             break;
@@ -563,9 +562,62 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
     }
 
     //Tutto è andato a buon fine
+    //aggiorno il current username passato dal chiamante
+    strcpy(current_username, buffer);
     return 0;
 
 }
+
+
+
+
+
+/*
+Implementa l'I/O per la modifica della password di un utente, richiede in ingresso la stringa del nome utente attuale dell'utente e la lista degli utenti
+    Restituisce:
+        1 In caso di errori di lettura del buffer di input
+        2 In caso di annullamento dell'operazione da parte dell'utente
+        3 In caso di errori di modifica dell'utente nella struttura dati
+        0 Se tutto va a buon fine
+    N.B: La stringa password, nel caso di effettuata modifica, viene modificata con la nuova password inserita dall'user da terminale.
+*/
+int sys_modify_password(char current_password[MAX_STR_LEN], users* users_list_head){
+
+    //char per lo svuotamento del buffer
+    char ch; 
+
+    char buffer[MAX_STR_LEN+10];
+
+    int buffer_len;
+
+    int valid_password;
+
+    while(1){
+
+        printf("Inserisci la tua nuova password. \n\n");
+        printf("Per annullare la modifica della tua password, immetti una stringa vuota. \n\n");
+
+        if(fgets(buffer,sizeof(buffer),stdin) == NULL){
+            return 1; //Errore di lettura buffer input
+        }
+
+        buffer_len=strlen(buffer);
+
+        //controllo input troppo lungo che causa troncamento del buffer
+        if(buffer_len > 0 && (buffer[buffer_len - 1] != "\n")){
+            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer 
+            printf("Input troppo lungo! Riprova. \n");
+            continue; //Ricomincio il ciclo while
+        }
+
+        
+
+
+
+    }
+
+};
+
     
 
     

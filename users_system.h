@@ -36,6 +36,7 @@ Implementa l'I/O Per la SOLA modifica dell'username.
 int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_head);
 
 
+int sys_modify_password(char current_password[MAX_STR_LEN], users* users_list_head);
 
 /*
 Implementa l'I/O per l'eliminazione di un utente
