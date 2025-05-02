@@ -303,6 +303,7 @@ Cerca un utente nella lista utenti con ordinamento alfabetico e ne modifica user
 Utilizza la funzione modify user che controlla anche la validità della password
 
 Restituisce:
+- 0 Se tutto va a buon fine
 - 1 Se la lista utenti è vuota
 - 2 Se non è stata trovata una corrispondenza
 - 3 Utente non inizializzato (Improbabile)
