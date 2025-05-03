@@ -19,6 +19,12 @@ int main() {
     users nuova_lista = NULL;
 
     sys_register_user(&(nuova_lista));
+
+    user logged_user = NULL;
+
+    logged_user = sys_login_user(&(nuova_lista));
+
+   // int result = sys_modify_credentials(&(logged_user),&(nuova_lista));
     
 
 /*

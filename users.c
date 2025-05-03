@@ -56,6 +56,7 @@ int insert_user_sorted(users* users_list_head, char new_username[MAX_STR_LEN], c
     if(*users_list_head == NULL){
         (*users_list_head) = new_user_node;
         (*users_list_head) -> next = NULL;
+        return 0;
     }
 
     //Altrimenti devo ricercare il punto di inserimento con ordinamento alfabetico sulla base dell'username, preparo stringa e puntatori di appoggio

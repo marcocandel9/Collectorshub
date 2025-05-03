@@ -244,7 +244,7 @@ user sys_login_user(users* users_list_head){
     while(1){
 
         printf("Inserisci il tuo username. \n");
-        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n");
+        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE IL LOGIN.\n");
         
         if(fgets(buffer,sizeof(buffer),stdin)==NULL){
             //errore di lettura, restituisco un puntatore a NULL
@@ -391,6 +391,9 @@ Implementa l'I/O per la modifica dell'username di un utente, richiede in ingress
 */
 int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_head){
 
+    
+    char empty_string[MAX_STR_LEN] = "";
+
     //char per lo svuotamento del buffer
     char ch; 
 
@@ -399,6 +402,8 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
     int buffer_len;
 
     int valid_username;
+
+    char validated_username[MAX_STR_LEN];
 
     while(1){
 
@@ -446,14 +451,15 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
         }
 
         //utilizzo la funzione user_exists per cercare il nome utente in lista. Se il nome utente è disponibile, proseguo alla modifica dell'username, altrimenti riprovo
-        valid_username = user_exists(users_list_head,buffer);
+        valid_username = user_exists(*(users_list_head),buffer);
         if(valid_username  == 0){
             printf("Il nume utente non è disponibile. Riprova.\n");
             continue;
         }
 
+
         //chiamo la funzione search_and_modify_user_Credentials per modificarne l'username.
-        int result = search_and_modify_user_credentials(users_list_head, current_username, buffer, "");
+        int result = search_and_modify_user_credentials(users_list_head, current_username, buffer, empty_string);
 
         if(result == 0){
             break;
@@ -486,6 +492,8 @@ Implementa l'I/O per la modifica della password di un utente, richiede in ingres
 */
 int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[MAX_STR_LEN], users* users_list_head){
 
+    char empty_string[MAX_STR_LEN] = "";
+
     //char per lo svuotamento del buffer
     char ch; 
 
@@ -494,6 +502,8 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
     int buffer_len;
 
     int valid_password;
+
+
 
     while(1){
 
@@ -541,7 +551,8 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
         break;
     }
 
-    int result = search_and_modify_user_credentials(users_list_head, user_username, "", buffer);
+
+    int result = search_and_modify_user_credentials(users_list_head, user_username, empty_string, buffer);
 
     if(result == 1 || result == 2 || result == 3){
         printf("FATAL ERROR 3: USER NOT FOUND ");
@@ -696,10 +707,10 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
     }
 
     if (temp_case_1 == 0) {
-        set_username(my_user, user_username);
+        set_username(*(my_user), user_username);
     }
     if (temp_case_2 == 0) {
-        set_password(my_user, user_password);
+        set_password(*(my_user), user_password);
     }
     
 
