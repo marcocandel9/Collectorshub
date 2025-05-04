@@ -236,10 +236,11 @@ user sys_login_user(users* users_list_head){
     user logging_user = NULL;
     char user_username[MAX_STR_LEN];
     char user_password[MAX_STR_LEN];
-
-
-
     
+    
+    clear_screen();
+    printf("Benvenuto/a nell'area login.\n"); 
+
     //in caso di immissione con successo effettuo il break del ciclo while.
     while(1){
 
@@ -453,7 +454,7 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
         //utilizzo la funzione user_exists per cercare il nome utente in lista. Se il nome utente è disponibile, proseguo alla modifica dell'username, altrimenti riprovo
         valid_username = user_exists(*(users_list_head),buffer);
         if(valid_username  == 0){
-            printf("Il nume utente non è disponibile. Riprova.\n");
+            printf("Il nome utente non e' disponibile. Riprova.\n");
             continue;
         }
 
@@ -598,9 +599,12 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
     get_username(*my_user, user_username);
     get_password(*my_user, user_password);
 
+    clear_screen();
+    printf("Benvenuto nell'area di modifica delle credenziali. \n");
+    printf("Per poter procedere, e' necessario riconfermare l'autenticazione tramite password. \n");
     while(1){
 
-        printf("Per annullare la modifica delle tue credenziali, immetti una stringa vuota. \n\n");
+        printf("Per annullare la modifica delle tue credenziali, immetti una stringa vuota. \n");
         printf("Inserisci la tua password per procedere con il cambiamento delle credenziali. \n\n");
 
         if(fgets(buffer, sizeof(buffer), stdin) == NULL){
@@ -649,7 +653,6 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
 
         //Se la password è valida, esco dal ciclo while
         if(auth_password == 0){
-            printf("Password verificata con successo! \n");
             break;
         } else {         //Altrimenti, riparte il ciclo while e l'utente riprova l'inserimento della password
             printf("Password invalida. Riprova.\n");
@@ -660,9 +663,9 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
     //Se la password è stata verificata con successo, procedo alla modifica delle credenziali
 
     //chiamo le funzioni system_modify_username e system_modify_password:
-
-    printf(" Procedere alla modifica delle proprie credenziali.\n");
-    printf("È possibile modificare soltanto uno dei campi username/password, immettendo una stringa vuota.\n\n");
+    clear_screen();
+    printf("Password verificata con successo!\nSi procede con la modifica delle proprie credenziali.\n");
+    printf("E' possibile modificare soltanto uno dei campi username/password, immettendo una stringa vuota.\n\n");
 
 
 
@@ -678,7 +681,7 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
             printf("Errore lettura buffer di input! (FATAL ERROR: 2)\n");
             return 2;
         case(2):
-            printf("Il nome utente rimarrà invariato. Si procede con la modifica della password.\n");
+            printf("Il nome utente rimarra' invariato. Si procede con la modifica della password.\n");
             break;
         case(3):
             printf("Errore lettura dell'utente nella lista utenti! (FATAL ERROR:3)\n");
@@ -699,7 +702,7 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
             printf("Errore lettura buffer di input! (FATAL ERROR: 2)\n");
             return 2;
         case(2):
-            printf("La password rimarrà invariata. \n");
+            printf("La password rimarra' invariata. \n");
             break;
         case(3):
             printf("Errore lettura dell'utente nella lista utenti! (FATAL ERROR:3)\n");
@@ -715,6 +718,113 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
     
 
     return 0;
+}
+
+
+
+
+/*
+Implementa l'I/O Per l'eliminazione di un utente dalla lista utenti.
+
+Restituisce:
+    1: Se l'utente immette una stringa vuota e annulla l'eliminazione del proprio profilo
+    2: in caso di errore di lettura del buffer di input
+    3: Se non è stato possiible trovare l'utente nella lista utenti
+    0: Se l'eliminazione va a buon fine
+
+*/
+int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]){
+
+        //char per lo svuotamento del buffer
+        char ch; 
+        char buffer[MAX_STR_LEN+10];
+        int buffer_len;
+
+        user user_to_del = NULL;
+
+        search_user(*(users_list_head),user_username,&(user_to_del));
+        char user_password[MAX_STR_LEN];
+
+        get_password(user_to_del,user_password);
+
+        clear_screen();
+        printf("Benvenuto nell'area di eliminazione del tuo account utente.\n");
+        printf("QUESTA AZIONE SARA' DEFINITIVA. Si consiglia di procedere con cautela.\n");
+        printf("Per procedere con l'operazione, e' necessario autenticare la propria password.\n");
+
+        while(1){
+
+            printf("Per annullare l'eliminazione del profilo utente, immetti una stringa vuota. \n");
+            printf("Inserisci la tua password per eliminare DEFINITIVAMENTE IL TUO ACCOUNT UTENTE. \n\n");
+    
+            if(fgets(buffer, sizeof(buffer), stdin) == NULL){
+                //errore di lettura, restituisco 2
+                return 2;
+            }
+    
+            buffer_len=strlen(buffer);
+    
+    
+            if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
+                while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer 
+                printf("Input troppo lungo! Riprova. \n");
+                continue; //Ricomincio il ciclo while
+            }
+    
+    
+            //rimouvo il carattere di newline
+            if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
+                //sostituisco il carattere di newline con il terminatore di stringa
+                buffer[buffer_len - 1] = '\0';
+                //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
+                buffer_len = buffer_len - 1;
+            }
+    
+            //se l'utente immette una stringa vuota, la funzione esce e restitusice 1.
+            if(buffer_len == 0){
+                return 1;
+            }
+    
+             //controllo lunghezza password
+    
+             if(buffer_len < 6){
+                printf("Password troppo corta. Minimo 6 caratteri consentiti. Riprova.\n");
+                continue; //riparte il ciclo while
+            }
+        
+            if(buffer_len > 19){
+                printf("Password troppo lunga. Massimo 19 caratteri consentiti. Riprova.\n");
+                continue; //riparte il ciclo while
+            }
+    
+    
+            //superato il controllo di validità della stringa, confronto con la password dell'utente.
+            
+            int auth_password = strcmp(user_password,buffer);
+    
+            //Se la password è valida, esco dal ciclo while
+            if(auth_password == 0){
+                break;
+            } else {         //Altrimenti, riparte il ciclo while e l'utente riprova l'inserimento della password
+                printf("Password invalida. Riprova.\n");
+                continue;
+            }
+        }
+    
+        //Se la password è stata verificata con successo, procedo all'operazione di eliminazione
+        clear_screen();
+        printf("Password verificata con successo!\n");
+
+        
+        int result = remove_user(users_list_head, user_username);
+
+        if(result != 0){
+            return 3; //FATAL ERROR 3 (NON È STATO POSSIBILE ACCEDERE ALLA LISTA UTENTI/ L'UTENTE NON È STATO TROVATO)
+        }
+
+        printf("L'UTENTE E' STATO DEFINITIVAMENTE ELIMINATO.\n");
+        return 0;
+
 }
     
 

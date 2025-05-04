@@ -5,12 +5,6 @@
 #include "users.h"
 
 
-/*
-Implementa l'I/O per il controllo della lunghezza dell'immissione di una nuova stringa. Se l'input inserito dall'utente
-Non eccede i caratteri massimi (impostati a 19 dalla funzione stessa) allora copia l'input nella nuova stringa
-*/
-void str_len_control(char input_string[MAX_STR_LEN]);
-
 
 /*
 Implementa l'I/O per la registrazione di un nuovo utente. Chiede in input da tastiera un nuovo username, controlla che questo username non sia già utilizzato (sia già presente nella lista utenti), controlla che la password sia valida secondo la logica dell'ADT
@@ -44,14 +38,14 @@ int sys_modify_credentials(user* my_user, users* users_list_head);
 /*
 Implementa l'I/O per l'eliminazione di un utente
 */
-int sys_delete_user(users* users_list_head, user user_to_modify);
+int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]);
 
 
-
+//WIP
 int sys_promote_user(users* users_list_head , user user_to_promote);
 
 
-
+collections sys_view_user_collection(user logged_user);
 
 
 

@@ -11,22 +11,27 @@ int main() {
     user_menu();
     collection_menu();
     products_menu();
-    admin_menu();
-    superuser_menu();
-    superuser_collections_submenu();
-    superuser_products_submenu();
+    //admin_menu();
+    //superuser_menu();
+    //superuser_collections_submenu();
+    //superuser_products_submenu();
 
     users nuova_lista = NULL;
 
     sys_register_user(&(nuova_lista));
 
+    
     user logged_user = NULL;
 
+
     logged_user = sys_login_user(&(nuova_lista));
+    char user_username[MAX_STR_LEN];
 
-   // int result = sys_modify_credentials(&(logged_user),&(nuova_lista));
-    
+    get_username(logged_user,user_username);
 
+    sys_delete_user(&(nuova_lista),user_username);
+
+    logged_user = sys_login_user(&(nuova_lista));
 /*
     //Creo una nuova lista prodotti e aggiungo un nuovo prodotto
     products Nuova_lista;
