@@ -25,14 +25,19 @@ int main() {
 
 
     logged_user = sys_login_user(&(nuova_lista));
-    char user_username[MAX_STR_LEN];
+   
+   /* char user_username[MAX_STR_LEN];
 
     get_username(logged_user,user_username);
 
     sys_delete_user(&(nuova_lista),user_username);
 
     logged_user = sys_login_user(&(nuova_lista));
+
 /*
+
+
+
     //Creo una nuova lista prodotti e aggiungo un nuovo prodotto
     products Nuova_lista;
     create_products_list(&(Nuova_lista));

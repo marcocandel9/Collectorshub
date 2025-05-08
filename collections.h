@@ -6,6 +6,7 @@
 #ifndef COLLECTIONS_H
 #define COLLECTIONS_H
 
+//Configurazione lista: Ordinata alfabeticamente sulla base del nome della collezione, doppioni NON consentiti.
 struct collections{
     collection collection_elem;
     struct collections* next;

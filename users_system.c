@@ -3,7 +3,104 @@
 
 
 
+/*
+Funzione che implementa il controllo della stringa in input. Controlla i seguenti criteri:
+    1) Che la stringa passata in ingresso non sia stata troncata -> input troppo lungo, riprova
+    2) Che la stringa passata in ingresso non sia minore di min_len caratteri -> Input troppo corto, riprova
+    3) Che la stringa passata in ingresso non sia maggiore di max_len caratteri -> Input troppo lungo, riprova
+    4) Se il flag check_space è impostato su true, allora controlla anche che la stringa non contenga spazi.
+    3) Rimuove il carattere a capo dalla stringa prelevata dal buffer di input
 
+    Restituisce:
+    - 0 Se la stringa passata in input è stata correttamente inserita e viene passata al chiamante tramite la stringa output_string
+    - 1 Se l'utente immette in input una stringa vuota, indicando l'operazione di ANNULLAMENTO.
+    - 2 In caso di errori di lettura del buffer di input (FATAL ERROR:2)
+
+    N.B: max_len_plus1 e min_len_plus1 RAPPRESENTANO LA DIMENSIONE MINIMA E MASSIMA DEGLI ARRAY ACCETTATI IN INPUT, COMPRESO IL TERMINATORE DI STRINGA. 
+    //ES. Se MAX_LEN_PLUS1 sarà 20, il numero di caratteri effettivi accettati in input (escludendo il terminatore) saranno 19.
+*/ 
+int sys_input_string_checker(char output_string[MAX_STR_LEN], bool check_space, int min_len_plus1, int max_len_plus1){
+
+    char ch;
+    char buffer[MAX_STR_LEN + 10];
+    int buffer_len;
+    
+
+    while(1){
+
+        //resetto il flag che segnala che la stringa contiene spazi, utilizzata nel caso in cui il check degli spazi è attivo (check_space == true)
+        bool has_space = false;
+
+        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
+            //errore di lettura, restituisco un puntatore a NULL
+            return 2;
+        }
+
+        buffer_len = strlen(buffer); 
+
+        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
+            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer (questa volta è necessario, perchè in caso
+                                                          //di troncamento il buffer di input conterrà i caratteri residui, compreso
+                                                          //il carattere di newline non letto.
+            printf("Input troppo lungo! Riprova. \n");
+            continue; //Ricomincio il ciclo while
+        }
+
+
+        //Rimouvo il carattere di newline dalla stringa ottenuta in input nel buffer
+        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
+            //sostituisco il carattere di newline con il terminatore di stringa
+            buffer[buffer_len - 1] = '\0';
+            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
+            buffer_len = buffer_len - 1;
+        }
+
+
+        //Controlli sull'input immesso dall'utente
+
+        //l'utente ha immesso invio, vuole annullare la registrazione
+        if(buffer_len == 0){
+            printf("\n");
+            return 1; //restituisco 1
+        }
+
+         //se il flag check_space è settato su true, allora avverrà anche il controllo degli spazi
+         if(check_space == true){
+
+            for (int i = 0; i < buffer_len; i++) {
+                if (isspace((unsigned char)buffer[i])) {  // cast a unsigned char per sicurezza
+                    has_space = true;
+                    break;
+                    }
+                }
+                if (has_space) {
+                    printf("Spazi non consentiti. Riprova.\n");
+                    continue;  // Riparte il ciclo while per la stringa in ingresso.
+                    }
+
+        }
+
+        //controllo lunghezza username, se inferiore a 6 caratteri riprovo
+        if(buffer_len < min_len_plus1-1){
+            printf("Stringa troppo corta. Minimo %d caratteri consentiti. Riprova.\n", min_len_plus1-1);
+            continue; //riparte il ciclo while
+        }
+
+        if(buffer_len > max_len_plus1-1){
+            printf("Stringa troppo lunga. Massimo %d caratteri consentiti. Riprova.\n", max_len_plus1-1);
+            continue; //riparte il ciclo while
+        }
+
+       
+
+        break;
+
+    }
+
+    strcpy(output_string,buffer);
+    return 0;
+
+}
 
 
 
@@ -21,99 +118,44 @@ user sys_register_user(users* users_list_head){
     int valid_password; 
     int valid_username;
 
-    //variabile per lo svuotamento del buffer stdin
-    char ch;
-    char buffer[MAX_STR_LEN + 10];
-    int buffer_len;
+    //variabili per il controllo della stringa in input
+    char username_io_string[MAX_STR_LEN];
+    char password_io_string[MAX_STR_LEN];
+    bool check_space = true; //l'username non può contenere spazi, effettuo il controllo sulla stringa in input.
+    int string_checker_result;
 
-    char new_username[MAX_STR_LEN];
-    char new_password[MAX_STR_LEN];
+
     user_role new_user_role = USER;
 
     user new_user = NULL;
 
     
+    clear_screen();
 
-    //LOGICA INSERIMENTO USERNAME IN INPUT (NB FGETS SVUOTA AUTOMATICAMENTE IL BUFFER DOPO L'INPUT)
+  
+    //INSERIMENTO NUOVO USERNAME
     while(1){
 
-        printf("\n\nInserisci il tuo nuovo username. (Massimo 19 caratteri consentiti, minimo 6, spazi non consentiti)\n");
+        printf("Inserisci il tuo nuovo username. (Massimo %d caratteri consentiti, minimo %d, spazi non consentiti)\n",MAX_STR_LEN-1,MIN_STR_LEN-1);
         printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n\n");
 
-        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
-            //errore di lettura, restituisco un puntatore a NULL
-            return NULL;
+
+        string_checker_result = sys_input_string_checker(username_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+        
+        switch(string_checker_result){
+            case 1:
+                printf("Registrazione annullata correttamente. \n");
+                return NULL;
+            case 2:
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                return NULL;
+            default: 
+                break;
         }
 
-        buffer_len = strlen(buffer); 
-        //BUGFIX ADDITION
-        //SE L'UTENTE INSERIVA UNA STRINGA MOLTO LUNGA, VENIVA ACCETTATA! Ciò è dovuto al comportamento di fgets, che
-        //se riceve una stringa di dimensioni superiori alla dimensione massima del buffer (MAX_STR_LEN+10-1 caratteri)
-        //TRONCA LA PRIMA PARTE LASCIANDO SOLTANTO LA SECONDA CHE PUÒ ESSERE DI DIMENSIONI INFERIORI A 19.
-        //Nel caso in cui avvenga il troncamento l'ultimo carattere non sarà quello di newline.
-        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
-            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer (questa volta è necessario, perchè in caso
-                                                          //di troncamento il buffer di input conterrà i caratteri residui, compreso
-                                                          //il carattere di newline non letto.
-            printf("Input troppo lungo! Riprova. \n");
-            continue; //Ricomincio il ciclo while
-        }
-
-
-
-        //esempio input fgets: l'utente immette: "prova" e preme invio, il buffer conterrà:
-        // 'p','r','o','v','a','\n','\0'//
-        //è necessario rimuovere il carattere di newline
-         //strlen conterà da 1 (p) a '\n' restituendo 6
-
-        //Rimouvo il carattere di newline dalla stringa ottenuta in input nel buffer
-        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
-            //sostituisco il carattere di newline con il terminatore di stringa
-            buffer[buffer_len - 1] = '\0';
-            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
-            buffer_len = buffer_len - 1;
-        }
-
-
-        //Controlli sull'input immesso dall'utente
-
-        //l'utente ha immesso invio, vuole annullare la registrazione
-        if(buffer_len == 0){
-            printf("\n");
-            return NULL; //restituisco un puntatore a NULL ed esco dalla funzione
-        }
-
-        //controllo lunghezza username, se inferiore a 6 caratteri riprovo
-        if(buffer_len < 6){
-            printf("Username troppo corto. Minimo 6 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
-
-        if(buffer_len > 19){
-            printf("Username troppo lungo. Massimo 19 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
-
-        //controllo siano presenti degli spazi
-        bool has_space = false;
-        for (int i = 0; i < buffer_len; i++) {
-            if (isspace((unsigned char)buffer[i])) {  // cast a unsigned char per sicurezza
-            has_space = true;
-            break;
-        }
-        }
-        if (has_space) {
-        printf("Spazi non consentiti. Riprova.\n");
-        continue;  // Riparte il ciclo while per l'username
-        }
-
-        //Se la stringa ha superato i vari step di controllo, non contenendo cioè spazi, avendo una lunghezza compresa
-        //fra minimo 6 massimo 19 caratteri, procedo al controllo dell'esistenza all'interno della lista utenti (username non disponibile)
-
-        strcpy(new_username,buffer);
 
         //Controllo che l'utente non sia già presente nella lista utenti (DUPLICATI NON CONSENTITI)
-        valid_username = user_exists(*users_list_head,new_username); 
+        valid_username = user_exists(*users_list_head,username_io_string); 
 
 
         //Username disponibile, esce dal ciclo while (valid_username == 2: nessuna corrispondenza trovata nella lista, valid_username == 1: lista vuota, in entrambi casi l'username è disponibile)
@@ -122,90 +164,64 @@ user sys_register_user(users* users_list_head){
             break;
         }
 
-        //Altrimenti notifica l'utente che l'username e già occupato e ricomincia il ciclo.
-        printf("L'username ' già occupato.\n");
+        //Altrimenti notifica l'utente che l'username e già occupato e ricomincia il ciclo while.
+        printf("L'username e' già occupato.\n");
+        continue;
     }
+    
+        
+
+    //INSERIMENTO NUOVA PASSWORD
+    //clear_screen();
+    
+    //N.B: Nonostante la password NON POSSA CONTENERE SPAZI, disattivo in questo caso il controllo in quanto sarebbe ridondante,
+    //Venendo già realizzato dalla funzione validate_password.
+    check_space = false;
 
 
-    //LOGICA INSERIMENTO PASSWORD IN INPUT
-    do{
-        printf("Inserisci la tua nuova password. (Massimo 19 caratteri consentiti)\n\n");
+    
+    while(1){
+        printf("Inserisci la tua nuova password. (Massimo %d caratteri consentiti)\n\n", MAX_STR_LEN-1);
         printf("La password deve contenere:\n");
-        printf(" - Almeno 8 caratteri \n" );
+        printf(" - Almeno %d caratteri \n", MIN_STR_LEN-1 );
         printf(" - Almeno una maiuscola \n");
         printf(" - Almeno una minuscola \n");
         printf(" - Almeno un numero \n");
         printf(" - Almeno un simbolo (SPAZI ESCLUSI)\n");
         printf(" - PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n\n");
 
-        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
-            //errore di lettura, restituisco un puntatore a NULL
-            return NULL;
-        }
-        
-        buffer_len = strlen(buffer);
-
-        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
-            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer (questa volta è necessario, perchè in caso
-                                                          //di troncamento il buffer di input conterrà i caratteri residui, compreso
-                                                          //il carattere di newline non letto.
-            printf("Input troppo lungo! Riprova. \n");
-            continue; //Ricomincio il ciclo while
-        }
-
-        
-        //Rimouvo il carattere di newline dalla stringa ottenuta in input nel buffer
-        //strlen conterà da 1 (p) a '\n' restituendo 6
-        
-        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
-            //sostituisco il carattere di newline con il terminatore di stringa
-            buffer[buffer_len - 1] = '\0';
-            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa
-            buffer_len = buffer_len - 1;
-        }
-
-
-        //Controlli sull'input immesso dall'utente
-
-        //l'utente ha immesso invio, vuole annullare la registrazione
-        if(buffer_len == 0){
-            printf("\n");
-            return NULL; //restituisco un puntatore a NULL ed esco dalla funzione
-        }
-
-
-         //controllo lunghezza password, se inferiore a 6 caratteri riprovo
-         if(buffer_len < 6){
-            printf("Password troppo corta. Minimo 6 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
-    
-        if(buffer_len > 19){
-            printf("Password troppo lunga. Massimo 19 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
-
-
-        
         //Controllo che la password rispetti i requisiti del sistema definiti in validate_password di user.h
-        valid_password = validate_password(buffer);
+        string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
-        if(valid_password == 1){
-            printf("La password inserita non e' valida. Riprova.\n");
-        };
-
-        //altrimenti accetto la nuova password
-        if(valid_password == 0){
-            strcpy(new_password,buffer);
-        };
+        switch(string_checker_result){
+            case 1:
+                printf("Registrazione annullata correttamente. \n");
+                return NULL;
+            case 2:
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                return NULL;
+            default: 
+                break;
+        }
+        
+        //Secondo controllo sulla password secondo i criteri dettati da user.h
+        string_checker_result = validate_password(password_io_string);
+        
+        if(string_checker_result == 1) {
+            printf("Password non valida. Contiene caratteri non ammessi e/o spazi. Riprova \n");
+            continue;
+        }
+        if(string_checker_result == 0) break; //altrimenti la password è validata, posso uscire dal ciclo while.
     }
-    while(valid_password != 0);
 
+    
     //Una volta validato sia l'username che la nuova password, procedo all'inserimento del nuovo utente nella lista utenti.
 
-    insert_user_sorted(users_list_head, new_username, new_password, new_user_role);
+    insert_user_sorted(users_list_head, username_io_string, password_io_string, new_user_role);
 
-    search_user(*users_list_head,new_username, &new_user);
+    search_user(*users_list_head,username_io_string, &new_user);
+
+    printf("Registrazione effettuata con successo!\n");
 
     return new_user;
 }
@@ -217,24 +233,23 @@ user sys_register_user(users* users_list_head){
 Implementa l'I/O Per il login di un utente
 
 Restituisce:
-- un puntatore al nuovo utente creato in caso di corretta autenticazione
-- un puntatore a NULL in caso di errori del buffer o di annullamento da parte dell'utente
+    - un puntatore al nuovo utente creato in caso di corretta autenticazione
+    - un puntatore a NULL in caso di errori del buffer o di annullamento da parte dell'utente
 */
 
 
 user sys_login_user(users* users_list_head){
 
-    //char per lo svuotamento del buffer
-    char ch; 
-    char buffer[MAX_STR_LEN+10];
-    int buffer_len;
-
-
     int valid_username;
     int valid_password;
 
+    bool check_space = true; //la password in input non può contenere spazi, effettuo il controllo sulla stringa in input.
+    int string_checker_result;
+    
+    char username_io_string[MAX_STR_LEN];
+    char password_io_string[MAX_STR_LEN];
+
     user logging_user = NULL;
-    char user_username[MAX_STR_LEN];
     char user_password[MAX_STR_LEN];
     
     
@@ -247,53 +262,22 @@ user sys_login_user(users* users_list_head){
         printf("Inserisci il tuo username. \n");
         printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE IL LOGIN.\n");
         
-        if(fgets(buffer,sizeof(buffer),stdin)==NULL){
-            //errore di lettura, restituisco un puntatore a NULL
-            return NULL;
-        }
+        string_checker_result = sys_input_string_checker(username_io_string, check_space,MIN_STR_LEN,MAX_STR_LEN);
 
-        buffer_len = strlen(buffer);
-        
-        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
-            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer (questa volta è necessario, perchè in caso
-                                                          //di troncamento il buffer di input conterrà i caratteri residui, compreso
-                                                          //il carattere di newline non letto.
-            printf("Input troppo lungo! Riprova. \n");
-            continue; //Ricomincio il ciclo while
+        switch(string_checker_result){
+            case 1:
+                printf("Login annullato correttamente. \n");
+                return NULL;
+            case 2:
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                return NULL;
+            default: 
+                break;
         }
-
-
-        //Rimouvo il carattere di newline dalla stringa ottenuta in input nel buffer
-        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
-            //sostituisco il carattere di newline con il terminatore di stringa
-            buffer[buffer_len - 1] = '\0';
-            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
-            buffer_len = buffer_len - 1;
-        }
-
-        ///CONTROLLI STRINGA INSERITA IN INPUT///
-
-        //l'utente ha immesso invio, vuole annullare la registrazione
-        if(buffer_len == 0){
-            printf("\n");
-            return NULL; //restituisco un puntatore a NULL ed esco dalla funzione
-        }
-        
-        //controllo lunghezza username, se inferiore a 6 caratteri riprovo
-        if(buffer_len < 6){
-            printf("Username troppo corto. Minimo 6 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
-    
-        if(buffer_len > 19){
-            printf("Username troppo lungo. Massimo 19 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
-
 
 
         //controllo che l'username esista nella lista utenti
-        valid_username = user_exists(*users_list_head,buffer);
+        valid_username = user_exists(*users_list_head,username_io_string);
 
         //se valid_úsername diverso da 0, utente non presente nella lista. Riprova
         if(valid_username != 0){
@@ -302,11 +286,9 @@ user sys_login_user(users* users_list_head){
         }
 
         //altrimenti accede al contenuto informativo dell'utente prelevando la password e preparandola al confronto con il successivo input da terminale.
-        
-
+    
         //adesso il puntatore ad user logging_user punterà all'utente trovato
-        strcpy(user_username,buffer);
-        search_user(*users_list_head,user_username,&logging_user);
+        search_user(*users_list_head,username_io_string,&logging_user);
         get_password(logging_user,user_password);
         break; 
     }
@@ -318,50 +300,22 @@ user sys_login_user(users* users_list_head){
 
         printf("Inserisci la tua password. \n\n");
 
-        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
-            //errore di lettura, restituisco un puntatore a NULL
-            return NULL;
-        }
+        string_checker_result = sys_input_string_checker(password_io_string, check_space,MIN_STR_LEN,MAX_STR_LEN);
 
-        buffer_len=strlen(buffer);
-
-
-        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
-            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer 
-            printf("Input troppo lungo! Riprova. \n");
-            continue; //Ricomincio il ciclo while
-        }
-
-
-        //rimouvo il carattere di newline
-        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
-            //sostituisco il carattere di newline con il terminatore di stringa
-            buffer[buffer_len - 1] = '\0';
-            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
-            buffer_len = buffer_len - 1;
-        }
-
-        //se l'utente immette una stringa vuota, la funzione esce e restitusice NULL
-        if(buffer_len == 0){
-            logging_user = NULL;
-            return NULL;
-        }
-
-         //controllo lunghezza password
-
-         if(buffer_len < 6){
-            printf("Password troppo corta. Minimo 6 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
-    
-        if(buffer_len > 19){
-            printf("Password troppo lunga. Massimo 19 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
+        switch(string_checker_result){
+            case 1:
+                printf("Login annullato correttamente. \n");
+                return NULL;
+            case 2:
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                return NULL;
+            default: 
+                break;
         }
 
 
         //superato il controllo di validità della stringa, confronto con la password dell'utente.
-        valid_password = strcmp(user_password,buffer);
+        valid_password = strcmp(user_password,password_io_string);
 
         //Se la password è valida, esco dal ciclo while
         if(valid_password == 0){
@@ -384,8 +338,8 @@ user sys_login_user(users* users_list_head){
 /*
 Implementa l'I/O per la modifica dell'username di un utente, richiede in ingresso la stringa del nome utente attuale dell'utente e la lista degli utenti
     Restituisce:
-        1 In caso di errori di lettura del buffer di input
-        2 In caso di annullamento dell'operazione da parte dell'utente
+        1 In caso di annullamento dell'operazione da parte dell'utente
+        2 In caso di errori di lettura del buffer di input
         3 In caso di errori di modifica dell'utente nella struttura dati (FATAL ERROR)
         0 Se tutto va a buon fine
     N.B: La stringa current_username, nel caso di effettuata modifica, viene modificata con il nuovo nome utente inserito dall'user da terminale.
@@ -395,64 +349,37 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
     
     char empty_string[MAX_STR_LEN] = "";
 
-    //char per lo svuotamento del buffer
-    char ch; 
-
-    char buffer[MAX_STR_LEN+10];
-
-    int buffer_len;
+    int string_checker_result;
 
     int valid_username;
 
-    char validated_username[MAX_STR_LEN];
+    char username_io_string[MAX_STR_LEN];
+
+    bool check_space = true; //l'username in input non può contenere spazi, effettuo il controllo sulla stringa in input.
 
     while(1){
 
         printf("Inserisci il tuo nuovo username. \n\n");
         printf("Per annullare la modifica del tuo username, immetti una stringa vuota. \n\n");
         
+        string_checker_result = sys_input_string_checker(username_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
-        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
-            //errore di lettura, restituisco un puntatore a NULL
-            return 1;
+        switch(string_checker_result){
+            case 1:
+                printf("La modifica dell'username è stata annullata correttamente.\n");
+                return 1;
+            case 2:
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                return 2;
+            default: 
+                break;
         }
 
-        buffer_len=strlen(buffer);
 
-
-        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
-            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer 
-            printf("Input troppo lungo! Riprova. \n");
-            continue; //Ricomincio il ciclo while
-        }
-
-
-        //rimouvo il carattere di newline
-        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
-            //sostituisco il carattere di newline con il terminatore di stringa
-            buffer[buffer_len - 1] = '\0';
-            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
-            buffer_len = buffer_len - 1;
-        }
-
-        //se l'utente immette una stringa vuota, la funzione esce e restitusice 2.
-        if(buffer_len == 0){
-            return 2;
-        }
-
-         //controllo lunghezza username
-         if(buffer_len < 6){
-            printf("Username troppo corto. Minimo 6 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
-    
-        if(buffer_len > 19){
-            printf("Username troppo lungo. Massimo 19 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
+       
 
         //utilizzo la funzione user_exists per cercare il nome utente in lista. Se il nome utente è disponibile, proseguo alla modifica dell'username, altrimenti riprovo
-        valid_username = user_exists(*(users_list_head),buffer);
+        valid_username = user_exists(*(users_list_head),username_io_string);
         if(valid_username  == 0){
             printf("Il nome utente non e' disponibile. Riprova.\n");
             continue;
@@ -460,7 +387,7 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
 
 
         //chiamo la funzione search_and_modify_user_Credentials per modificarne l'username.
-        int result = search_and_modify_user_credentials(users_list_head, current_username, buffer, empty_string);
+        int result = search_and_modify_user_credentials(users_list_head, current_username, username_io_string, empty_string);
 
         if(result == 0){
             break;
@@ -473,7 +400,7 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
 
     //Tutto è andato a buon fine
     //aggiorno il current username passato dal chiamante
-    strcpy(current_username, buffer);
+    strcpy(current_username, username_io_string);
     return 0;
 
 }
@@ -485,8 +412,8 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
 /*
 Implementa l'I/O per la modifica della password di un utente, richiede in ingresso la stringa del nome utente attuale dell'utente e la lista degli utenti
     Restituisce:
-        1 In caso di errori di lettura del buffer di input
-        2 In caso di annullamento dell'operazione da parte dell'utente
+        1 In caso di annullamento dell'operazione da parte dell'utente
+        2 In caso di errori di lettura del buffer di input
         3 In caso di errori di modifica dell'utente nella struttura dati (ES. UTENTE NON TROVATO O LISTA VUOTA)
         0 Se tutto va a buon fine
     N.B: La stringa current_password, nel caso di effettuata modifica, viene aggiornata con la nuova password inserita dall'utente.
@@ -495,12 +422,11 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
 
     char empty_string[MAX_STR_LEN] = "";
 
-    //char per lo svuotamento del buffer
-    char ch; 
+    int string_checker_result;
 
-    char buffer[MAX_STR_LEN+10];
+    char password_io_string[MAX_STR_LEN];
 
-    int buffer_len;
+    bool check_space = true;
 
     int valid_password;
 
@@ -511,32 +437,22 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
         printf("Inserisci la tua nuova password. \n\n");
         printf("Per annullare la modifica della tua password, immetti una stringa vuota. \n\n");
 
-        if(fgets(buffer,sizeof(buffer),stdin) == NULL){
-            return 1; //Errore di lettura buffer input
-        }
-
-        buffer_len=strlen(buffer);
-
-        //controllo input troppo lungo che causa troncamento del buffer
-        if(buffer_len > 0 && (buffer[buffer_len - 1] != '\n')){
-            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer 
-            printf("Input troppo lungo! Riprova. \n");
-            continue; //Ricomincio il ciclo while
-        }
-
-        if(buffer_len > 0 && buffer[buffer_len-1] == '\n'){
-            buffer[buffer_len-1] = '\0';
-            buffer_len = buffer_len - 1;
-        }
-
-        if(buffer_len == 0){
-            return 2; //L'utente non vuole modificare la password, la funzione restituisce 2.
-        }
+        string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
         
+        switch(string_checker_result){
+            case 1:
+                printf("La modifica della password è stata annullata correttamente.\n");
+                return 1;
+            case 2:
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                return 2;
+            default: 
+                break;
+        }
 
         //Validazione nuova password tramite la funzione validate_password
         
-        valid_password = validate_password(buffer);
+        valid_password = validate_password(password_io_string);
 
         if(valid_password == 1){
             printf("La password non è valida, deve contenere i seguenti requisiti:\n");
@@ -553,7 +469,7 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
     }
 
 
-    int result = search_and_modify_user_credentials(users_list_head, user_username, empty_string, buffer);
+    int result = search_and_modify_user_credentials(users_list_head, user_username, empty_string, password_io_string);
 
     if(result == 1 || result == 2 || result == 3){
         printf("FATAL ERROR 3: USER NOT FOUND ");
@@ -562,7 +478,7 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
 
     //Tutto è andato a buon fine, restituisco 0.
 
-    strcpy(current_password, buffer);
+    strcpy(current_password, password_io_string);
     return 0;
 }
 
@@ -578,19 +494,21 @@ Il puntatore alla testa della lista utenti
 
 Restituisce:
   0 Se tutto va a buon fine
+  1 In caso di annullamento della modifica delle credenziali
   2 In caso di errori di lettura del buffer di input (FATAL ERROR 2)
   3 In caso di errori di lettura dell'utente in lista (FATAL ERROR 3)
 */
 int sys_modify_credentials(user* my_user, users* users_list_head){
 
-    //char per lo svuotamento del buffer
-    char ch; 
-    char buffer[MAX_STR_LEN+10];
-    int buffer_len;
- 
- 
+    
+    int string_checker_result;
     int auth_username;
     int auth_password;
+
+    char password_io_string[MAX_STR_LEN];
+    char username_io_string[MAX_STR_LEN];
+
+    bool check_space = true;
 
     char user_username[MAX_STR_LEN];
     char user_password[MAX_STR_LEN];
@@ -607,49 +525,22 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
         printf("Per annullare la modifica delle tue credenziali, immetti una stringa vuota. \n");
         printf("Inserisci la tua password per procedere con il cambiamento delle credenziali. \n\n");
 
-        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
-            //errore di lettura, restituisco un puntatore a NULL
-            return 1;
-        }
-
-        buffer_len=strlen(buffer);
-
-
-        if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
-            while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer 
-            printf("Input troppo lungo! Riprova. \n");
-            continue; //Ricomincio il ciclo while
-        }
-
-
-        //rimouvo il carattere di newline
-        if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
-            //sostituisco il carattere di newline con il terminatore di stringa
-            buffer[buffer_len - 1] = '\0';
-            //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
-            buffer_len = buffer_len - 1;
-        }
-
-        //se l'utente immette una stringa vuota, la funzione esce e restitusice 1.
-        if(buffer_len == 0){
-            return 1;
-        }
-
-         //controllo lunghezza password
-
-         if(buffer_len < 6){
-            printf("Password troppo corta. Minimo 6 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
-        }
-    
-        if(buffer_len > 19){
-            printf("Password troppo lunga. Massimo 19 caratteri consentiti. Riprova.\n");
-            continue; //riparte il ciclo while
+        string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+        
+        switch(string_checker_result){
+            case 1:
+                printf("Operazione di modifica credenziali annullata correttamente.\n");
+                return 1;
+            case 2:
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                return 2;
+            default: 
+                break;
         }
 
 
         //superato il controllo di validità della stringa, confronto con la password dell'utente.
-        auth_password = strcmp(user_password,buffer);
+        auth_password = strcmp(user_password,password_io_string);
 
         //Se la password è valida, esco dal ciclo while
         if(auth_password == 0){
@@ -678,10 +569,11 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
             printf("Username modificato con successo. \n\n");
             break;
         case(1):
+            printf("Il nome utente rimarra' invariato. Si procede con la modifica della password.\n");
+            break;
+        case(2):
             printf("Errore lettura buffer di input! (FATAL ERROR: 2)\n");
             return 2;
-        case(2):
-            printf("Il nome utente rimarra' invariato. Si procede con la modifica della password.\n");
             break;
         case(3):
             printf("Errore lettura dell'utente nella lista utenti! (FATAL ERROR:3)\n");
@@ -699,11 +591,11 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
             printf("Password modificata con successo. \n\n");
             break;
         case(1):
+            printf("La password rimarrà invariata.\n");
+            break;
+        case(2):
             printf("Errore lettura buffer di input! (FATAL ERROR: 2)\n");
             return 2;
-        case(2):
-            printf("La password rimarra' invariata. \n");
-            break;
         case(3):
             printf("Errore lettura dell'utente nella lista utenti! (FATAL ERROR:3)\n");
             return 3;
@@ -724,7 +616,8 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
 
 
 /*
-Implementa l'I/O Per l'eliminazione di un utente dalla lista utenti.
+Implementa l'I/O Per l'eliminazione di un utente. Non effettua la ricerca dell'utente stesso, utile quindi quando
+un utente vuole eliminare il proprio profilo. 
 
 Restituisce:
     1: Se l'utente immette una stringa vuota e annulla l'eliminazione del proprio profilo
@@ -735,72 +628,43 @@ Restituisce:
 */
 int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]){
 
-        //char per lo svuotamento del buffer
-        char ch; 
-        char buffer[MAX_STR_LEN+10];
-        int buffer_len;
 
         user user_to_del = NULL;
-
-        search_user(*(users_list_head),user_username,&(user_to_del));
         char user_password[MAX_STR_LEN];
 
+        int string_checker_result; 
+        char password_io_string[MAX_STR_LEN];
+        bool check_space = true;
+
+        search_user(*(users_list_head),user_username,&(user_to_del));
+        
         get_password(user_to_del,user_password);
 
         clear_screen();
         printf("Benvenuto nell'area di eliminazione del tuo account utente.\n");
         printf("QUESTA AZIONE SARA' DEFINITIVA. Si consiglia di procedere con cautela.\n");
-        printf("Per procedere con l'operazione, e' necessario autenticare la propria password.\n");
 
         while(1){
 
-            printf("Per annullare l'eliminazione del profilo utente, immetti una stringa vuota. \n");
-            printf("Inserisci la tua password per eliminare DEFINITIVAMENTE IL TUO ACCOUNT UTENTE. \n\n");
-    
-            if(fgets(buffer, sizeof(buffer), stdin) == NULL){
-                //errore di lettura, restituisco 2
-                return 2;
+            printf("Per procedere all'eliminazione, è necessario inserire la propria password. ( UNA VOLTA VERIFICATA, NON PUOI TORNARE INDIETRO! )\n");
+            printf("Se si vuole annullare l'eliminazione del proprio profilo, inserire una stringa vuota.\n");
+
+            string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+            
+            switch(string_checker_result){
+                case 1:
+                    printf("Eliminazione del proprio profilo annullata correttamente.\n");
+                    return 1;
+                case 2:
+                    printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                    return 2;
+                default: 
+                    break;
             }
-    
-            buffer_len=strlen(buffer);
-    
-    
-            if(buffer_len > 0 && buffer[buffer_len-1] != '\n'){ //input troncato, stringa troppo lunga!
-                while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer 
-                printf("Input troppo lungo! Riprova. \n");
-                continue; //Ricomincio il ciclo while
-            }
-    
-    
-            //rimouvo il carattere di newline
-            if(buffer_len > 0 && buffer[buffer_len - 1] == '\n'){
-                //sostituisco il carattere di newline con il terminatore di stringa
-                buffer[buffer_len - 1] = '\0';
-                //decremento la lunghezza del buffer ottenendo l'effettiva lunghezza della stringa, compreso il terminatore
-                buffer_len = buffer_len - 1;
-            }
-    
-            //se l'utente immette una stringa vuota, la funzione esce e restitusice 1.
-            if(buffer_len == 0){
-                return 1;
-            }
-    
-             //controllo lunghezza password
-    
-             if(buffer_len < 6){
-                printf("Password troppo corta. Minimo 6 caratteri consentiti. Riprova.\n");
-                continue; //riparte il ciclo while
-            }
-        
-            if(buffer_len > 19){
-                printf("Password troppo lunga. Massimo 19 caratteri consentiti. Riprova.\n");
-                continue; //riparte il ciclo while
-            }
-    
-    
+            
             //superato il controllo di validità della stringa, confronto con la password dell'utente.
             
-            int auth_password = strcmp(user_password,buffer);
+            int auth_password = strcmp(user_password, password_io_string);
     
             //Se la password è valida, esco dal ciclo while
             if(auth_password == 0){
@@ -828,8 +692,83 @@ int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]){
 }
     
 
-    
+
+
+
+/*
+Implementa l'I/O per la visualizzazione della lista collezioni di un utente.
+Restituisce:
+    1: Se la lista è vuota 
+    0: Se tutto va a buon fine
+*/
+int sys_print_user_collections(user logged_user){
+
+    //Controllo che il puntatore non punti a NULL
+    if(logged_user == NULL){
+        printf("FATAL ERROR 1: USER POINTS TO NULL\n");
+        return 1;
+    }
+
+    int result = print_collections(logged_user->collections_list_head);
+
+    //La funzione print collections restituisce 1 se la lista è vuota -> gestisco questo caso:
+
+    if(result == 1){
+        printf("La tua lista collezioni è vuota!\n");
+        return 1;
+    }
+
+    //Altrimenti tutto va a buon fine, restituisco 0.
+    return 0; 
+}
+
+
  
+//int insert_collection(collections* collections_list_head, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN])
+
+/*
+Implementa l'I/O per l'aggiunta di una nuova collezione nella lista delle collezioni di un utente già loggato (Richiede in ingresso il puntatore all'utente loggato.)
+Restituisce:
+    1: In caso di annullamento da parte dell'utente
+    2: In caso di errore di lettura del buffer di input
+    3: In caso di inserimento di un DOPPIONE (DOPPIONI NON CONSENTITI DA COLLECTIONS.H)
+*/
+int sys_insert_collection(user logged_user){
+
+
+
+    //preparo le variabili che serviranno rispettivamente a:
+    char new_collection_name[MAX_STR_LEN];   //Contenere il nome della nuova collezione
+    char new_collection_type[MAX_STR_LEN];   //Contenere il tipo della nuova collezione
+    //Prelevo il puntatore alla testa della lista delle collezioni dell'utente loggato
+    collections collections_list_head = logged_user->collections_list_head; 
+
+    int string_checker_result;
+    char collection_name_io_string[MAX_STR_LEN];
+    char collection_type_io_string[MAX_STR_LEN];
+    bool check_space = false; //In questo caso, le stringhe possono contenere spazi.
+
+    clear_screen();
+    printf("Benvenuto/a nell'area di creazione di una nuova collezione!\n\n");
+
+    while(1){
+
+        printf("Per annullare l'eliminazione della tua nuova collezione, inserisci una stringa vuota \n");
+        printf("Inserisci il nome della tua nuova collezione. \n\n");
+
+        string_checker_result = sys_input_string_checker(collection_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1:
+                printf("Operazione di aggiunta collezione eliminata con successo. \n");
+        }
+
+        
+
+
+    }
+}
+
 
 
 

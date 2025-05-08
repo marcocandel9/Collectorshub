@@ -139,7 +139,7 @@ int collection_menu(){
 
     clear_screen();
 
-    int scelta = 0, min = 1, max = 6;
+    int scelta = 0, min = 1, max = 7;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     collection_menu_header();
@@ -148,10 +148,11 @@ int collection_menu(){
     printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
     printf("                                                                            1) Visualizza le tue collezioni\n");
     printf("                                                                            2) Accedi ad una collezione\n");
-    printf("                                                                            3) Modifica il nome/tipologia di una collezione\n");
-    printf("                                                                            4) Cancella definitivamente una collezione\n");
-    printf("                                                                            5) Cancella definitivamente tutte le collezioni\n");
-    printf("                                                                            6) Torna al menu' utente\n");
+    printf("                                                                            3) Crea una nuova collezione\n");
+    printf("                                                                            4) Modifica il nome/tipologia di una collezione\n");
+    printf("                                                                            5) Cancella definitivamente una collezione\n");
+    printf("                                                                            6) Cancella definitivamente tutte le collezioni\n");
+    printf("                                                                            7) Torna al menu' utente\n");
     printf("\n");
     printf("\n");
     printf("\n");
@@ -178,7 +179,7 @@ int products_menu(){
 
     clear_screen();
 
-    int scelta = 0, min = 1, max = 5;
+    int scelta = 0, min = 1, max = 6;
 
     printf(ANSI_COLOR_RED ANSI_BOLD);
     products_menu_header();
@@ -186,10 +187,11 @@ int products_menu(){
     printf("                                                                            Benvenuto/a nel menu' prodotti!\n\n" BOLD_OFF);
     printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
     printf("                                                                            1) Visualizza tutti i prodotti della collezione\n");
-    printf("                                                                            2) Cerca e modifica un prodotto\n");
-    printf("                                                                            3) Cerca e cancella definitivamente un prodotto\n");
-    printf("                                                                            4) Cancella definitivamente tutti i prodotti\n");
-    printf("                                                                            5) Torna al menu' collezioni \n");
+    printf("                                                                            2) Aggiungi un nuovo prodotto alla collezione\n");
+    printf("                                                                            3) Cerca e modifica un prodotto\n");
+    printf("                                                                            4) Cerca e cancella definitivamente un prodotto\n");
+    printf("                                                                            5) Cancella definitivamente tutti i prodotti\n");
+    printf("                                                                            6) Torna al menu' collezioni \n");
     printf("\n");
     printf("\n");
     printf("\n");

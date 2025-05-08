@@ -72,7 +72,7 @@ int check_user_privilege(user_role this_user_role, user_role that_user_role){
 
 /*
 Verifica che la password abbia le seguenti caratteristiche:
-- Lunga almeno 8 caratteri
+- Lunga almeno 7 caratteri (MIN STR LEN -1)
 - Contiene almeno una maiuscola
 - Contiene almeno una minuscola
 - Contiene almeno un numero
@@ -89,7 +89,7 @@ int validate_password(char password[MAX_STR_LEN]){
 
     //strlen controlla la dimensione LOGICA della stringa, non quella fisica, quindi conta il numero di caratteri fino al terminatore \0 (null terminator)
     int length = strlen(password);
-    if (length < 8) return 1; //Password invalida
+    if (length < MIN_STR_LEN-1) return 1; //Password invalida
 
     //Inizializzo delle variabili booleane di supporto per il controllo delle condizioni
     bool has_upper = false;
