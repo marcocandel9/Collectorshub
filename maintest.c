@@ -26,13 +26,40 @@ int main() {
 
     logged_user = sys_login_user(&(nuova_lista));
    
-   /* char user_username[MAX_STR_LEN];
+   char user_username[MAX_STR_LEN];
 
     get_username(logged_user,user_username);
 
-    sys_delete_user(&(nuova_lista),user_username);
+    //sys_delete_user(&(nuova_lista),user_username);
 
-    logged_user = sys_login_user(&(nuova_lista));
+    //logged_user = sys_login_user(&(nuova_lista));
+
+    //qui dovrei stampare che la lista è vuota
+    sys_print_user_collections(logged_user);
+
+    sys_insert_collection(logged_user);
+
+    //qui dovrei stampare che la lista è popolata
+    sys_print_user_collections(logged_user);
+
+    //test 1, modifico username
+    sys_modify_credentials(&(logged_user),&(nuova_lista));
+
+    //test 2, annullo modifica username
+    sys_modify_credentials(&(logged_user),&(nuova_lista));
+
+    //test 3, modifico username mettendo uno uguale a quello di prima
+    sys_modify_credentials(&(logged_user),&(nuova_lista));
+
+    //test 4: modifico password
+    sys_modify_credentials(&(logged_user),&(nuova_lista));
+
+    //test 5: annullo modifica password
+    sys_modify_credentials(&(logged_user),&(nuova_lista));
+
+
+
+
 
 /*
 

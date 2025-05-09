@@ -286,9 +286,10 @@ Prende in ingresso il puntatore alla testa della lista collezioni passato per ri
 puntatore alla testa della lista prodotti da inserire
 
 Restituisce:
-- 1 Se la lista delle collezioni è VUOTA
-- 2 Se non è stata trovata la collezione ricercata
-*/
+     1 Se la lista delle collezioni è VUOTA
+     2 Se non è stata trovata la collezione ricercata
+     0 Se tutto va a buon fine
+     */
 int insert_sorted_products_list(collections* collections_list_head, char key_name[MAX_STR_LEN], products* products_list_head){
 
     //Puntatore alla testa della lista collezioni uguale a NULL -> Lista vuota, restituisce 1
@@ -321,4 +322,47 @@ int insert_sorted_products_list(collections* collections_list_head, char key_nam
 
     insert_products_list(&(q->collection_elem),products_list_head);
     return 0; //Success
+}
+
+
+
+
+/*
+Ricerca una collezione nella lista collezioni sulla base del nome della collezione.a
+
+    Restituisce:
+        1 Se la lista delle collezioni è VUOTA
+        2 Se non è stata trovata la collezione ricercata
+        0 Se è stata trovata una corrispondenza
+*/
+int collection_exists(collections collections_list_head, char key_name[MAX_STR_LEN]){
+
+    //Puntatore alla testa della lista collezioni uguale a NULL -> Lista vuota, restituisce 1
+    if(collections_list_head == NULL) return 1;
+
+    //Puntatore di appoggio per scorrere la lista collezioni
+    collections q = collections_list_head;
+    char collection_name[MAX_STR_LEN];
+
+    //Ricerca ordinata sulla base del nome della collezione (array di caratteri key_name)
+    while(q != NULL){
+        get_collection_name(q->collection_elem,collection_name);
+
+        //strcmp restituisce:
+        // - un valore negativo se key_name è alfabeticamente inferiore al nome della collezione-> devo interrompere la ricerca
+        // - 0 se key_name == collection_name
+        // - un valore positivo se key_name è alfabeticamente superiore al nome della collezione -> devo continuare a cercare
+        int is_equal = strcmp(key_name,collection_name);
+
+        if(is_equal == 0) break; //Corrispondenza trovata, esco dal ciclo while di ricerca ordinata
+
+        if(is_equal < 0) return 2; //Collezione non trovata, restituisci 2
+        
+        //Incremento il puntatore di appoggio
+        q = q->next;
+    }
+
+    //se q == NULL, lo scorrimento ha giunto la coda della lista senza trovare una corrispondenza, restituisco 2 (Collezione cercata non trovata nella lista)
+    if(q == NULL) return 2;
+
 }

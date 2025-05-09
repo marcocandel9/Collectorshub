@@ -95,7 +95,27 @@ Restituisce:
 */
 int sys_print_user_collections(user logged_user);
 
-
+/*
+Implementa l'I/O per l'aggiunta di una nuova collezione nella lista delle collezioni di un utente già loggato (Richiede in ingresso il puntatore all'utente loggato.)
+Restituisce:
+    1: In caso di annullamento da parte dell'utente
+    2: In caso di errore di lettura del buffer di input
+    4: In caso di errore critico di allocazione di memoria
+    0: Se tutto va bene
+*/
 int sys_insert_collection(user logged_user);
+
+
+
+
+/*
+*/
+int sys_modify_collection(user logged_user);
+
+int sys_delete_collection(user logged_user);
+
+int sys_delete_collections(user logged_user);
+
+
 
 #endif

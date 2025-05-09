@@ -28,4 +28,6 @@ int free_collections(collections* collections_list_head);
 
 int insert_sorted_products_list(collections* collections_list_head, char key_name[MAX_STR_LEN], products* products_list_head);
 
+int collection_exists(collections collections_list_head, char key_name[MAX_STR_LEN]);
+
 #endif
