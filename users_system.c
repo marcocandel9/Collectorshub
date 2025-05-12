@@ -106,6 +106,62 @@ int sys_input_string_checker(char output_string[MAX_STR_LEN], bool check_space, 
 
 
 /*
+Semplice funzione che restituisce 0 se l'utente immette 0 in input, restituisce 1 se l'utente inserisce 1 in input.
+
+Restituisce:
+    2 In caso di errori di lettura del buffer di input
+    1 Se l'utente inserisce 1
+    0 Se l'utente inserisce 0
+    
+*/
+int ask_confirmation(){
+
+    char ch;
+    char buffer[4];
+    int buffer_len;
+
+    while(1){
+
+        if(fgets(buffer,sizeof(buffer),stdin)==NULL){
+            return 2; //ERRORE di lettura buffer di input
+        }
+
+        buffer_len = strlen(buffer);
+
+        //controllo sul troncamento in input
+        if(buffer[buffer_len - 1] != '\n'){
+            printf("Input troppo lungo. Inserisci una sola cifra: 0 o 1.\n");
+            while((ch = getchar()) != '\n' && ch != EOF);
+            continue;
+        }
+
+        //rimuovo il newline
+        buffer[buffer_len - 1] = '\0';
+        buffer_len = buffer_len - 1;
+        
+        if(buffer_len > 1){
+            printf("Input troppo lungo. Inserisci una sola cifra: 0 o 1.\n");
+            continue;
+        }
+
+        if(buffer_len == 0){
+            printf("Input invalido in quanto hai inserito una stringa vuota. Inserisci una sola cifra: 0 o 1.\n");
+            continue;
+        }
+
+        if(strcmp(buffer, "0") == 0) return 0;
+        if(strcmp(buffer, "1") == 0) return 1;
+
+        printf("Input invalido. Inserisci una sola cifra: 0 o 1.\n");
+        continue;
+    }
+}
+       
+
+
+
+
+/*
 Implementa l'I/O per la registrazione di un nuovo utente. Chiede in input da tastiera un nuovo username, controlla che questo username non sia già utilizzato (sia già presente nella lista utenti), controlla che la password sia valida secondo la logica dell'ADT
 (utilizzando la funzione validate_password di user.h) e in caso di esito positivo richiama la funzione insert_user_sorted di users.h per inserire il nuovo utente nella struttura dati utenti, con algoritmo di inserimento ordinato alfabeticamente.
 
@@ -833,6 +889,7 @@ int sys_modify_collection(user logged_user){
 
         printf("Benvenuto/a nell'area di modifica collezione.\n");
         printf("Inserisci il nome della collezione che vuoi modificare, (Attenzione, il nome deve essere lo stesso, comprese maiuscole e spazi.\n)");
+        printf("Se vuoi annullare la modifica, inserisci una stringa vuota.\n");
 
         string_checker_result = sys_input_string_checker(collection_name_io_string, check_space,MIN_STR_LEN,MAX_STR_LEN);
 
@@ -941,16 +998,157 @@ int sys_modify_collection(user logged_user){
     
     
 
+/*
+Implementa l'I/O Per la eliminazione di UNA collezione da parte di un utente loggato.
 
+Restituisce:
+    1 In caso di annullamento dell'operazione da parte dell'utente
+    2 In caso di errore critico di lettura del buffer di input stdin
+    3 Se la lista collezioni dell'utente è vuota.
+    4 In caso di errori critici durante l'eliminazione della collezione (RARI!)
+    0 Se tutto va a buon fine
+*/
 int sys_delete_collection(user logged_user){
 
-    
+    int string_checker_result;
+
+    //Stringa utilizzata per l'inserimento del nome della collezione che l'utente desidera eliminare
+    char collection_name_io_string[MAX_STR_LEN];
+
+    bool check_space = false;
+
+    if((logged_user->collections_list_head) == NULL){
+        printf("Impossibile eliminare una collezione dell'utente poichè non possiede nessuna collezione.\n");
+        return 3;
+    }
+
+    while(1){
+
+        printf("Inserisci il nome della collezione che desideri eliminare.\n");
+        printf("Se vuoi annullare la modifica, inserisci una stringa vuota.\n");
+        string_checker_result = sys_input_string_checker(collection_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1:
+                printf("Eliminazione della collezione annullata correttamente. \n");
+                return 1;
+            case 2:
+                printf("FATAL ERROR 2: errore della lettura dle buffer di input. Contattare un amministratore.\n");
+                return 2;
+            default:
+                break;
+        }
+
+        int exists = collection_exists(logged_user->collections_list_head,collection_name_io_string);
+
+        switch(exists){
+            case 1:
+                printf("La lista delle collezioni dell'utente è vuota. Impossibile eliminare la collezione richiesta.\n");
+                return 3;
+        
+            case 2: 
+                printf("La collezione: (%s) , non e' stata trovata. Riprova inserendo un nome collezione adeguato.\n",collection_name_io_string);
+                continue;
+            default:
+                printf("Corrispondenza trovata!\n");
+                break;
+        }
+
+        break;
+
+    }
+
+    //Blocco di conferma ulteriore per la cancellazione della collezione
+    while (1){
+
+        printf("Confermi di voler eliminare la collezione \"%s\"? (Azione definitiva)\n", collection_name_io_string);
+        printf("Inserisci 0 per confermare, 1 per annullare.\n");        
+        
+        int confirm = ask_confirmation();
+
+
+        switch(confirm){
+            case 1:
+                printf("L'operazione è stata annullata. La collezione non verra' elimianta.\n");
+                return 1;
+            case 2:
+                printf("ERRORE Critico: 2 errore lettura del buffer di input stdin, contattare un admin.\n");
+                return 2;
+            default:
+                printf("Eliminazione confermata.\n");
+                break;
+        }
+    }
+
+
+
+    int result = remove_collection(&(logged_user->collections_list_head),collection_name_io_string);
+
+    switch(result){
+        case 1:
+            printf("ERRORE CRITICO: la lista collezioni durante la fase di eliminazione e' risultata vuota. Contattare un admin.\n");
+            return 4;
+        case 2:
+            printf("ERRORE CRITICO: la lista collezioni durante la fase di eliminazione non possedeva la collezione ricercata. Contattare un admin.\n");
+            return 4;
+        default:
+            printf("La collezione (%s) e' stata definitivamente cancellata dalla lista collezioni.\n",collection_name_io_string);
+            break;
+    }
+    //l'eliminazione è andata a buon fine, restituisco 0.
+    return 0;
 }
+
 
 
    
 
-        
+/*
+Implementa l'I/O Per la eliminazione di TUTTE le collezioni da parte di un utente.
+
+Restituisce:
+    1 In caso di annullamento dell'operazione da parte dell'utente
+    2 In caso di errore critico di lettura del buffer di input stdin
+    3 Se la lista collezioni dell'utente è vuota.
+    4 In caso di errori critici durante l'eliminazione delle collezioni (RARI!)
+    0 Se tutto va a buon fine
+*/
+int sys_delete_collections(user logged_user){
+
+    if((logged_user->collections_list_head) == NULL){
+        printf("L'utente possiede già una lista collezioni vuota.\n");
+        return 3;
+    }
+
+
+
+    printf("Confermi di voler eliminare tutte le tue collezioni? (Azione definitiva)\n");
+    printf("Inserisci 0 per confermare, 1 per annullare.\n");     
+
+    int confirm = ask_confirmation();
+    
+    switch(confirm){
+        case 1:
+            printf("L'operazione è stata annullata. Le tue collezioni non verranno eliminate.\n");
+            return 1;
+        case 2:
+            printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
+            return 2;
+        default:
+            printf("Operazione confermata...\n");
+            break;
+    }
+
+    int result = free_collections(&(logged_user->collections_list_head));
+
+    if(result == 1){
+        printf("ERRORE Critico: la lista collezioni dell'utente e' vuota (codice 4). Contattare un amministratore.");
+        return 4;
+    }
+
+    printf("Tutte le tue collezioni sono state eliminate.\n");
+    return 0;
+}
 
 
 

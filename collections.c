@@ -162,7 +162,10 @@ Funzione che cerca una collezione sulla base del nome e la rimuove dalla lista
 Prende in ingresso il puntatore alla testa della lista collezioni passato come riferimento e l'array di caratteri del nome della collezione da ricercare ed eliminare
 
 Restituisce:
-- 1 Se la lista collezioni è vuota o non valida
+    0 Se tutto va a buon fine
+    1 Se la lista collezioni è vuota o non valida
+    2 Se non è stata trovata una corrispondenza
+    
 - 
 */
 int remove_collection(collections* collections_list_head, char key_name[MAX_STR_LEN]){
@@ -194,7 +197,7 @@ int remove_collection(collections* collections_list_head, char key_name[MAX_STR_
     }
 
     //Se lo scorrimento è giunto fino alla fine della lista, non è stato trovato nessuna collezione corrispondente, restituisco 1
-    if(q == NULL) return 2;
+    if(q == NULL) return 1;
 
     //Caso 1: cancellazione testa, traslo la testa della lista un nodo avanti
     if(r == NULL){

@@ -19,6 +19,17 @@ Funzione che implementa il controllo della stringa in input. Controlla i seguent
 int sys_input_string_checker(char output_string[MAX_STR_LEN], bool check_space, int max_len, int min_len);
 
 
+
+
+
+/*
+Semplice funzione che restituisce 0 se l'utente immette 0 in input, restituisce 1 se l'utente inserisce 1 in input.
+*/
+int ask_confirmation();
+
+
+
+
 /*
 Implementa l'I/O per la registrazione di un nuovo utente. Chiede in input da tastiera un nuovo username, controlla che questo username non sia già utilizzato (sia già presente nella lista utenti), controlla che la password sia valida secondo la logica dell'ADT
 (utilizzando la funzione validate_password di user.h) e in caso di esito positivo richiama la funzione insert_user_sorted di users.h per inserire il nuovo utente nella struttura dati utenti, con algoritmo di inserimento ordinato alfabeticamente.
@@ -129,11 +140,30 @@ int sys_modify_collection(user logged_user);
 
 
 
+/*
+Implementa l'I/O Per la eliminazione di UNA collezione da parte di un utente loggato.
 
+Restituisce:
+    1 In caso di annullamento dell'operazione da parte dell'utente
+    2 In caso di errore critico di lettura del buffer di input stdin
+    3 Se la lista collezioni dell'utente è vuota.
+    4 In caso di errori critici durante l'eliminazione della collezione (RARI!)
+    0 Se tutto va a buon fine
+*/
 int sys_delete_collection(user logged_user);
 
+
+
+/*
+Implementa l'I/O Per la eliminazione di TUTTE le collezioni da parte di un utente loggato.
+
+Restituisce:
+    1 In caso di annullamento dell'operazione da parte dell'utente
+    2 In caso di errore critico di lettura del buffer di input stdin
+    3 Se la lista collezioni dell'utente è vuota.
+    4 In caso di errori critici durante l'eliminazione delle collezioni (RARI!)
+    0 Se tutto va a buon fine
+*/
 int sys_delete_collections(user logged_user);
-
-
 
 #endif
