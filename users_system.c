@@ -807,6 +807,154 @@ int sys_insert_collection(user logged_user){
 
 
 
+/*
+Implementa l'I/O Per la modifica della collezione di un utente già loggato.
+Restituisce:
+    1) In caso di annullamento dell'operazione di modifica della collezione da parte dell'utente
+    2) In caso di errore della lettura del buffer di input stdin
+    3) Se la lista collezioni dell'utente è vuota (Non c'è alcuna collezione modificabile)
+    4) Per errori critici nella modifica finale, RARO!
+*/
+int sys_modify_collection(user logged_user){
+
+    int string_checker_result;
+
+    //Stringa utilizzata per l'inserimento del nome della collezione che l'utente desidera modificare
+    char collection_name_io_string[MAX_STR_LEN];
+
+    //Sringhe utilizzate per l'inserimento del NUOVO nome e NUOVO tipo della collezione che l'utente desidera modificare
+    char collection_new_name_io_string[MAX_STR_LEN];
+    char collection_new_type_io_string[MAX_STR_LEN];
+
+    bool check_space = false; //In questo caso, le stringhe possono contenere spazi.
+
+    //Ricerca della collezione che l'utente desidera modificare
+    while(1){
+
+        printf("Benvenuto/a nell'area di modifica collezione.\n");
+        printf("Inserisci il nome della collezione che vuoi modificare, (Attenzione, il nome deve essere lo stesso, comprese maiuscole e spazi.\n)");
+
+        string_checker_result = sys_input_string_checker(collection_name_io_string, check_space,MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1:
+                printf("Modifica della collezione annullata con successo.\n");
+                return 1;
+            case 2:
+                printf("FATAL ERROR 2: errore della lettura buffer di input. Contattare un amministartore.\n");
+                return 2;
+            default:
+                //verifico che la collezione esista nella lista collezioni dell'utente loggato
+                int collection_found = collection_exists(logged_user->collections_list_head, collection_name_io_string);
+                
+                switch(collection_found){
+                    case 1:
+                        printf("La tua lista collezioni è vuota, non e' presente alcuna collezione da modificare!");
+                        return 3;
+                    case 2:
+                        printf("Non e' stata trovata una corrispondenza. Riprova. \n");
+                        continue;
+                    default:
+                        printf("Collezione (%s) trovata! Si procede con la modifica.\n",collection_name_io_string);
+                        break;
+                }        
+            }
+        break;
+        }
+    
+    //Procedo con la modifica del nome della collezione
+    while(1){
+
+        printf("Inserisci un nuovo nome per la tua collezione. Deve essere differente da (%s) e dal nome delle tue altre collezioni.\n", collection_name_io_string);
+        printf("Se vuoi lasciare invariato il nome della collezione e modificarne solo il tipo, immetti una stringa vuota.\n");
+
+        string_checker_result = sys_input_string_checker(collection_new_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1: 
+                printf("Il nome della collezione rimarra' invariato.\n");
+                break;
+            case 2:
+                printf("FATAL ERROR 2: errore della lettura buffer di input. Contattare un amministartore.\n");
+                return 2;
+            default: 
+                if(strcmp(collection_new_name_io_string,collection_name_io_string) == 0){
+                    printf("Inserisci un nome per la tua collezione differente da quello precedente.\n");
+                    printf("Se desideri lasciare invariato il nome della tua collezione e modificarne solo il tipo, inserisci una stringa vuota, altrimenti riprova.\n");
+                    continue;
+                }
+                //se il nuovo nome è differente da quello precedente, allora verifico che sia univoco nella lista delle collezioni dell'utente.
+                int collection_found = collection_exists(logged_user->collections_list_head, collection_new_name_io_string); 
+                
+                if(collection_found == 0){
+                    printf("E'gia' presente una collezione con il seguente nome :(%s). Riprova.",collection_new_name_io_string);
+                    continue;
+                }
+                //altrimenti posso procedere con la modifica del tipo.
+                printf("Il nuovo nome: (%s) e' valido. Si procede con la modifica della tipologia.\n",collection_name_io_string	);
+                break;
+            }
+        break;
+    }
+
+    //Procedo con la modifica del tipo della collezione
+    while(1){
+
+        printf("Inserisci una nuova tipologia per la tua collezione.\n");
+        printf("Se vuoi lasciare invariata la tipologia della collezione, inserisci una stringa vuota.\n");
+
+        string_checker_result = sys_input_string_checker(collection_new_type_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1:
+                printf("La tipologia della collezione rimarra' invariata.\n");
+                break;
+            case 2:
+                printf("FATAL ERROR 2: errore della lettura dle buffer di input. Contattare un amministratore.\n");
+                return 2;
+            default:
+                printf("La tipologia inserita è valida.\n");
+                break;
+        }
+
+        break;
+    }
+
+    int final_res = search_and_modify_collection(logged_user->collections_list_head,collection_name_io_string,collection_new_name_io_string,collection_new_type_io_string);
+
+    switch(final_res){
+        case 1: 
+            printf("ERRORE CRITICO: La lista collezioni risulta vuota al momento della modifica. Contattare un amministratore.\n");
+            return 4;
+        case 2:
+            printf("ERRORE CRITICO: Collezione da modificare non trovata. Contattare un amministratore.\n");
+            return 4;
+        default: 
+            printf("La tua collezione e' stata modificata con successo in:\n");
+            printf("Nome: %s\n", (strlen(collection_new_name_io_string) > 0 ? collection_new_name_io_string : "Invariato"));
+            printf("Tipo: %s\n", (strlen(collection_new_type_io_string) > 0 ? collection_new_type_io_string : "Invariata"));
+            break;
+    }   
+    return 0; //Tutto è andato a buon fine
+}
+    
+    
+    
+
+
+int sys_delete_collection(user logged_user){
+
+    
+}
+
+
+   
+
+        
+
+
+
+
 
 
 

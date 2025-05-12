@@ -87,6 +87,10 @@ int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]);
 //WIP
 int sys_promote_user(users* users_list_head , user user_to_promote);
 
+
+
+
+
 /*
 Implementa l'I/O per la visualizzazione della lista collezioni di un utente.
 Restituisce:
@@ -94,6 +98,10 @@ Restituisce:
     0: Se tutto va a buon fine
 */
 int sys_print_user_collections(user logged_user);
+
+
+
+
 
 /*
 Implementa l'I/O per l'aggiunta di una nuova collezione nella lista delle collezioni di un utente già loggato (Richiede in ingresso il puntatore all'utente loggato.)
@@ -109,8 +117,18 @@ int sys_insert_collection(user logged_user);
 
 
 /*
+Implementa l'I/O per l'aggiunta di una nuova collezione nella lista delle collezioni di un utente già loggato (Richiede in ingresso il puntatore all'utente loggato.)
+Restituisce:
+    1: In caso di annullamento da parte dell'utente
+    2: In caso di errore di lettura del buffer di input
+    4: In caso di errore critico di allocazione di memoria
+    0: Se tutto va bene
 */
 int sys_modify_collection(user logged_user);
+
+
+
+
 
 int sys_delete_collection(user logged_user);
 

@@ -327,6 +327,54 @@ int insert_sorted_products_list(collections* collections_list_head, char key_nam
 
 
 
+
+/*
+Ricerca una collezione nella lista collezioni sulla base del nome della collezione e ne restituisce il puntatore
+
+    Restituisce:
+        1 Se la lista delle collezioni è VUOTA (found collection punterà a NULL)
+        2 Se non è stata trovata la collezione ricercata (found collection punterà a NULL)
+        0 Se è stata trovata una corrispondenza e restituisce il puntatore a quella collezione
+*/
+int search_collection(collections collections_list_head, char key_name[MAX_STR_LEN], collection* found_collection){
+
+    //Puntatore alla testa della lista collezioni uguale a NULL -> Lista vuota, restituisce 1
+    if(collections_list_head == NULL) return 1;
+
+    //Puntatore di appoggio per scorrere la lista collezioni
+    collections q = collections_list_head;
+    char collection_name[MAX_STR_LEN];
+
+    //Ricerca ordinata sulla base del nome della collezione (array di caratteri key_name)
+    while(q != NULL){
+        get_collection_name(q->collection_elem,collection_name);
+
+        //strcmp restituisce:
+        // - un valore negativo se key_name è alfabeticamente inferiore al nome della collezione-> devo interrompere la ricerca
+        // - 0 se key_name == collection_name
+        // - un valore positivo se key_name è alfabeticamente superiore al nome della collezione -> devo continuare a cercare
+        int is_equal = strcmp(key_name,collection_name);
+
+        if(is_equal == 0) break; //Corrispondenza trovata, esco dal ciclo while di ricerca ordinata
+
+        if(is_equal < 0) return 2; //Collezione non trovata, restituisci 2
+        
+        //Incremento il puntatore di appoggio
+        q = q->next;
+    }
+
+    //se q == NULL, lo scorrimento ha giunto la coda della lista senza trovare una corrispondenza, restituisco 2 (Collezione cercata non trovata nella lista)
+    if(q == NULL) return 2;
+
+    *found_collection = q->collection_elem;
+    return 0;
+
+}
+
+
+
+
+
 /*
 Ricerca una collezione nella lista collezioni sulla base del nome della collezione.a
 
@@ -364,5 +412,7 @@ int collection_exists(collections collections_list_head, char key_name[MAX_STR_L
 
     //se q == NULL, lo scorrimento ha giunto la coda della lista senza trovare una corrispondenza, restituisco 2 (Collezione cercata non trovata nella lista)
     if(q == NULL) return 2;
+
+    return 0;
 
 }
