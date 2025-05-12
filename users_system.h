@@ -19,15 +19,10 @@ Funzione che implementa il controllo della stringa in input. Controlla i seguent
 int sys_input_string_checker(char output_string[MAX_STR_LEN], bool check_space, int max_len, int min_len);
 
 
-
-
-
 /*
 Semplice funzione che restituisce 0 se l'utente immette 0 in input, restituisce 1 se l'utente inserisce 1 in input.
 */
 int ask_confirmation();
-
-
 
 
 /*
@@ -39,6 +34,7 @@ Restituisce:
 - un puntatore a NULL nel caso in cui la registrazione venga annullata dall'utente o ci siano problemi di lettura del buffer stdin
 */
 user sys_register_user(users* users_list_head);
+
 
 /*
 Implementa l'I/O Per il login di un utente
@@ -60,6 +56,7 @@ Implementa l'I/O per la modifica dell'username di un utente, richiede in ingress
     N.B: La stringa current_username, nel caso di effettuata modifica, viene modificata con il nuovo nome utente inserito dall'user da terminale.
 */
 int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_head);
+
 
 /*
 Implementa l'I/O Per la SOLA modifica della password.
@@ -99,9 +96,6 @@ int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]);
 int sys_promote_user(users* users_list_head , user user_to_promote);
 
 
-
-
-
 /*
 Implementa l'I/O per la visualizzazione della lista collezioni di un utente.
 Restituisce:
@@ -111,7 +105,17 @@ Restituisce:
 int sys_print_user_collections(user logged_user);
 
 
+/*
+Implementa l'I/O per l'accesso ad una collezione, e il conseguente ingresso nel menù prodotti. 
 
+Restituisce:
+    4 Se la lista delle collezioni risulta vuota durante l'accesso ai dati utente.
+    3 Se la lista collezioni è vuota', (*user_collection = NULL)
+    2 In caso di errore di lettura del buffer di input stdin
+    1 Se l'utente annulla l'accesso alla collezione. (*user_collection = NULL)
+    0 Se tutto va a buon fine (*user_collection = collezione a cui si vuole accedere)
+*/
+int sys_access_user_collection(user logged_user, collection* user_collection);
 
 
 /*
@@ -125,8 +129,6 @@ Restituisce:
 int sys_insert_collection(user logged_user);
 
 
-
-
 /*
 Implementa l'I/O per l'aggiunta di una nuova collezione nella lista delle collezioni di un utente già loggato (Richiede in ingresso il puntatore all'utente loggato.)
 Restituisce:
@@ -136,8 +138,6 @@ Restituisce:
     0: Se tutto va bene
 */
 int sys_modify_collection(user logged_user);
-
-
 
 
 /*
@@ -151,7 +151,6 @@ Restituisce:
     0 Se tutto va a buon fine
 */
 int sys_delete_collection(user logged_user);
-
 
 
 /*

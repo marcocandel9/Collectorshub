@@ -775,7 +775,68 @@ int sys_print_user_collections(user logged_user){
 }
 
 
- 
+
+/*
+Implementa l'I/O per l'accesso ad una collezione, e il conseguente ingresso nel menù prodotti. 
+
+Restituisce:
+    4 Se la lista delle collezioni risulta vuota durante l'accesso ai dati utente.
+    3 Se la lista collezioni è vuota', (*user_collection = NULL)
+    2 In caso di errore di lettura del buffer di input stdin
+    1 Se l'utente annulla l'accesso alla collezione. (*user_collection = NULL)
+    0 Se tutto va a buon fine (*user_collection = collezione a cui si vuole accedere)
+*/
+int sys_access_user_collection(user logged_user, collection* user_collection){
+
+    int string_checker_result;
+    char collection_name_io_string[MAX_STR_LEN];
+    bool check_space = false;
+    *user_collection = NULL;
+
+    if((logged_user->collections_list_head) == NULL){
+        printf("Impossibile accedere ad una collezione, la tua lista è vuota. Creane una dal menu' collezioni.\n");
+        return 3;
+    }
+    while(1){
+        printf("Scegli una fra le seguenti collezioni a cui accedere inserendone il nome.\n");
+        printf("E'necessario inserire correttamente maiuscole e spazi, per annullare l'accesso ad una collezione inserire una stringa vuota.\n");
+        printf("Lista collezioni di %s:\n", logged_user->username);
+        print_collections(logged_user->collections_list_head);
+
+        string_checker_result = sys_input_string_checker(collection_name_io_string, false,MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1:
+                printf("L'accesso ad una collezione è stato annullato correttamente.\n");
+                return 1;
+            case 2:
+                printf("ERRORE Critico: errore di lettura del buffer di input (codice 2), contattare un amministratore.\n");
+                return 2;
+            default:
+                break;
+        }
+
+        int search_result = search_collection(logged_user->collections_list_head,collection_name_io_string,user_collection);
+
+        switch(search_result){
+            case 1: 
+                printf("ERRORE Critico. La lista delle collezioni risulta vuota durante la ricerca della collezione (codice 4). Contattare un amministratore.\n");
+                return 4;
+            case 2:
+                printf("La collezione non e' stata trovata. Inserire un nome della collezione a cui si desidera accedere valido.\n");
+                continue;
+            default:
+                break; 
+        }
+
+        break;
+
+    }
+
+    printf("Accesso alla collezione \"%s\" effettuato con successo. Scegli una delle seguenti opzioni del menu' prodotti.\n", collection_name_io_string);
+    return 0; //NB adesso *user_collection punterà alla collezione alla quale l'utente desiderava fare l'accesso.
+}
+
 
 
 /*
@@ -860,6 +921,7 @@ int sys_insert_collection(user logged_user){
         return 0;
     }
     
+
 
 
 
@@ -996,6 +1058,7 @@ int sys_modify_collection(user logged_user){
 }
     
     
+
     
 
 /*
@@ -1149,6 +1212,9 @@ int sys_delete_collections(user logged_user){
     printf("Tutte le tue collezioni sono state eliminate.\n");
     return 0;
 }
+
+
+
 
 
 
