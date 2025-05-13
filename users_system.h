@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "users.h"
 
+//////////////////////////////////////////////////////MENÙ UTENTE///////////////////////////////////////////////////////////////////
 
 /*
 Funzione che implementa il controllo della stringa in input. Controlla i seguenti criteri:
@@ -96,6 +97,8 @@ int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]);
 int sys_promote_user(users* users_list_head , user user_to_promote);
 
 
+//////////////////////////////////////////////////////MENÙ COLLEZIONI///////////////////////////////////////////////////////////////////
+
 /*
 Implementa l'I/O per la visualizzazione della lista collezioni di un utente.
 Restituisce:
@@ -164,5 +167,20 @@ Restituisce:
     0 Se tutto va a buon fine
 */
 int sys_delete_collections(user logged_user);
+
+
+//////////////////////////////////////////////////////MENÙ PRODOTTI///////////////////////////////////////////////////////////////////
+
+//N.B In queste funzioni il parametro di ingresso user sarebbe superfluo, ma lo passo comunque per aggiungere informazioni degli utenti per l'UI.
+
+int sys_print_user_products(user logged_user, collection user_collection);
+
+int sys_insert_user_product(user logged_user, collection user_collection);
+
+int sys_modify_user_product(user logged_user, collection user_collection);
+
+int sys_delete_user_product(user logged_user, collection user_collection);
+
+int sys_delete_user_products(user logged_user, collection user_collection);
 
 #endif

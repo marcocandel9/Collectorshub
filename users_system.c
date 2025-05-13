@@ -42,7 +42,10 @@ int sys_input_string_checker(char output_string[MAX_STR_LEN], bool check_space, 
             while((ch = getchar()) != '\n' && ch != EOF); //svuoto il buffer (questa volta è necessario, perchè in caso
                                                           //di troncamento il buffer di input conterrà i caratteri residui, compreso
                                                           //il carattere di newline non letto.
+
+            printf("\n");
             printf("Input troppo lungo! Riprova. \n");
+            printf("\n");
             continue; //Ricomincio il ciclo while
         }
 
@@ -58,9 +61,9 @@ int sys_input_string_checker(char output_string[MAX_STR_LEN], bool check_space, 
 
         //Controlli sull'input immesso dall'utente
 
-        //l'utente ha immesso invio, vuole annullare la registrazione
+        //l'utente ha immesso invio, vuole annullare l'operazione
         if(buffer_len == 0){
-            printf("\n");
+            strcpy(output_string,buffer); //output string sarà adesso una stringa vuota
             return 1; //restituisco 1
         }
 
@@ -82,12 +85,16 @@ int sys_input_string_checker(char output_string[MAX_STR_LEN], bool check_space, 
 
         //controllo lunghezza username, se inferiore a 6 caratteri riprovo
         if(buffer_len < min_len_plus1-1){
+            printf("\n");
             printf("Stringa troppo corta. Minimo %d caratteri consentiti. Riprova.\n", min_len_plus1-1);
+            printf("\n");
             continue; //riparte il ciclo while
         }
 
         if(buffer_len > max_len_plus1-1){
+            printf("\n");
             printf("Stringa troppo lunga. Massimo %d caratteri consentiti. Riprova.\n", max_len_plus1-1);
+            printf("\n");
             continue; //riparte il ciclo while
         }
 
@@ -130,7 +137,9 @@ int ask_confirmation(){
 
         //controllo sul troncamento in input
         if(buffer[buffer_len - 1] != '\n'){
+            printf("\n");
             printf("Input troppo lungo. Inserisci una sola cifra: 0 o 1.\n");
+            printf("\n");
             while((ch = getchar()) != '\n' && ch != EOF);
             continue;
         }
@@ -140,19 +149,25 @@ int ask_confirmation(){
         buffer_len = buffer_len - 1;
         
         if(buffer_len > 1){
+            printf("\n");
             printf("Input troppo lungo. Inserisci una sola cifra: 0 o 1.\n");
+            printf("\n");
             continue;
         }
 
         if(buffer_len == 0){
+            printf("\n");
             printf("Input invalido in quanto hai inserito una stringa vuota. Inserisci una sola cifra: 0 o 1.\n");
+            printf("\n");
             continue;
         }
 
         if(strcmp(buffer, "0") == 0) return 0;
         if(strcmp(buffer, "1") == 0) return 1;
 
+        printf("\n");
         printf("Input invalido. Inserisci una sola cifra: 0 o 1.\n");
+        printf("\n");
         continue;
     }
 }
@@ -192,18 +207,23 @@ user sys_register_user(users* users_list_head){
     //INSERIMENTO NUOVO USERNAME
     while(1){
 
+        printf("\n");
         printf("Inserisci il tuo nuovo username. (Massimo %d caratteri consentiti, minimo %d, spazi non consentiti)\n",MAX_STR_LEN-1,MIN_STR_LEN-1);
-        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n\n");
-
+        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n");
+        printf("\n");
 
         string_checker_result = sys_input_string_checker(username_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
         
         switch(string_checker_result){
             case 1:
+                printf("\n");
                 printf("Registrazione annullata correttamente. \n");
+                printf("\n");
                 return NULL;
             case 2:
+                printf("\n");
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                printf("\n");
                 return NULL;
             default: 
                 break;
@@ -216,12 +236,16 @@ user sys_register_user(users* users_list_head){
 
         //Username disponibile, esce dal ciclo while (valid_username == 2: nessuna corrispondenza trovata nella lista, valid_username == 1: lista vuota, in entrambi casi l'username è disponibile)
         if(valid_username == 2 || valid_username == 1){
+            printf("\n");
             printf("L'username e' disponibile.\n");
+            printf("\n");
             break;
         }
 
         //Altrimenti notifica l'utente che l'username e già occupato e ricomincia il ciclo while.
+        printf("\n");
         printf("L'username e' già occupato.\n");
+        printf("\n");
         continue;
     }
     
@@ -237,6 +261,7 @@ user sys_register_user(users* users_list_head){
 
     
     while(1){
+        printf("\n");
         printf("Inserisci la tua nuova password. (Massimo %d caratteri consentiti)\n\n", MAX_STR_LEN-1);
         printf("La password deve contenere:\n");
         printf(" - Almeno %d caratteri \n", MIN_STR_LEN-1 );
@@ -244,17 +269,22 @@ user sys_register_user(users* users_list_head){
         printf(" - Almeno una minuscola \n");
         printf(" - Almeno un numero \n");
         printf(" - Almeno un simbolo (SPAZI ESCLUSI)\n");
-        printf(" - PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n\n");
+        printf(" - PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n");
+        printf("\n");
 
         //Controllo che la password rispetti i requisiti del sistema definiti in validate_password di user.h
         string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
+                printf("\n");
                 printf("Registrazione annullata correttamente. \n");
+                printf("\n");
                 return NULL;
             case 2:
+                printf("\n");
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                printf("\n");
                 return NULL;
             default: 
                 break;
@@ -264,7 +294,9 @@ user sys_register_user(users* users_list_head){
         string_checker_result = validate_password(password_io_string);
         
         if(string_checker_result == 1) {
+            printf("\n");
             printf("Password non valida. Contiene caratteri non ammessi e/o spazi. Riprova \n");
+            printf("\n");
             continue;
         }
         if(string_checker_result == 0) break; //altrimenti la password è validata, posso uscire dal ciclo while.
@@ -277,7 +309,9 @@ user sys_register_user(users* users_list_head){
 
     search_user(*users_list_head,username_io_string, &new_user);
 
-    printf("Registrazione effettuata con successo!\n\n");
+    printf("\n");
+    printf("Registrazione effettuata con successo!\n");
+    printf("\n");
 
     return new_user;
 }
@@ -308,23 +342,30 @@ user sys_login_user(users* users_list_head){
     user logging_user = NULL;
     char user_password[MAX_STR_LEN];
     
-    
-    printf("Benvenuto/a nell'area login.\n\n"); 
+    printf("\n");
+    printf("Benvenuto/a nell'area login.\n"); 
+    printf("\n");
 
     //in caso di immissione con successo effettuo il break del ciclo while.
     while(1){
 
+        printf("\n");
         printf("Inserisci il tuo username. \n");
-        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE IL LOGIN.\n\n");
+        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE IL LOGIN.\n");
+        printf("\n");
         
         string_checker_result = sys_input_string_checker(username_io_string, check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("Login annullato correttamente. \n\n");
+                printf("\n");
+                printf("Login annullato correttamente. \n");
+                printf("\n");
                 return NULL;
             case 2:
-                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n\n");
+                printf("\n");
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                printf("\n");
                 return NULL;
             default: 
                 break;
@@ -352,17 +393,23 @@ user sys_login_user(users* users_list_head){
     //VERIFICA PASSWORD
 
     while(1){
-
-        printf("Inserisci la tua password. \n\n");
+        
+        printf("\n");
+        printf("Inserisci la tua password. \n");
+        printf("\n");
 
         string_checker_result = sys_input_string_checker(password_io_string, check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("Login annullato correttamente. \n\n");
+                printf("\n");
+                printf("Login annullato correttamente. \n");
+                printf("\n");
                 return NULL;
             case 2:
-                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n\n");
+                printf("\n");
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                printf("\n");
                 return NULL;
             default: 
                 break;
@@ -376,12 +423,16 @@ user sys_login_user(users* users_list_head){
         if(valid_password == 0){
             break;
         } else {         //Altrimenti, riparte il ciclo while e l'utente riprova l'inserimento della password
-            printf("\nPassword invalida. Riprova.\n");
+            printf("\n");
+            printf("Password invalida. Riprova.\n");
+            printf("\n");
             continue;
         }
     }
     
-    printf("Autenticazione effettuata con successo! \n\n");
+    printf("\n");
+    printf("Autenticazione effettuata con successo! \n");
+    printf("\n");
     //restituisco l'utente loggato.
     return logging_user;
 }
@@ -414,17 +465,23 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
 
     while(1){
 
+        printf("\n");
         printf("Inserisci il tuo nuovo username. \n");
-        printf("Se vuoi lasciare invariato il tuo username, inserisci una stringa vuota. \n\n");
+        printf("Se vuoi lasciare invariato il tuo username, inserisci una stringa vuota. \n");
+        printf("\n");
         
         string_checker_result = sys_input_string_checker(username_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("L'username rimarra' invariato.\n\n");
+                printf("\n");
+                printf("L'username rimarra' invariato.\n");
+                printf("\n");
                 return 1;
             case 2:
-                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n\n");
+                printf("\n");
+                printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                printf("\n");
                 return 2;
             default: 
                 break;
@@ -489,17 +546,23 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
 
     while(1){
 
+        printf("\n");
         printf("Inserisci la tua nuova password. \n");
-        printf("Se vuoi lasciare invariata la tua password, inserisci una stringa vuota. \n\n");
+        printf("Se vuoi lasciare invariata la tua password, inserisci una stringa vuota. \n");
+        printf("\n");
 
         string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
         
         switch(string_checker_result){
             case 1:
+                printf("\n");
                 printf("La password rimarra' invariata.\n");
+                printf("\n");
                 return 1;
             case 2:
+                printf("\n");
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                printf("\n");
                 return 2;
             default: 
                 break;
@@ -510,6 +573,7 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
         valid_password = validate_password(password_io_string);
 
         if(valid_password == 1){
+            printf("\n");
             printf("La password non e' valida, deve contenere i seguenti requisiti:\n");
             printf("- Lunga almeno 8 caratteri\n");
             printf("- Contiene almeno una maiuscola\n");
@@ -517,6 +581,7 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
             printf("- Contiene almeno un numero\n");
             printf("- Contiene almeno un simbolo (SPAZI ESCLUSI)\n");
             printf("Riprova.\n");
+            printf("\n");
             continue;
         }
         //altrimenti, la password è stata correttamente validata, esco dal ciclo while e procedo alla modifica
@@ -572,21 +637,30 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
     get_username(*my_user, user_username);
     get_password(*my_user, user_password);
 
+    printf("\n");
     printf("Benvenuto nell'area di modifica delle credenziali. \n");
     printf("Per poter procedere, e' necessario riconfermare l'autenticazione tramite password. \n");
+    printf("\n");
+
     while(1){
 
+        printf("\n");
         printf("Per annullare la modifica delle tue credenziali, immetti una stringa vuota. \n");
-        printf("Inserisci la tua password per procedere con il cambiamento delle credenziali. \n\n");
+        printf("Inserisci la tua password per procedere con il cambiamento delle credenziali. \n");
+        printf("\n");
 
         string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
         
         switch(string_checker_result){
             case 1:
+                printf("\n");
                 printf("Operazione di modifica credenziali annullata correttamente.\n");
+                printf("\n");
                 return 1;
             case 2:
+                printf("\n");
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                printf("\n");
                 return 2;
             default: 
                 break;
@@ -694,22 +768,30 @@ int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]){
         
         get_password(user_to_del,user_password);
 
+        printf("\n");
         printf("Benvenuto nell'area di eliminazione del tuo account utente.\n");
         printf("QUESTA AZIONE SARA' DEFINITIVA. Si consiglia di procedere con cautela.\n");
+        printf("\n");
 
         while(1){
 
+            printf("\n");
             printf("Per procedere all'eliminazione, è' necessario inserire la propria password. ( UNA VOLTA VERIFICATA, NON PUOI TORNARE INDIETRO! )\n");
             printf("Se si vuole annullare l'eliminazione del proprio profilo, inserire una stringa vuota.\n");
+            printf("\n");
 
             string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
             
             switch(string_checker_result){
                 case 1:
+                    printf("\n");
                     printf("Eliminazione del proprio profilo annullata correttamente.\n\n");
+                    printf("\n");
                     return 1;
                 case 2:
+                    printf("\n");
                     printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n\n");
+                    printf("\n");
                     return 2;
                 default: 
                     break;
@@ -757,7 +839,9 @@ int sys_print_user_collections(user logged_user){
 
     //Controllo che il puntatore non punti a NULL
     if(logged_user == NULL){
+        printf("\n");
         printf("FATAL ERROR 1: USER POINTS TO NULL\n");
+        printf("\n");
         return 1;
     }
 
@@ -766,7 +850,9 @@ int sys_print_user_collections(user logged_user){
     //La funzione print collections restituisce 1 se la lista è vuota -> gestisco questo caso:
 
     if(result == 1){
+        printf("\n");
         printf("La tua lista collezioni e' vuota!\n");
+        printf("\n");
         return 1;
     }
 
@@ -793,21 +879,28 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
     bool check_space = false;
     *user_collection = NULL;
 
-    if((logged_user->collections_list_head) == NULL){
+    if((logged_user->collections_list_head) == NULL){\
+        printf("\n");
         printf("Impossibile accedere ad una collezione, la tua lista è vuota. Creane una dal menu' collezioni.\n");
+        printf("\n");
         return 3;
     }
     while(1){
+        printf("\n");
         printf("Scegli una fra le seguenti collezioni a cui accedere inserendone il nome.\n");
         printf("E'necessario inserire correttamente maiuscole e spazi, per annullare l'accesso ad una collezione inserire una stringa vuota.\n");
         printf("Lista collezioni di %s:\n", logged_user->username);
+        printf("\n");
         print_collections(logged_user->collections_list_head);
+        printf("\n");
 
         string_checker_result = sys_input_string_checker(collection_name_io_string, false,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("L'accesso ad una collezione è stato annullato correttamente.\n");
+                printf("\n");
+                printf("L'accesso ad una collezione e' stato annullato correttamente.\n");
+                printf("\n");
                 return 1;
             case 2:
                 printf("ERRORE Critico: errore di lettura del buffer di input (codice 2), contattare un amministratore.\n");
@@ -820,10 +913,14 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
 
         switch(search_result){
             case 1: 
+                printf("\n");
                 printf("ERRORE Critico. La lista delle collezioni risulta vuota durante la ricerca della collezione (codice 4). Contattare un amministratore.\n");
+                printf("\n");
                 return 4;
             case 2:
+                printf("\n");
                 printf("La collezione non e' stata trovata. Inserire un nome della collezione a cui si desidera accedere valido.\n");
+                printf("\n");
                 continue;
             default:
                 break; 
@@ -855,21 +952,29 @@ int sys_insert_collection(user logged_user){
 
     bool check_space = false; //In questo caso, le stringhe possono contenere spazi.
 
-    printf("Benvenuto/a nell'area di creazione di una nuova collezione!\n\n");
+    printf("\n");
+    printf("Benvenuto/a nell'area di creazione di una nuova collezione!\n");
+    printf("\n");
 
     while(1){
 
+        printf("\n");
         printf("Per annullare l'inserimento della tua nuova collezione, inserisci una stringa vuota \n");
-        printf("Inserisci il nome della tua nuova collezione. \n\n");
+        printf("Inserisci il nome della tua nuova collezione. \n");
+        printf("\n");
 
         string_checker_result = sys_input_string_checker(collection_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
+                printf("\n");
                 printf("Operazione di aggiunta collezione annullata con successo.\n");
+                printf("\n");
                 return 1;
             case 2: 
+                printf("\n");
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                printf("\n");
                 return 2;
             default: 
                 break;
@@ -877,7 +982,9 @@ int sys_insert_collection(user logged_user){
 
             //Verifico che la collezione esiste nella lista, in tal caso ricomincia il ciclo while
             if(collection_exists(logged_user->collections_list_head,collection_name_io_string) == 0){
+                printf("\n");
                 printf("Hai gia' una collezione con questo nome, non sono consentiti duplicati. Riprova.\n");
+                printf("\n");
                 continue;
             }
 
@@ -886,7 +993,6 @@ int sys_insert_collection(user logged_user){
 
     //Passo all'inserimento della tipologia della collezione
 
-    printf("\n");
     printf("\n");
 
     while(1){
@@ -898,10 +1004,14 @@ int sys_insert_collection(user logged_user){
 
         switch(string_checker_result){
             case 1:
+                printf("\n");
                 printf("Operazione di aggiunta collezione annullata con successo. \n");
+                printf("\n");
                 return 1;
             case 2: 
+                printf("\n");
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                printf("\n");
                 return 2;
             default: 
                 break;
@@ -912,13 +1022,16 @@ int sys_insert_collection(user logged_user){
 
         int result = insert_collection(&(logged_user->collections_list_head),collection_name_io_string, collection_type_io_string);
         if (result == 1){
+            printf("\n");
             printf("CRITICAL ERROR 4: errore di allocazione di memoria! Contattare un amministratore.\n");
+            printf("\n");
             return 4;
         }
 
-        //Tutto è andato a buon fine
-        printf("La tua nuova collezione: (%s) e' stata aggiunta correttamente.\n",collection_name_io_string);
-        return 0;
+        printf("\n");
+        printf("La tua nuova collezione: (%s) e' stata aggiunta correttamente.\n\n",collection_name_io_string);
+        printf("\n");
+        return 0; //Tutto è andato a buon fine
     }
     
 
@@ -939,6 +1052,7 @@ int sys_modify_collection(user logged_user){
 
     //Stringa utilizzata per l'inserimento del nome della collezione che l'utente desidera modificare
     char collection_name_io_string[MAX_STR_LEN];
+    char collection_type_io_string[MAX_STR_LEN];
 
     //Sringhe utilizzate per l'inserimento del NUOVO nome e NUOVO tipo della collezione che l'utente desidera modificare
     char collection_new_name_io_string[MAX_STR_LEN];
@@ -950,11 +1064,11 @@ int sys_modify_collection(user logged_user){
     while(1){
 
         printf("Benvenuto/a nell'area di modifica collezione.\n");
-        printf("Inserisci il nome della collezione che vuoi modificare, (Attenzione, il nome deve essere lo stesso, comprese maiuscole e spazi.\n)");
+        printf("Inserisci il nome della collezione che vuoi modificare, (Attenzione, il nome deve essere lo stesso, comprese maiuscole e spazi.\n");
         printf("Se vuoi annullare la modifica, inserisci una stringa vuota.\n");
-
+        printf("\n");
         string_checker_result = sys_input_string_checker(collection_name_io_string, check_space,MIN_STR_LEN,MAX_STR_LEN);
-
+        printf("\n");
         switch(string_checker_result){
             case 1:
                 printf("Modifica della collezione annullata con successo.\n");
@@ -968,49 +1082,70 @@ int sys_modify_collection(user logged_user){
                 
                 switch(collection_found){
                     case 1:
-                        printf("La tua lista collezioni è vuota, non e' presente alcuna collezione da modificare!");
+                        printf("\n");
+                        printf("La tua lista collezioni è vuota, non e' presente alcuna collezione da modificare!\n");
+                        printf("\n");
                         return 3;
                     case 2:
+                        printf("\n");
                         printf("Non e' stata trovata una corrispondenza. Riprova. \n");
+                        printf("\n");
                         continue;
                     default:
-                        printf("Collezione (%s) trovata! Si procede con la modifica.\n",collection_name_io_string);
+                        printf("\n");
+                        printf("Collezione (%s) trovata! Si procede con la modifica...\n",collection_name_io_string);
+                        printf("\n");
                         break;
                 }        
             }
         break;
         }
+
     
     //Procedo con la modifica del nome della collezione
     while(1){
 
+        printf("\n");
         printf("Inserisci un nuovo nome per la tua collezione. Deve essere differente da (%s) e dal nome delle tue altre collezioni.\n", collection_name_io_string);
         printf("Se vuoi lasciare invariato il nome della collezione e modificarne solo il tipo, immetti una stringa vuota.\n");
+        printf("\n");
 
         string_checker_result = sys_input_string_checker(collection_new_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1: 
+
+                printf("\n");
                 printf("Il nome della collezione rimarra' invariato.\n");
+                printf("\n");
+
                 break;
             case 2:
+                printf("\n");
                 printf("FATAL ERROR 2: errore della lettura buffer di input. Contattare un amministartore.\n");
+                printf("\n");
                 return 2;
             default: 
                 if(strcmp(collection_new_name_io_string,collection_name_io_string) == 0){
+                    printf("\n");
                     printf("Inserisci un nome per la tua collezione differente da quello precedente.\n");
                     printf("Se desideri lasciare invariato il nome della tua collezione e modificarne solo il tipo, inserisci una stringa vuota, altrimenti riprova.\n");
+                    printf("\n");
                     continue;
                 }
                 //se il nuovo nome è differente da quello precedente, allora verifico che sia univoco nella lista delle collezioni dell'utente.
                 int collection_found = collection_exists(logged_user->collections_list_head, collection_new_name_io_string); 
                 
                 if(collection_found == 0){
-                    printf("E'gia' presente una collezione con il seguente nome :(%s). Riprova.",collection_new_name_io_string);
+                    printf("\n");
+                    printf("E'gia' presente una collezione con il seguente nome :(%s). Riprova.\n",collection_new_name_io_string);
+                    printf("\n");
                     continue;
                 }
                 //altrimenti posso procedere con la modifica del tipo.
-                printf("Il nuovo nome: (%s) e' valido. Si procede con la modifica della tipologia.\n",collection_name_io_string	);
+                printf("\n");
+                printf("Il nuovo nome: (%s) e' valido. Si procede con la modifica della tipologia.\n",collection_new_name_io_string	);
+                printf("\n");
                 break;
             }
         break;
@@ -1019,20 +1154,27 @@ int sys_modify_collection(user logged_user){
     //Procedo con la modifica del tipo della collezione
     while(1){
 
+        printf("\n");
         printf("Inserisci una nuova tipologia per la tua collezione.\n");
         printf("Se vuoi lasciare invariata la tipologia della collezione, inserisci una stringa vuota.\n");
-
+        printf("\n");
         string_checker_result = sys_input_string_checker(collection_new_type_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
+                printf("\n");
                 printf("La tipologia della collezione rimarra' invariata.\n");
+                printf("\n");
                 break;
             case 2:
+                printf("\n");
                 printf("FATAL ERROR 2: errore della lettura dle buffer di input. Contattare un amministratore.\n");
+                printf("\n");
                 return 2;
             default:
+                printf("\n");
                 printf("La tipologia inserita è valida.\n");
+                printf("\n");
                 break;
         }
 
@@ -1050,7 +1192,7 @@ int sys_modify_collection(user logged_user){
             return 4;
         default: 
             printf("La tua collezione e' stata modificata con successo in:\n");
-            printf("Nome: %s\n", (strlen(collection_new_name_io_string) > 0 ? collection_new_name_io_string : "Invariato"));
+            printf("Nome: %s\n", (strlen(collection_new_name_io_string) > 0 ? collection_new_name_io_string : collection_name_io_string));
             printf("Tipo: %s\n", (strlen(collection_new_type_io_string) > 0 ? collection_new_type_io_string : "Invariata"));
             break;
     }   
@@ -1081,22 +1223,31 @@ int sys_delete_collection(user logged_user){
     bool check_space = false;
 
     if((logged_user->collections_list_head) == NULL){
+
+        printf("\n");
         printf("Impossibile eliminare una collezione dell'utente poichè non possiede nessuna collezione.\n");
+        printf("\n");
         return 3;
     }
 
     while(1){
 
+        printf("\n");
         printf("Inserisci il nome della collezione che desideri eliminare.\n");
         printf("Se vuoi annullare la modifica, inserisci una stringa vuota.\n");
+        printf("\n");
         string_checker_result = sys_input_string_checker(collection_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
+                printf("\n");
                 printf("Eliminazione della collezione annullata correttamente. \n");
+                printf("\n");
                 return 1;
             case 2:
+                printf("\n");
                 printf("FATAL ERROR 2: errore della lettura dle buffer di input. Contattare un amministratore.\n");
+                printf("\n");
                 return 2;
             default:
                 break;
@@ -1106,14 +1257,20 @@ int sys_delete_collection(user logged_user){
 
         switch(exists){
             case 1:
+                printf("\n");
                 printf("La lista delle collezioni dell'utente è vuota. Impossibile eliminare la collezione richiesta.\n");
+                printf("\n");
                 return 3;
         
             case 2: 
+                printf("\n");
                 printf("La collezione: (%s) , non e' stata trovata. Riprova inserendo un nome collezione adeguato.\n",collection_name_io_string);
+                printf("\n");
                 continue;
             default:
-                printf("Corrispondenza trovata!\n");
+                printf("\n");
+                printf("Corrispondenza trovata...\n");
+                printf("\n");
                 break;
         }
 
@@ -1124,21 +1281,29 @@ int sys_delete_collection(user logged_user){
     //Blocco di conferma ulteriore per la cancellazione della collezione
     while (1){
 
+        printf("\n");
         printf("Confermi di voler eliminare la collezione \"%s\"? (Azione definitiva)\n", collection_name_io_string);
         printf("Inserisci 0 per confermare, 1 per annullare.\n");        
-        
+        printf("\n");
+
         int confirm = ask_confirmation();
 
 
         switch(confirm){
             case 1:
+                printf("\n");
                 printf("L'operazione è stata annullata. La collezione non verra' elimianta.\n");
+                printf("\n");
                 return 1;
             case 2:
+                printf("\n");
                 printf("ERRORE Critico: 2 errore lettura del buffer di input stdin, contattare un admin.\n");
+                printf("\n");
                 return 2;
             default:
+                printf("\n");
                 printf("Eliminazione confermata.\n");
+                printf("\n");
                 break;
         }
     }
@@ -1149,13 +1314,19 @@ int sys_delete_collection(user logged_user){
 
     switch(result){
         case 1:
+            printf("\n");
             printf("ERRORE CRITICO: la lista collezioni durante la fase di eliminazione e' risultata vuota. Contattare un admin.\n");
+            printf("\n");
             return 4;
         case 2:
+            printf("\n");
             printf("ERRORE CRITICO: la lista collezioni durante la fase di eliminazione non possedeva la collezione ricercata. Contattare un admin.\n");
+            printf("\n");
             return 4;
         default:
+            printf("\n");
             printf("La collezione (%s) e' stata definitivamente cancellata dalla lista collezioni.\n",collection_name_io_string);
+            printf("\n");
             break;
     }
     //l'eliminazione è andata a buon fine, restituisco 0.
@@ -1179,37 +1350,51 @@ Restituisce:
 int sys_delete_collections(user logged_user){
 
     if((logged_user->collections_list_head) == NULL){
+        printf("\n");
         printf("L'utente possiede già una lista collezioni vuota.\n");
+        printf("\n");
         return 3;
     }
 
 
-
+    printf("\n");
     printf("Confermi di voler eliminare tutte le tue collezioni? (Azione definitiva)\n");
     printf("Inserisci 0 per confermare, 1 per annullare.\n");     
+    printf("\n");
 
     int confirm = ask_confirmation();
     
     switch(confirm){
         case 1:
-            printf("L'operazione è stata annullata. Le tue collezioni non verranno eliminate.\n");
+            printf("\n");
+            printf("L'operazione e' stata annullata. Le tue collezioni non verranno eliminate.\n");
+            printf("\n");
             return 1;
         case 2:
+            printf("\n");
             printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
+            printf("\n");
             return 2;
         default:
+            printf("\n");
             printf("Operazione confermata...\n");
+            printf("\n");
             break;
     }
 
     int result = free_collections(&(logged_user->collections_list_head));
 
     if(result == 1){
+        
+        printf("\n");
         printf("ERRORE Critico: la lista collezioni dell'utente e' vuota (codice 4). Contattare un amministratore.");
+        printf("\n");
         return 4;
     }
 
+    printf("\n");
     printf("Tutte le tue collezioni sono state eliminate.\n");
+    printf("\n");
     return 0;
 }
 

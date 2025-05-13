@@ -115,13 +115,13 @@ Restituisce:
 - 0 Se tutto va a buon fine
 
 */
-int search_and_modify_collection(collections* collections_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
+int search_and_modify_collection(collections collections_list_head, char key_name[MAX_STR_LEN], char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
 
     //Puntatore alla testa della lista collezioni uguale a NULL -> Lista vuota , restitusisce 1
-    if(*collections_list_head==NULL) return 1;
+    if(collections_list_head==NULL) return 1;
 
     //Inizializzo le variabili di appoggio utili alla ricerca ordinata nella lista e alla modifica della collezione
-    collections q = *collections_list_head; //Puntatore di appoggio per lo scorrimento della lista 
+    collections q = collections_list_head; //Puntatore di appoggio per lo scorrimento della lista 
     char collection_name[MAX_STR_LEN];
     int found;
 

@@ -45,17 +45,20 @@ int main() {
     //test 1, modifico username
     sys_modify_credentials(&(logged_user),&(nuova_lista));
 
-    //test 2, annullo modifica username
-    sys_modify_credentials(&(logged_user),&(nuova_lista));
+    sys_insert_collection(logged_user);
 
-    //test 3, modifico username mettendo uno uguale a quello di prima
-    sys_modify_credentials(&(logged_user),&(nuova_lista));
+    sys_modify_collection(logged_user);
 
-    //test 4: modifico password
-    sys_modify_credentials(&(logged_user),&(nuova_lista));
+    sys_delete_collection(logged_user);
 
-    //test 5: annullo modifica password
-    sys_modify_credentials(&(logged_user),&(nuova_lista));
+    sys_print_user_collections(logged_user);
+
+    collection accessed_collection = NULL;
+
+    sys_access_user_collection(logged_user,&(accessed_collection));
+
+    sys_delete_collections(logged_user);
+
 
 
 
