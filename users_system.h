@@ -173,8 +173,25 @@ int sys_delete_collections(user logged_user);
 
 //N.B In queste funzioni il parametro di ingresso user sarebbe superfluo, ma lo passo comunque per aggiungere informazioni degli utenti per l'UI.
 
+/*
+Stampa tutti i prodotti di una collezione di un utente loggato.
+
+Restituisce:
+    1 Se la lista prodotti della collezione è vuota.
+    0 Se tutto va a buon fine
+    4 Se al momento della chiamata della funzione print_products risulta vuota (non dovrebbe accadere, raro, codice 4)
+*/
 int sys_print_user_products(user logged_user, collection user_collection);
 
+/*
+@Brief implementa l'I/O Per l'inserimento di un nuovo prodotto in una determinata collezione passata in ingresso
+
+    Restituisce:
+        0 Se tutto va a buon fine
+        1 In caso di annullamento da parte dell'utente
+        2 In caso di errori di lettura del buffer di input (codice 2)
+        4 In caso di errori di accesso alla memoria (Codice 4)
+*/
 int sys_insert_user_product(user logged_user, collection user_collection);
 
 int sys_modify_user_product(user logged_user, collection user_collection);

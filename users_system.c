@@ -1402,6 +1402,246 @@ int sys_delete_collections(user logged_user){
 
 
 
+/*
+
+Restituisce:
+    1 Se la lista prodotti della collezione è vuota.
+    0 Se tutto va a buon fine
+    4 Se al momento della chiamata della funzione print_products risulta vuota (non dovrebbe accadere, raro, codice 4)
+*/
+int sys_print_user_products(user logged_user, collection user_collection){
+
+    if(user_collection->products_list_head == NULL){
+        printf("\n");
+        printf("%s , la tua lista collezioni \"%s\" e' vuota.\n",logged_user->username, user_collection->collection_name);
+        printf("\n");
+        return 1;
+    }
+
+    int result = print_products(user_collection->products_list_head);
+
+    if(result == 1){
+        printf("\n");
+        printf("ERRORE Critico: la lista dei prodotti risulta vuota (codice 04). Contattare un amministratore.\n");
+        printf("\n");
+        return 4;
+    }
+
+    return 0;
+
+}
+
+
+/*
+@Brief implementa l'I/O Per l'inserimento di un nuovo prodotto in una determinata collezione passata in ingresso
+
+    Restituisce:
+        0 Se tutto va a buon fine
+        1 In caso di annullamento da parte dell'utente
+        2 In caso di errori di lettura del buffer di input (codice 2)
+        4 In caso di errori di accesso alla memoria (Codice 4)
+*/
+int sys_insert_user_product(user logged_user, collection user_collection){
+
+    int string_checker_result;
+
+    char product_name_io_string[MAX_STR_LEN];
+
+    char product_type_io_string[MAX_STR_LEN];
+
+    char product_condition_io_string[MAX_STR_LEN];
+
+    float product_buyprice;
+
+    bool check_space = false; //spazi consentiti
+
+    printf("\n");
+    printf("%s, stai inserendo un nuovo prodotto alla collezione \"%s\" \n",logged_user->username, user_collection->collection_name);
+    printf("\n");
+
+    /* CICLO NOME PRODOTTO */
+    while (1){
+
+        printf("Inserisci un nome per il tuo nuovo prodotto. Duplicati non consentiti. \n");
+        printf("Puoi annullare il processo in qualsiasi momento inserendo una stringa vuota.\n");
+        string_checker_result = sys_input_string_checker(product_name_io_string, check_space, MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1: 
+                printf("\n");
+                printf("Operazione di inserimento prodotto annullata...\n");
+                printf("\n");
+                return 1;
+            case 2:
+                printf("\n");
+                printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default:
+                int exists = exist_sorted(user_collection->products_list_head, product_name_io_string);
+
+                if (exists == 0){
+                    printf("\n");
+                    printf("E'Gia' presente un prodotto nella collezione \"%s\" con questo nome. I duplicati non sono consentiti. Riprova.\n",user_collection->collection_name);
+                    printf("\n");
+                    continue;
+                } else {
+                    printf("\n");
+                    printf("Il nome è disponibile! Si procede con l'inserimento della tipologia del prodotto... \n");
+                    printf("\n");
+                    break;
+                    }
+                break;
+        }
+    break;
+    }
+
+    /* CICLO TIPOLOGIA PRODOTTO */
+
+    while (1){
+
+        printf("Inserisci una tipologia per il tuo nuovo prodotto.\n");
+        printf("Puoi annullare il processo in qualsiasi momento inserendo una stringa vuota.\n");
+        string_checker_result = sys_input_string_checker(product_type_io_string, check_space, MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1: 
+                printf("\n");
+                printf("Operazione di inserimento prodotto annullata...\n");
+                printf("\n");
+                return 1;
+            case 2:
+                printf("\n");
+                printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default:
+                printf("\n");
+                printf("Tipologia del prodotto correttamente inserita. \n");
+                printf("\n");
+                break;
+                }
+        break;
+    }
+
+
+    /* CICLO CONDIZIONI PRODOTTO*/
+
+    while (1){
+
+        printf("Inserisci le condizioni per il tuo nuovo prodotto.\n");
+        printf("Puoi annullare il processo in qualsiasi momento inserendo una stringa vuota.\n");
+        string_checker_result = sys_input_string_checker(product_condition_io_string, check_space, MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1: 
+                printf("\n");
+                printf("Operazione di inserimento prodotto annullata...\n");
+                printf("\n");
+                return 1;
+            case 2:
+                printf("\n");
+                printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default:
+                printf("\n");
+                printf("Condizioni del prodotto correttamente inserite. \n");
+                printf("\n");
+                break;
+                }
+        break;
+    }
+
+    /* CICLO PREZZO DI ACQUISTO PRODOTTO*/
+
+     //in questo caso, occorre utilizzare una stringa di appoggio per contenere la cifra inserita dall'utente, tale cifra verrà poi
+     //controllata (devono essere numeri e non caratteri) ed eventualmente convertita (casting) a float.
+    char temp_buyprice[MAX_STR_LEN];
+
+    while(1){
+
+        printf("Inserisci il prezzo di acquisto per il tuo nuovo prodotto. (Non si accettano numeri negativi o uno zero!) \n");
+        printf("Puoi annullare il processo premendo invio. \n");
+
+
+        //in questo caso non può contenere spazi, avrò in questo modo un controllo in meno da svolgere seguentem.
+        string_checker_result = sys_input_string_checker(temp_buyprice,true,MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1: 
+                printf("\n");
+                printf("Operazione di inserimento prodotto annullata...\n");
+                printf("\n");
+                return 1;
+            case 2:
+                printf("\n");
+                printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default: 
+                break;
+        }
+
+        /*srtof è una funzione della libreria stdlib.h
+        * converte una stringa in un float. In caso di corretta conversione, restituisce il float. Altrimenti restituisce 0.0.
+        */
+
+        char *endptr;
+
+        product_buyprice = strtof(temp_buyprice,&endptr);
+        
+        //se endptr punta alla stessa area di memoria della stringa (puntatore) temp buy price, vuol dire che il primo elemento era un carattere.
+        if(endptr == temp_buyprice){
+            printf("Hai inserito dei caratteri, non sono validi. Si accettano cifre positive non nulle. Riprova.\n");
+            continue;
+        } else if(*endptr != '\0'){
+            printf("Hai inserito in parte dei caratteri superflui non validi. Si accettano cifre positive non nulle. Riprova.\n");
+            continue;
+        } else if (product_buyprice <= 0){
+            printf("Hai inserito un numero negativo o nullo non valido. Si accettano cifre positive non nulle. Riprova.\n");
+            continue;
+        } else {
+            printf("Numero valido correttamente inserito...\n");
+        }
+
+        printf("Il prezzo di acquisto inserito è il seguente: %.2f \n",product_buyprice); //stampo 2 cifre decimali
+        printf("Premi 0 per confermarlo, 1 per modificarne il valore.\n");
+        int confirm = ask_confirmation();
+        
+        switch (confirm){
+            case 1: continue;
+            case 2: printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n"); return 2;
+            default: break;
+        }
+    
+    printf("Inserimento del prodotto \"%s\" in corso...\n",product_name_io_string);
+    break; 
+    }
+
+    int result = insert_product(&(user_collection->products_list_head),product_name_io_string,product_type_io_string,product_condition_io_string,product_buyprice);
+
+    switch(result){
+        case 1: 
+            printf("ERRORE Critico: errore di allocazione della memoria (codice 4). Contattare un amministratore.\n");
+            return 4;
+        case 2:
+            printf("ERRORE Critico: rilevato duplicato quando non dovrebbe (codice 4). Contattare un amministratore.\n");
+            return 4;
+        default:
+            break;
+    }
+
+    printf("Il seguente prodotto e' stato correttamente inserito nella collezione \"%s\": \n",user_collection->collection_name);
+    printf("Nome prodotto: %s\n", product_name_io_string);
+    printf("Tipologia: %s\n", product_type_io_string);
+    printf("Condizioni: %s\n",product_condition_io_string);
+    printf("Prezzo di acquisto: %.2f\n",product_buyprice);
+    return 0;
+}
+
+
+
 
 
 
