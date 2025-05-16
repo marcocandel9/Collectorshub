@@ -166,8 +166,10 @@ Funzione che ricerca un elemento nella lista ORDINATA.
 
 Prende in ingresso il puntatore alla testa della lista passato come copia, l'array di caratteri
 
-Restituisce 0 se l'elemento esiste
-Restituisce 1 altrimenti
+Restituisce:
+    0 se l'elemento esiste
+    1 Se la lista passata è vuota
+    2 Se non è stata trovata alcuna corrispondenza
 */
 
 int exist_sorted(products products_list_head, char key_name[MAX_STR_LEN]){
@@ -191,7 +193,7 @@ int exist_sorted(products products_list_head, char key_name[MAX_STR_LEN]){
         products_list_head = products_list_head -> next;
     }
 
-    return 1; // non è stata trovata una corrispondenza
+    return 2; // non è stata trovata una corrispondenza
 }
 
 
@@ -232,6 +234,7 @@ product search_product(products products_list_head, char key_name[MAX_STR_LEN]){
 
 /*
 Funzione che ricerca un elemento nella lista ORDINATA, ne modifica il contenuto del prodotto nel nodo
+//N.B modify product, se riceve in ingresso  stringhe vuote o un valore di float pari a quello sentinella (-1.0f), non modifica quel contenuto del prodotto
 
 Prende in ingresso il puntatore alla testa della lista passato per riferimento, il nome dell'elemento da modificare,
 le variabili del contenuto informativo della Struct Prodotto

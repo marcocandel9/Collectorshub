@@ -1246,7 +1246,7 @@ int sys_delete_collection(user logged_user){
                 return 1;
             case 2:
                 printf("\n");
-                printf("FATAL ERROR 2: errore della lettura dle buffer di input. Contattare un amministratore.\n");
+                printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
                 printf("\n");
                 return 2;
             default:
@@ -1403,6 +1403,7 @@ int sys_delete_collections(user logged_user){
 
 
 /*
+Funzione che implementa l'I/O della stampa della lista prodotti di una collezione di un utente. 
 
 Restituisce:
     1 Se la lista prodotti della collezione è vuota.
@@ -1433,7 +1434,7 @@ int sys_print_user_products(user logged_user, collection user_collection){
 
 
 /*
-@Brief implementa l'I/O Per l'inserimento di un nuovo prodotto in una determinata collezione passata in ingresso
+@implementa l'I/O Per l'inserimento di un nuovo prodotto in una determinata collezione passata in ingresso
 
     Restituisce:
         0 Se tutto va a buon fine
@@ -1641,6 +1642,307 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 }
 
 
+
+
+/*
+@Implementa l'I/O per la modifica di un prodotto di un utente.
+
+    Restituisce:
+        0 Se tutto va a buon fine
+        1 In caso di annullamento da parte dell'utente
+        2 in caso di errori di lettura del buffer di input stdin (codice 2)
+        3 In caso di lista prodotti dell'utente vuota.
+        4 In caso di errori logici di accesso alla struttura dati in memoria (codice 4)
+        5 In caso di errori di modifica del prodotto durante la chiamata alla funzione search_and_modify_products (libreria products.h) (codice 5)
+
+
+*/
+int sys_modify_user_product(user logged_user, collection user_collection){
+
+    int string_checker_result;
+
+    //informazioni prodotto prima della modifica
+    char product_name_io_string[MAX_STR_LEN];
+
+    //informazioni prodotto dopo la modifica
+    char new_product_name_io_string[MAX_STR_LEN];
+    char new_product_type_io_string[MAX_STR_LEN];
+    char new_product_condition_io_string[MAX_STR_LEN];
+    float new_product_buyprice;
+    
+    bool check_space = false; //spazi consentiti
+
+    //se rimangono invariati, imposto a true in modo tale da printare il prodotto corretto per la conferma finale in I/O.
+    bool unchanged_name = false;
+    bool unchanged_type = false;
+    bool unchanged_condition = false;
+    bool unchanged_buyprice = false;
+
+    //stampo la lista dei prodotti della collezione dell'utente
+    int result = sys_print_user_product(logged_user, user_collection);
+    if(result == 4){
+        return 4;  //errore critico di accesso alla struttura dati, la lista risulta vuota quando non dovrebbe (codice 4)
+    }
+    if(result == 1){
+        return 3; //Lista vuota, restituisco 3
+    }
+
+
+    ////////////////////////////////////////////////////CICLO DI RICERCA PRODOTTO DA MODIFICARE/////////////////////////////////////////////////
+    while(1){
+        //altrimenti stampa la lista dei prodotti
+        printf("\n");
+        printf("Inserisci il nome del prodotto della collezione\"%s\" che desideri modificare. \n",logged_user->username, user_collection->collection_name);
+        printf("Inserisci una stringa vuota per annullare l'operazione di modifica. \n");
+        printf("\n");
+
+        string_checker_result = sys_input_string_checker(product_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1:
+                printf("\n");
+                printf("Modifica del prodotto annullata correttamente. \n");
+                printf("\n");
+                return 1;
+            case 2:
+                printf("\n");
+                printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default:
+                break;
+        }
+
+        //controllo se il nome del prodotto inserito in input esista nella lista dei prodotti
+        int exists = exist_sorted(user_collection->products_list_head, product_name_io_string);
+
+        switch (exists) {
+            case 1: 
+                printf("Lista vuota quando non dovrebbe. Errore critico di lettura dati in memeria (Codice 4). Contattare un'amministratore. \n");
+                return 4;
+            case 2: 
+                printf("Non è stato trovato il prodotto nella lista. Assicurati di aver inserito correttamente spazi/maiuscole. Riprova.\n");
+                continue;
+            default:
+                printf("Prodotto trovato, si procede con la modifica...\n");
+                break;
+        }
+        break;
+    }
+
+    ///PRODUCT_NAME_IO_STRING CONTIENE IL NOME DEL PRODOTTO CORRETTO E PRESENTE IN LISTA DEL PRODOTTO DA MODIFICARE.
+
+    ////////////////////////////////////////////CICLO DI MODIFICA NOME DEL PRODOTTO///////////////////////////////////////////////////////////
+    while(1){
+        
+        printf("\n");
+        printf("Inserisci un nuovo nome per il tuo prodotto. Deve essere differente dai prodotti nella tua lista e da \"%s\"\n", product_name_io_string);
+        printf("Se vuoi mantenere invariato il nome del prodotto, inserisci una stringa vuota.\n");
+        printf("\n");
+
+        string_checker_result = sys_input_string_checker(new_product_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+
+        //controllo validità input, se lo è, nel default controllo che non sia occupato. Se non lo è, -> new_product_name_io_string è il nuovo nome validitato.
+        switch(string_checker_result){
+            case 1:
+                printf("\n");
+                printf("Il nome del prodotto rimarra' invariato, si procede con la modifica della tipologia...\n");
+                printf("\n");
+                unchanged_name = true;
+                break;
+            case 2:
+                printf("\n");
+                printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default: 
+                int exists = exist_sorted(user_collection->products_list_head,new_product_name_io_string); //controllo che l'input valido non sia occupato
+                switch(exists) {
+                    case 1: 
+                        printf("Lista e' vuota quando non dovrebbe. Errore critico di lettura dati in memeria (Codice 4). Contattare un'amministratore. \n");
+                        return 4;
+                    case 2: 
+                        printf("Il nuovo nome prodotto inserito e' disponibile. Si procede con la modifica della tipologia...\n");
+                        break;
+                    default:
+                        printf("Il nuovo nome prodotto non e' disponibile. Riprova.\n");
+                        continue;
+                    }
+        }
+    }
+
+
+    ////////////////////////////////////////////CICLO DI MODIFICA TIPOLOGIA DEL PRODOTTO///////////////////////////////////////////////////////////
+    while(1){
+
+        printf("\n");
+        printf("Inserisci una nuova tipologia per il tuo prodotto.\n");
+        printf("Se vuoi mantenere invariata la tipologia del prodotto, inserisci una stringa vuota.\n");
+        printf("\n");
+
+        string_checker_result = sys_input_string_checker(new_product_type_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+
+        //controllo validità input inserito.   Default:  new_product_type_io_string conterrà la nuova tipologia valida.
+        switch(string_checker_result){
+            case 1:
+                printf("\n");
+                printf("La tipologia del prodotto rimarra' invariata, si procede con la modifica della tipologia...\n");
+                printf("\n");
+                unchanged_type = true;
+                break;
+            case 2:
+                printf("\n");
+                printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default: 
+                printf("La tipologia inserita e' valida. Si procede con la modifica delle condizioni...\n");
+                break;
+        }
+    }
+
+
+
+    /////////////////////////////////////////////CICLO DI MODIFICA CONDIZIONI DEL PRODOTTO////////////////////////////////////////////////////
+    while(1){
+
+        printf("\n");
+        printf("Inserisci una nuova condizione per il tuo prodotto.\n");
+        printf("Se vuoi mantenere invariate le condizioni del prodotto, inserisci una stringa vuota.\n");
+        printf("\n");
+
+        string_checker_result = sys_input_string_checker(new_product_condition_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+
+        //controllo validità input inserito.   Default:  new_product_type_io_string conterrà la nuova tipologia valida.
+        switch(string_checker_result){
+            case 1:
+                printf("\n");
+                printf("Le condizioni del prodotto rimarranno invariate, si procede con la modifica del prezzo di acquisto...\n");
+                printf("\n");
+                unchanged_condition = true;
+                break;
+            case 2:
+                printf("\n");
+                printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default: 
+                printf("Le condizioni inserite sono valide. Si procede con la modifica del prezzo di acquisto...\n");
+                break;
+        }
+    }
+
+
+
+    ////////////////////////////////////////////////////CICLO DI MODIFICA PREZZO DI ACQUISTO DEL PRODOTTO////////////////////////////////////////////
+
+
+    char temp_buyprice[MAX_STR_LEN];
+
+    while(1){
+
+        printf("Inserisci il prezzo di acquisto per il tuo nuovo prodotto. (Non si accettano numeri negativi o uno zero!) \n");
+        printf("Puoi annullare il processo premendo invio. \n");
+
+
+        //in questo caso non può contenere spazi, avrò in questo modo un controllo in meno da svolgere seguentem.
+        string_checker_result = sys_input_string_checker(temp_buyprice,true,MIN_STR_LEN,MAX_STR_LEN);
+
+        switch(string_checker_result){
+            case 1: 
+                printf("\n");
+                printf("Il prezzo di acquisto rimarra' invariato, si procede alla conferma della modifica...\n");
+                printf("\n");
+                unchanged_buyprice = true;
+                break;
+            case 2:
+                printf("\n");
+                printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default: 
+                break;
+        }
+
+        //se l'utente vuole mantenere invariato il prezzo di acquisto, imposto il valore sentinella per mantenere invariato il float, ed esco dal ciclo while.
+        if(unchanged_buyprice == true) {
+            //N.B search_and_modify_product, se riceve in ingresso  stringhe vuote o un valore di float pari a quello sentinella (-1.0f), non modifica quel contenuto del prodotto
+            new_product_buyprice = -1.0f; 
+            break;
+        }
+
+        /*srtof è una funzione della libreria stdlib.h
+        * converte una stringa in un float. In caso di corretta conversione, restituisce il float. Altrimenti restituisce 0.0.
+        */
+
+        char *endptr;
+
+        new_product_buyprice = strtof(temp_buyprice,&endptr);
+        
+        //se endptr punta alla stessa area di memoria della stringa (puntatore) temp buy price, vuol dire che il primo elemento era un carattere.
+        if(endptr == temp_buyprice){
+            printf("Hai inserito dei caratteri, non sono validi. Si accettano cifre positive non nulle. Riprova.\n");
+            continue;
+        } else if(*endptr != '\0'){
+            printf("Hai inserito in parte dei caratteri superflui non validi. Si accettano cifre positive non nulle. Riprova.\n");
+            continue;
+        } else if (new_product_buyprice <= 0){
+            printf("Hai inserito un numero negativo o nullo non valido. Si accettano cifre positive non nulle. Riprova.\n");
+            continue;
+        } else {
+            printf("Numero valido correttamente inserito...\n");
+        }
+
+        break;
+    }
+
+
+//condizione ? valore_se_vero : valore_se_falso
+
+    //////////////////////////////////////////////////////////CONFERMA NUOVO PRODOTTO INSERITO/////////////////////////////////////////
+    printf("Il prodotto modificato sara' il seguente:\n\n");
+
+    printf("Nome: %s\n", unchanged_name ? "Invariato" : new_product_name_io_string);
+    printf("Tipologia: %s\n", unchanged_type ? "Invariato" : new_product_type_io_string);
+    printf("Condizioni: %s\n", unchanged_condition ? "Invariato" : new_product_condition_io_string);
+    
+    if (unchanged_buyprice) printf("Prezzo di acquisto: Invariato\n\n");
+    else printf("Prezzo di acquisto: %.2f\n\n", new_product_buyprice);
+
+
+    printf("Confermi di voler procedere alla modifica? Inserisci 0 per confermare, 1 per annullare.\n");
+    int confirm = ask_confirmation();
+
+    if(confirm == 2){
+        printf("Errore del buffer di input (codice 2). Contattare un amministratore.\n");
+        return 2;
+    }
+    if(confirm == 1){
+        printf("La modifica del prodotto e' stata annullata correttamente.\n");
+        return 1;
+    }
+
+    //altrimenti, se result == 0 modifico il prodotto.
+
+    int result = search_and_modify_product(&(user_collection->products_list_head), product_name_io_string,new_product_name_io_string, new_product_type_io_string, new_product_condition_io_string,new_product_buyprice);
+
+    switch (result) {
+        case 1:
+            printf("ERRORE CRITICO: lista vuota quando non dovrebbe, errore di accesso alla struttura dati in memoria. (errore 4). Contattare un amministratore.\n");
+            return 4;
+        case 2:
+            printf("ERRORE CRITICO: Prodotto non trovato, mentre precedentemente lo è stato. Errore critico (codice 4), contattare un amministratore.\n");
+            return 2;
+        case 3:
+            printf("ERRORE CRITICO: errore nella modifica del prodotto durante la chiamata a search_and_modify_product. Contattare un amministratore (codice 5)\n");
+            return 5;
+        default: 
+            printf("Prodotto correttamente modificato!\n");
+    }
+
+    return 0;
+
+}
 
 
 
