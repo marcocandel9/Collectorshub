@@ -9,19 +9,30 @@
 /*
 Funzione che implementa il controllo della stringa in input. Controlla i seguenti criteri:
     1) Che la stringa passata in ingresso non sia stata troncata -> input troppo lungo, riprova
-    2) Che la stringa passata in ingresso non sia minore di MIN LEN  -> Input troppo corto, riprova
-    3) Che la stringa passata in ingresso non sia maggiore di MAX LEN -> Input troppo lungo, riprova
+    2) Che la stringa passata in ingresso non sia minore di min_len caratteri -> Input troppo corto, riprova
+    3) Che la stringa passata in ingresso non sia maggiore di max_len caratteri -> Input troppo lungo, riprova
+    4) Se il flag check_space è impostato su true, allora controlla anche che la stringa non contenga spazi.
     3) Rimuove il carattere a capo dalla stringa prelevata dal buffer di input
 
     Restituisce:
-    - 0 Se la stringa passata in input è stata correttamente inserita e viene passata al chiamante tramite la stringa output_string
-    - 1 Se l'utente immette in input una stringa vuota, indicando l'operazione di ANNULLAMENTO.
+         0 Se la stringa passata in input è stata correttamente inserita e viene passata al chiamante tramite la stringa output_string
+         1 Se l'utente immette in input una stringa vuota, indicando l'operazione di ANNULLAMENTO.
+         2 In caso di errori di lettura del buffer di input (FATAL ERROR:2)
+
+    N.B: max_len_plus1 e min_len_plus1 RAPPRESENTANO LA DIMENSIONE MINIMA E MASSIMA DEGLI ARRAY ACCETTATI IN INPUT, COMPRESO IL TERMINATORE DI STRINGA. 
+    //ES. Se MAX_LEN_PLUS1 sarà 20, il numero di caratteri effettivi accettati in input (escludendo il terminatore) saranno 19.
 */ 
 int sys_input_string_checker(char output_string[MAX_STR_LEN], bool check_space, int max_len, int min_len);
 
 
 /*
 Semplice funzione che restituisce 0 se l'utente immette 0 in input, restituisce 1 se l'utente inserisce 1 in input.
+
+Restituisce:
+    2 In caso di errori di lettura del buffer di input
+    1 Se l'utente inserisce 1
+    0 Se l'utente inserisce 0
+    
 */
 int ask_confirmation();
 
@@ -194,10 +205,39 @@ int sys_print_user_products(user logged_user, collection user_collection);
 */
 int sys_insert_user_product(user logged_user, collection user_collection);
 
+/*
+@Implementa l'I/O per la modifica di un prodotto di un utente, a partire dalla collezione dell'utente passata in ingresso.
+
+    Restituisce:
+        0 Se tutto va a buon fine
+        1 In caso di annullamento da parte dell'utente
+        2 in caso di errori di lettura del buffer di input stdin (codice 2)
+        3 In caso di lista prodotti dell'utente vuota.
+        4 In caso di errori logici di accesso alla struttura dati in memoria (codice 4)
+        5 In caso di errori di modifica del prodotto durante la chiamata alla funzione search_and_modify_products (libreria products.h) (codice 5)
+*/
 int sys_modify_user_product(user logged_user, collection user_collection);
 
+/*
+Implementa l'I/O Per l'eliminazione di un prodotto data una collezione passata in ingresso. 
+
+    Restituisce: 
+        0 In caso di eliminazione avvenuta con successo
+        1 In caso di annullamento da parte dell'utente
+        2 In caso di errore di lettura del buffer di input stdin
+        3 Se la lista dei prodotti della collezione dell'utente e' gia' vuota. 
+        4 Se la lista risulta vuota quando non dovrebbe durante l'accesso alla struttura dati in memoria, codice 4
+*/
 int sys_delete_user_product(user logged_user, collection user_collection);
 
+/*
+Implementa l'I/O Per l'eliminazione di tutti i prodotti di una lista prodotti di una collezione di un utente. 
+
+    Restituisce:
+        1 In caso di annullamento da parte dell'utente
+        2 in caso di errori di lettura del buffer di input stdin
+        4 In caso di errore critico durante l'eliminazione dei prodotti, in particolare se la lista risulta vuota quando non dovrebbe. 
+*/
 int sys_delete_user_products(user logged_user, collection user_collection);
 
 #endif

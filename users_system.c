@@ -12,9 +12,9 @@ Funzione che implementa il controllo della stringa in input. Controlla i seguent
     3) Rimuove il carattere a capo dalla stringa prelevata dal buffer di input
 
     Restituisce:
-    - 0 Se la stringa passata in input è stata correttamente inserita e viene passata al chiamante tramite la stringa output_string
-    - 1 Se l'utente immette in input una stringa vuota, indicando l'operazione di ANNULLAMENTO.
-    - 2 In caso di errori di lettura del buffer di input (FATAL ERROR:2)
+         0 Se la stringa passata in input è stata correttamente inserita e viene passata al chiamante tramite la stringa output_string
+         1 Se l'utente immette in input una stringa vuota, indicando l'operazione di ANNULLAMENTO.
+         2 In caso di errori di lettura del buffer di input (FATAL ERROR:2)
 
     N.B: max_len_plus1 e min_len_plus1 RAPPRESENTANO LA DIMENSIONE MINIMA E MASSIMA DEGLI ARRAY ACCETTATI IN INPUT, COMPRESO IL TERMINATORE DI STRINGA. 
     //ES. Se MAX_LEN_PLUS1 sarà 20, il numero di caratteri effettivi accettati in input (escludendo il terminatore) saranno 19.
@@ -1645,7 +1645,7 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 
 
 /*
-@Implementa l'I/O per la modifica di un prodotto di un utente.
+@Implementa l'I/O per la modifica di un prodotto di un utente, a partire dalla collezione dell'utente passata in ingresso.
 
     Restituisce:
         0 Se tutto va a buon fine
@@ -1654,8 +1654,6 @@ int sys_insert_user_product(user logged_user, collection user_collection){
         3 In caso di lista prodotti dell'utente vuota.
         4 In caso di errori logici di accesso alla struttura dati in memoria (codice 4)
         5 In caso di errori di modifica del prodotto durante la chiamata alla funzione search_and_modify_products (libreria products.h) (codice 5)
-
-
 */
 int sys_modify_user_product(user logged_user, collection user_collection){
 
@@ -1947,5 +1945,153 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
 
 
+/*
+Implementa l'I/O Per l'eliminazione di un prodotto data una collezione passata in ingresso. 
+
+    Restituisce: 
+        0 In caso di eliminazione avvenuta con successo
+        1 In caso di annullamento da parte dell'utente
+        2 In caso di errore di lettura del buffer di input stdin
+        3 Se la lista dei prodotti della collezione dell'utente e' gia' vuota. 
+        4 Se la lista risulta vuota quando non dovrebbe durante l'accesso alla struttura dati in memoria, codice 4
+*/
+int sys_delete_user_product(user logged_user, collection user_collection){
+
+    int string_checker_result;
+    char product_name_io_string[MAX_STR_LEN];
+    bool check_space = false;
+    
+
+    //se la lista prodotti è vuota, restituisco 3
+    if(user_collection -> products_list_head == NULL){
+        printf("La collezione \"%s\" e' gia' vuota. Non e' presente alcun prodotto da eliminare.\n",user_collection->collection_name);
+        return 3;
+    }
+
+    while(1){
+
+        printf("I prodotti all'interno della tua collezione \"%s\" sono i seguenti:\n\n",user_collection->collection_name);
+        int print_result = print_products(user_collection->products_list_head);
+
+        if(print_result == 1){
+            printf("ERRORE Critico, la lista risulta vuota durante l'accesso in memoria quando non dovrebbe esserlo. Codice 4. Contattare un amministratore.\n");
+            return 4;
+        }
+        
+        //altrimenti stampo correttamente i prodotti della lista.
+
+        printf("Digita il prodotto che desideri eliminare. Assicurati di inserire correttamente maiuscole/spazi.\n");
+
+        string_checker_result = sys_input_string_checker(product_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
+        switch(string_checker_result){
+            case 1:
+                printf("\n");
+                printf("Eliminazione annullata correttamente. \n");
+                printf("\n");
+                return 1;
+            case 2:
+                printf("\n");
+                printf("Errore durante la lettura del buffer di input stdin. Contattare un amministratore.\n");
+                printf("\n");
+                return 2;
+            default: 
+                printf("\n");
+                printf("Ricerca del prodotto \"%s\" in corso...\n",product_name_io_string);
+                break;
+        }
+
+        int exists = exist_sorted(user_collection->products_list_head,product_name_io_string);
+
+        switch(exists){
+            case 1:
+                printf("ERRORE Critico, la lista risulta vuota durante l'accesso in memoria quando non dovrebbe esserlo. Codice 4. Contattare un amministratore.\n");
+                return 4;
+            case 2:
+                printf("Il prodotto non e' stato trovato all'interno della lista. Riprova.\n");
+                continue;
+            default:
+                printf("Corrispondenza trovata!\n");
+                break;
+        }
+        break;
+    }
+
+    printf("Il prodotto che eliminerai e' il seguente: \n");
+    search_and_print_product(user_collection->products_list_head, product_name_io_string);
+    printf("Confermi di volerlo eliminare? Inserisci 0 per confermare, 1 per annullarne l'eliminazione.\n");
+    int result = ask_confirmation();
+
+    if(result == 1){
+        printf("Operazione annullata correttamente. Il tuo prodotto non verra' eliminato. \n");
+        return 1;
+    }
+
+    int final_result = remove_product(&(user_collection->products_list_head), product_name_io_string);
+
+    if(final_result == 1){
+        printf("ERRORE Critico, la lista dei prodotti risulta vuota quando non dovrebbe. (codice 4). Contattare un amministratore. \n");
+        return 4;
+    } else if (final_result == 2){
+        printf("ERRORE Critico, non e' stata trovata una corrispondenza durante l'eliminazione anche se non dovrebbe accadere (codice 4). Contattare un amministratore.\n");
+        return 4;
+    }
+    
+    //altrimenti il prodotto e' stato correttamente eliminato.
+
+    printf("Il prodotto \"%s\" e'stato correttamente eliminato\n",product_name_io_string);
+    return 0;
+}
 
 
+
+
+/*
+Implementa l'I/O Per l'eliminazione di tutti i prodotti di una lista prodotti di una collezione di un utente. 
+
+    Restituisce:
+        1 In caso di annullamento da parte dell'utente
+        2 in caso di errori di lettura del buffer di input stdin
+        4 In caso di errore critico durante l'eliminazione dei prodotti, in particolare se la lista risulta vuota quando non dovrebbe. 
+*/
+int sys_delete_user_products(user logged_user, collection user_collection){
+
+    int string_checker_result;
+
+    if(user_collection->products_list_head == NULL){
+        printf("La tua collezione \"%s\" e' gia' vuota, non e' presente alcun prodotto da eliminare.\n",user_collection->collection_name);
+        return 3;
+    }
+
+    printf("Attenzione %s, stai per eliminare tutti i prodotti dalla collezione \"%s\" definitivamente. \n",logged_user->username, user_collection->collection_name);
+    printf("Sei sicuro di voler procedere? Inserisci 0 per confermare, 1 per annullare l'eliminazione.\n");
+    int decision = ask_confirmation();
+    if(decision == 1){
+        printf("\n");
+        printf("Hai annullato correttamente l'operazione.\n");
+        printf("\n");
+        return 1;
+    }
+
+    if(decision == 2){
+        printf("\n");
+        printf("Errore lettura del buffer di input. (codice 2). Contattare un amministartore.\n");
+        printf("\n");
+        return 2;
+    }
+
+    //altrimenti procedo all'eliminazione.
+    printf("Hai confermato correttamente l'eliminazione...\n");
+    int result = free_products(&(user_collection->products_list_head));
+    
+    switch(result){
+        case 1:
+            printf("La lista risulta vuota quando non dovrebbe. Errore critico (codice 4). Contattare un amministratore.\n");
+            return 4;
+        default:
+            printf("La lista prodotti della tua collezione e' stata correttamente svuotata.\n");
+            break;
+         }
+
+    return 0;
+    
+}

@@ -171,7 +171,6 @@ Restituisce:
     1 Se la lista passata è vuota
     2 Se non è stata trovata alcuna corrispondenza
 */
-
 int exist_sorted(products products_list_head, char key_name[MAX_STR_LEN]){
 
     //Lista vuota: ritorno 1
