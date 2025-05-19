@@ -1,6 +1,6 @@
 //Definisce la libreria per le funzioni che implementano l'input/output delle funzionalità della libreria users/user.h.
-#ifndef USERS_SYSTEM_H
-#define USERS_SYSTEM_H
+#ifndef SYSTEM_H
+#define SYSTEM_H
 #include "menu.h"
 #include "users.h"
 
@@ -181,7 +181,6 @@ int sys_delete_collections(user logged_user);
 
 
 //////////////////////////////////////////////////////MENÙ PRODOTTI///////////////////////////////////////////////////////////////////
-
 //N.B In queste funzioni il parametro di ingresso user sarebbe superfluo, ma lo passo comunque per aggiungere informazioni degli utenti per l'UI.
 
 /*
@@ -239,5 +238,23 @@ Implementa l'I/O Per l'eliminazione di tutti i prodotti di una lista prodotti di
         4 In caso di errore critico durante l'eliminazione dei prodotti, in particolare se la lista risulta vuota quando non dovrebbe. 
 */
 int sys_delete_user_products(user logged_user, collection user_collection);
+
+int sys_save_files(user logged_user);
+
+int sys_load_files(user logged_user);
+
+
+//salvataggio e caricamento annidato, su un unico file
+
+int save_users(users users_list, FILE* fp);
+int save_collections(collections collections_list, FILE* fp);
+int save_products(products products_list, FILE* fp);
+
+int load_users(users* users_list_head, FILE* fp);
+int load_collections(collections* collections_list_head, FILE* fp);
+int load_products(products* products_list_head, FILE* fp);
+
+int sys_save_files(users users_list_head);  // apre il file, chiama save_users
+int sys_load_files(users* users_list_head); // apre il file, chiama load_users
 
 #endif

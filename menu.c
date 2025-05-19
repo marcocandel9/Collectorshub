@@ -168,12 +168,13 @@ int collection_menu(){
 /*
 Implementa l'I/O del menù prodotti
 
-Restituisce:
-- 1 Se l'utente desidera visualizzare tutti i prodotti della collezione
-- 2 Se l'utente desidera cercare e modificare un prodotto
-- 3 Se l'utente desidera cancellare definitivamente un prodotto
-- 4 Se l'utente desidera cancellare definitivamente tutti i prodotti della collezione
-- 5 Se l'utente desidera tornare al menù collezioni
+    Restituisce:
+        1 Se l'utente desidera visualizzare tutti i prodotti della collezione
+        2 Se l'utente desidera aggiungere un nuovo prodotto alla sua collezione
+        3 Se l'utente desidera cercare e modificare un prodotto
+        4 Se l'utente desidera cancellare definitivamente un prodotto
+        5 Se l'utente desidera cancellare definitivamente tutti i prodotti della collezione
+        6 Se l'utente desidera tornare al menù collezioni
 */
 int products_menu(){
 

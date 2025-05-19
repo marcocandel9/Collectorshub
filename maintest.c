@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "users_system.h"
+#include "system.h"
 #include "menu.h"
 
 int main() {
 
 
-    login_menu();
-    user_menu();
-    collection_menu();
-    products_menu();
+    //login_menu();
+    //user_menu();
+    //collection_menu();
+    //products_menu();
     //admin_menu();
     //superuser_menu();
     //superuser_collections_submenu();
@@ -35,29 +35,59 @@ int main() {
     //logged_user = sys_login_user(&(nuova_lista));
 
     //qui dovrei stampare che la lista è vuota
-    sys_print_user_collections(logged_user);
+    //sys_print_user_collections(logged_user);
 
     sys_insert_collection(logged_user);
 
     //qui dovrei stampare che la lista è popolata
-    sys_print_user_collections(logged_user);
+    //sys_print_user_collections(logged_user);
 
     //test 1, modifico username
-    sys_modify_credentials(&(logged_user),&(nuova_lista));
+    //sys_modify_credentials(&(logged_user),&(nuova_lista));
 
-    sys_insert_collection(logged_user);
+    //sys_insert_collection(logged_user);
 
-    sys_modify_collection(logged_user);
+    //sys_modify_collection(logged_user);
 
-    sys_delete_collection(logged_user);
+    //sys_delete_collection(logged_user);
 
-    sys_print_user_collections(logged_user);
+    //sys_print_user_collections(logged_user);
 
     collection accessed_collection = NULL;
 
     sys_access_user_collection(logged_user,&(accessed_collection));
 
-    sys_delete_collections(logged_user);
+    
+
+    
+
+    while (1){
+        int result = products_menu();
+        switch(result){
+            case 1:
+                int result1 = sys_print_user_products(logged_user, accessed_collection);
+                continue;
+            case 2:
+                int result2 = sys_insert_user_product(logged_user,accessed_collection);
+                continue;
+            case 3:
+                int result3 = sys_modify_user_product(logged_user,accessed_collection);
+                continue;
+            case 4:
+                int result4 = sys_delete_user_product(logged_user,accessed_collection);
+                continue;
+            case 5:
+                int result5 = sys_delete_user_products(logged_user,accessed_collection);
+                continue;
+            case 6: 
+                continue;
+        }
+    }
+
+    
+
+    ////test menu prodotti
+
 
 
 

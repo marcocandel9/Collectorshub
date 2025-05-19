@@ -223,7 +223,7 @@ int print_product(product myproduct){
     get_product_condition(myproduct, product_condition);
     get_product_buyprice(myproduct, &product_buyprice);
 
-    printf("%s, %s, %s, %f\n", product_name, product_type, product_condition, product_buyprice);
+    printf("%s, %s, %s, %.2f\n", product_name, product_type, product_condition, product_buyprice);
     return 0;
 }
 

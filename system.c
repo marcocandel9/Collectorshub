@@ -1,4 +1,4 @@
-#include "users_system.h"
+#include "system.h"
 
 
 
@@ -1488,7 +1488,7 @@ int sys_insert_user_product(user logged_user, collection user_collection){
                     continue;
                 } else {
                     printf("\n");
-                    printf("Il nome è disponibile! Si procede con l'inserimento della tipologia del prodotto... \n");
+                    printf("Il nome e' disponibile! Si procede con l'inserimento della tipologia del prodotto... \n");
                     printf("\n");
                     break;
                     }
@@ -1567,7 +1567,7 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 
 
         //in questo caso non può contenere spazi, avrò in questo modo un controllo in meno da svolgere seguentem.
-        string_checker_result = sys_input_string_checker(temp_buyprice,true,MIN_STR_LEN,MAX_STR_LEN);
+        string_checker_result = sys_input_string_checker(temp_buyprice,true,0,10);
 
         switch(string_checker_result){
             case 1: 
@@ -1606,7 +1606,7 @@ int sys_insert_user_product(user logged_user, collection user_collection){
             printf("Numero valido correttamente inserito...\n");
         }
 
-        printf("Il prezzo di acquisto inserito è il seguente: %.2f \n",product_buyprice); //stampo 2 cifre decimali
+        printf("Il prezzo di acquisto inserito e' il seguente: %.2f \n",product_buyprice); //stampo 2 cifre decimali
         printf("Premi 0 per confermarlo, 1 per modificarne il valore.\n");
         int confirm = ask_confirmation();
         
@@ -1677,11 +1677,13 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     bool unchanged_buyprice = false;
 
     //stampo la lista dei prodotti della collezione dell'utente
-    int result = sys_print_user_product(logged_user, user_collection);
+    printf("\nI prodotti nella tua collezione sono i seguenti:\n");
+    int result = sys_print_user_products(logged_user, user_collection);
     if(result == 4){
         return 4;  //errore critico di accesso alla struttura dati, la lista risulta vuota quando non dovrebbe (codice 4)
     }
     if(result == 1){
+        printf("Lista vuota! Nessun prodotto modificabile.\n");
         return 3; //Lista vuota, restituisco 3
     }
 
@@ -1690,7 +1692,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     while(1){
         //altrimenti stampa la lista dei prodotti
         printf("\n");
-        printf("Inserisci il nome del prodotto della collezione\"%s\" che desideri modificare. \n",logged_user->username, user_collection->collection_name);
+        printf("Inserisci il nome del prodotto della collezione \"%s\" che desideri modificare. \n",logged_user->username, user_collection->collection_name);
         printf("Inserisci una stringa vuota per annullare l'operazione di modifica. \n");
         printf("\n");
 
@@ -1719,7 +1721,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
                 printf("Lista vuota quando non dovrebbe. Errore critico di lettura dati in memeria (Codice 4). Contattare un'amministratore. \n");
                 return 4;
             case 2: 
-                printf("Non è stato trovato il prodotto nella lista. Assicurati di aver inserito correttamente spazi/maiuscole. Riprova.\n");
+                printf("Non e' stato trovato il prodotto nella lista. Assicurati di aver inserito correttamente spazi/maiuscole. Riprova.\n");
                 continue;
             default:
                 printf("Prodotto trovato, si procede con la modifica...\n");
@@ -1757,7 +1759,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
                 int exists = exist_sorted(user_collection->products_list_head,new_product_name_io_string); //controllo che l'input valido non sia occupato
                 switch(exists) {
                     case 1: 
-                        printf("Lista e' vuota quando non dovrebbe. Errore critico di lettura dati in memeria (Codice 4). Contattare un'amministratore. \n");
+                        printf("La lista e' vuota quando non dovrebbe. Errore critico di lettura dati in memeria (Codice 4). Contattare un'amministratore. \n");
                         return 4;
                     case 2: 
                         printf("Il nuovo nome prodotto inserito e' disponibile. Si procede con la modifica della tipologia...\n");
@@ -1767,6 +1769,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
                         continue;
                     }
         }
+        break;
     }
 
 
@@ -1797,6 +1800,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
                 printf("La tipologia inserita e' valida. Si procede con la modifica delle condizioni...\n");
                 break;
         }
+        break;
     }
 
 
@@ -1828,6 +1832,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
                 printf("Le condizioni inserite sono valide. Si procede con la modifica del prezzo di acquisto...\n");
                 break;
         }
+        break;
     }
 
 
@@ -1844,7 +1849,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
 
         //in questo caso non può contenere spazi, avrò in questo modo un controllo in meno da svolgere seguentem.
-        string_checker_result = sys_input_string_checker(temp_buyprice,true,MIN_STR_LEN,MAX_STR_LEN);
+        string_checker_result = sys_input_string_checker(temp_buyprice,true,0,10);
 
         switch(string_checker_result){
             case 1: 
@@ -1895,7 +1900,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     }
 
 
-//condizione ? valore_se_vero : valore_se_falso
+
 
     //////////////////////////////////////////////////////////CONFERMA NUOVO PRODOTTO INSERITO/////////////////////////////////////////
     printf("Il prodotto modificato sara' il seguente:\n\n");
@@ -1922,9 +1927,9 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
     //altrimenti, se result == 0 modifico il prodotto.
 
-    int result = search_and_modify_product(&(user_collection->products_list_head), product_name_io_string,new_product_name_io_string, new_product_type_io_string, new_product_condition_io_string,new_product_buyprice);
+    int final_result = search_and_modify_product(&(user_collection->products_list_head), product_name_io_string,new_product_name_io_string, new_product_type_io_string, new_product_condition_io_string,new_product_buyprice);
 
-    switch (result) {
+    switch (final_result) {
         case 1:
             printf("ERRORE CRITICO: lista vuota quando non dovrebbe, errore di accesso alla struttura dati in memoria. (errore 4). Contattare un amministratore.\n");
             return 4;
@@ -1981,6 +1986,7 @@ int sys_delete_user_product(user logged_user, collection user_collection){
         //altrimenti stampo correttamente i prodotti della lista.
 
         printf("Digita il prodotto che desideri eliminare. Assicurati di inserire correttamente maiuscole/spazi.\n");
+        printf("Per annullare l'operazione inserisci una stringa vuota. \n\n");
 
         string_checker_result = sys_input_string_checker(product_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
         switch(string_checker_result){

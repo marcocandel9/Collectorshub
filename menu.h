@@ -11,7 +11,7 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 #define ANSI_BOLD  "\e[1m"
 #define BOLD_OFF   "\e[m"
-#define SCREEN_LINES 20
+#define SCREEN_LINES 5
 
 
 void clear_screen();
