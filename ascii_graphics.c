@@ -1,4 +1,5 @@
 #include "ascii_graphics.h"
+#include "string.h"
 
 void collectors_hub_header(){
     printf("\n");
@@ -107,4 +108,30 @@ void superuser_menu_header(){
     printf("\n");
     printf("\n"); 
     return;                                                                                                    
+}
+
+
+
+
+//Stampa la seguente stringa ======================== [TESTO_CENTRALE] =========================== 
+//lateral padding width è il numero di = stampati a destra e sinistra del testo centrale
+void division_break_lines(const char *central_text,int lateral_padding_width){
+    
+    int len = strlen(central_text);
+    
+    //stampo la linea di sinistra
+    for(int i = 0; i < lateral_padding_width; i++){
+        printf("=");
+    }
+
+    printf(" [%s] ",central_text);
+
+    //stampo la linea di destra
+    for(int i = 0; i < lateral_padding_width; i++){
+            printf("=");
+        }
+    
+    printf("\n");
+
+    return;
 }

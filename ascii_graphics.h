@@ -20,5 +20,6 @@ void admin_menu_header();
 
 void superuser_menu_header();
 
+void division_break_lines(const char *central_text,int width);
 
 #endif

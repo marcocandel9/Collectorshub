@@ -65,11 +65,13 @@ int login_menu(){
     int scelta = 0;
     int min = 1, max = 3;
 
-    printf(ANSI_COLOR_RED ANSI_BOLD);
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
     collectors_hub_header();
-    printf(ANSI_COLOR_RESET BOLD_OFF);
-    printf("                                                                            Welcome!\n\n" BOLD_OFF);
-    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
+    printf("                                                                            Welcome in Collectors Hub!\n" );
+    printf(ANSI_COLOR_RED);
+    printf("\n");
+    printf("                                                                            Seleziona una tra le seguenti opzioni:\n"BOLD_OFF);
+    printf(ANSI_COLOR_RESET);
     printf("                                                                            1) Login\n");
     printf("                                                                            2) Registrazione\n");
     printf("                                                                            3) Esci\n");
@@ -101,11 +103,10 @@ int user_menu(){
 
     int scelta = 0, min = 1, max = 4;
 
-    printf(ANSI_COLOR_RED ANSI_BOLD);
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
     user_menu_header();
-    printf(ANSI_COLOR_RESET);
-    printf("                                                                            Benvenuto/a nella tua area utente!\n\n" BOLD_OFF);
-    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
+    printf("                                                                            Benvenuto/a nella tua area utente!\n\n"  ANSI_COLOR_RESET);
+    printf("                                                                            Seleziona una tra le seguenti opzioni:\n" BOLD_OFF);
     printf("                                                                            1) Accedi al menu' collezioni\n");
     printf("                                                                            2) Modifica le tue credenziali\n");
     printf("                                                                            3) Cancella il tuo utente (DEFINITIVO!)\n");

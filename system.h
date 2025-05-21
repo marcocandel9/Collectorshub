@@ -239,13 +239,10 @@ Implementa l'I/O Per l'eliminazione di tutti i prodotti di una lista prodotti di
 */
 int sys_delete_user_products(user logged_user, collection user_collection);
 
-int sys_save_files(user logged_user);
-
-int sys_load_files(user logged_user);
 
 
 //salvataggio e caricamento annidato, su un unico file
-
+/*
 int save_users(users users_list, FILE* fp);
 int save_collections(collections collections_list, FILE* fp);
 int save_products(products products_list, FILE* fp);
@@ -256,5 +253,5 @@ int load_products(products* products_list_head, FILE* fp);
 
 int sys_save_files(users users_list_head);  // apre il file, chiama save_users
 int sys_load_files(users* users_list_head); // apre il file, chiama load_users
-
+*/
 #endif

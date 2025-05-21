@@ -342,17 +342,22 @@ user sys_login_user(users* users_list_head){
     user logging_user = NULL;
     char user_password[MAX_STR_LEN];
     
+    printf(ANSI_COLOR_BLUE ANSI_BOLD);
+    division_break_lines("AREA LOGIN", 42);
+    printf(ANSI_COLOR_RESET);
     printf("\n");
-    printf("Benvenuto/a nell'area login.\n"); 
+    printf("Benvenuto/a nell'area login.\n" BOLD_OFF); 
     printf("\n");
 
     //in caso di immissione con successo effettuo il break del ciclo while.
     while(1){
 
+        printf(ANSI_BOLD);
         printf("\n");
         printf("Inserisci il tuo username. \n");
-        printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE IL LOGIN.\n");
+        printf("Inserisci una stringa vuota premendo invio per annullare il login.\n");
         printf("\n");
+        printf(BOLD_OFF);
         
         string_checker_result = sys_input_string_checker(username_io_string, check_space,MIN_STR_LEN,MAX_STR_LEN);
 
@@ -638,15 +643,20 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
     get_password(*my_user, user_password);
 
     printf("\n");
+    printf(ANSI_BOLD ANSI_COLOR_BLUE);
+    division_break_lines("MODIFICA CREDENZIALI",44);
+    printf("\n"ANSI_COLOR_RESET);
     printf("Benvenuto nell'area di modifica delle credenziali. \n");
-    printf("Per poter procedere, e' necessario riconfermare l'autenticazione tramite password. \n");
-    printf("\n");
+    printf("Per poter procedere, e' necessario riconfermare l'autenticazione tramite password. \n" BOLD_OFF);
+    
 
     while(1){
 
         printf("\n");
+        printf(ANSI_BOLD);
         printf("Per annullare la modifica delle tue credenziali, immetti una stringa vuota. \n");
         printf("Inserisci la tua password per procedere con il cambiamento delle credenziali. \n");
+        printf(BOLD_OFF);
         printf("\n");
 
         string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
@@ -683,8 +693,9 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
 
     //chiamo le funzioni system_modify_username e system_modify_password:
 
-    printf("Password verificata con successo!\nSi procede con la modifica delle proprie credenziali.\n");
-    printf("E' possibile modificare soltanto uno dei campi username/password, immettendo una stringa vuota.\n\n");
+    printf(ANSI_COLOR_GREEN"\nPassword verificata con successo!\n"ANSI_COLOR_RESET);
+    printf(ANSI_COLOR_CYAN"\nSi procede con la modifica delle proprie credenziali.\n"ANSI_COLOR_RESET);
+    printf("E' possibile modificare soltanto uno dei campi username/password, immettendo una stringa vuota.\n");
 
 
 

@@ -7,7 +7,8 @@
 int main() {
 
 
-    //login_menu();
+    
+    
     //user_menu();
     //collection_menu();
     //products_menu();
@@ -18,13 +19,21 @@ int main() {
 
     users nuova_lista = NULL;
 
-    sys_register_user(&(nuova_lista));
+    
 
     
     user logged_user = NULL;
 
-
+    login_menu();
+    sys_register_user(&(nuova_lista));
+    
     logged_user = sys_login_user(&(nuova_lista));
+    user_menu();
+
+    
+    sys_modify_credentials(&(logged_user),&(nuova_lista));
+
+
    
    char user_username[MAX_STR_LEN];
 
@@ -43,7 +52,7 @@ int main() {
     //sys_print_user_collections(logged_user);
 
     //test 1, modifico username
-    //sys_modify_credentials(&(logged_user),&(nuova_lista));
+    
 
     //sys_insert_collection(logged_user);
 
