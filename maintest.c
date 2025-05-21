@@ -24,9 +24,9 @@ int main() {
     
     user logged_user = NULL;
 
-    login_menu();
-    sys_register_user(&(nuova_lista));
     
+    sys_register_user(&(nuova_lista));
+    login_menu();
     logged_user = sys_login_user(&(nuova_lista));
     user_menu();
 

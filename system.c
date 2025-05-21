@@ -343,10 +343,10 @@ user sys_login_user(users* users_list_head){
     char user_password[MAX_STR_LEN];
     
     printf(ANSI_COLOR_BLUE ANSI_BOLD);
-    division_break_lines("AREA LOGIN", 42);
-    printf(ANSI_COLOR_RESET);
+    division_break_lines("AREA LOGIN", 60);
+    printf(ANSI_COLOR_RESET BOLD_OFF);
     printf("\n");
-    printf("Benvenuto/a nell'area login.\n" BOLD_OFF); 
+    printf(ANSI_BOLD ANSI_COLOR_CYAN "Benvenuto/a nell'area login!\n" ANSI_COLOR_RESET BOLD_OFF); 
     printf("\n");
 
     //in caso di immissione con successo effettuo il break del ciclo while.
@@ -436,7 +436,7 @@ user sys_login_user(users* users_list_head){
     }
     
     printf("\n");
-    printf("Autenticazione effettuata con successo! \n");
+    printf(ANSI_COLOR_GREEN "Autenticazione effettuata con successo! \n"ANSI_COLOR_RESET);
     printf("\n");
     //restituisco l'utente loggato.
     return logging_user;
