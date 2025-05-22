@@ -142,11 +142,12 @@ int collection_menu(){
 
     int scelta = 0, min = 1, max = 7;
 
-    printf(ANSI_COLOR_RED ANSI_BOLD);
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
     collection_menu_header();
-    printf(ANSI_COLOR_RESET);
-    printf("                                                                            Benvenuto/a nel menu' collezione!\n\n" BOLD_OFF);
-    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
+    printf("                                                                            Benvenuto/a nel menu' collezione!\n\n" ANSI_COLOR_RESET BOLD_OFF);
+    printf(ANSI_BOLD ANSI_COLOR_RED);
+    printf("                                                                            Seleziona una tra le seguenti opzioni:\n" ANSI_COLOR_RESET);
+    printf(ANSI_BOLD);
     printf("                                                                            1) Visualizza le tue collezioni\n");
     printf("                                                                            2) Accedi ad una collezione\n");
     printf("                                                                            3) Crea una nuova collezione\n");
@@ -157,6 +158,7 @@ int collection_menu(){
     printf("\n");
     printf("\n");
     printf("\n");
+    printf(BOLD_OFF);
 
     scelta = get_valid_input(min,max);
     return scelta;

@@ -200,23 +200,25 @@ user sys_register_user(users* users_list_head){
 
     user new_user = NULL;
 
+    printf(ANSI_BOLD ANSI_COLOR_BLUE"\n");
+    division_break_lines("AREA REGISTRAZIONE",60);
+    printf( ANSI_COLOR_CYAN);
+    printf("\nBenvenuto/a nell'area registrazione!\n");
+    printf(BOLD_OFF ANSI_COLOR_RESET);
     
-    clear_screen();
-
-  
     //INSERIMENTO NUOVO USERNAME
     while(1){
 
-        printf("\n");
+        printf("\n" ANSI_BOLD);
         printf("Inserisci il tuo nuovo username. (Massimo %d caratteri consentiti, minimo %d, spazi non consentiti)\n",MAX_STR_LEN-1,MIN_STR_LEN-1);
         printf("PREMI INVIO PER INSERIRE UNA STRINGA VUOTA E ANNULLARE LA REGISTRAZIONE.\n");
-        printf("\n");
+        printf("\n" BOLD_OFF);
 
         string_checker_result = sys_input_string_checker(username_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
         
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" );
                 printf("Registrazione annullata correttamente. \n");
                 printf("\n");
                 return NULL;
@@ -236,16 +238,16 @@ user sys_register_user(users* users_list_head){
 
         //Username disponibile, esce dal ciclo while (valid_username == 2: nessuna corrispondenza trovata nella lista, valid_username == 1: lista vuota, in entrambi casi l'username è disponibile)
         if(valid_username == 2 || valid_username == 1){
-            printf("\n");
+            printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
             printf("L'username e' disponibile.\n");
-            printf("\n");
+            printf("\n"ANSI_COLOR_RESET BOLD_OFF);
             break;
         }
 
         //Altrimenti notifica l'utente che l'username e già occupato e ricomincia il ciclo while.
-        printf("\n");
+        printf("\n"ANSI_COLOR_RED ANSI_BOLD);
         printf("L'username e' già occupato.\n");
-        printf("\n");
+        printf("\n"ANSI_COLOR_RESET BOLD_OFF);
         continue;
     }
     
@@ -309,9 +311,9 @@ user sys_register_user(users* users_list_head){
 
     search_user(*users_list_head,username_io_string, &new_user);
 
-    printf("\n");
+    printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
     printf("Registrazione effettuata con successo!\n");
-    printf("\n");
+    printf("\n" ANSI_COLOR_RESET BOLD_OFF);
 
     return new_user;
 }
@@ -779,15 +781,21 @@ int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]){
         
         get_password(user_to_del,user_password);
 
+        printf(ANSI_BOLD ANSI_COLOR_CYAN);
+        printf("\n");
+        division_break_lines("AREA ELIMINAZIONE UTENTE",60);
         printf("\n");
         printf("Benvenuto nell'area di eliminazione del tuo account utente.\n");
-        printf("QUESTA AZIONE SARA' DEFINITIVA. Si consiglia di procedere con cautela.\n");
+        printf(ANSI_COLOR_MAGENTA "QUESTA AZIONE SARA' DEFINITIVA. Si consiglia di procedere con cautela.\n" ANSI_COLOR_RESET);
         printf("\n");
 
         while(1){
 
             printf("\n");
-            printf("Per procedere all'eliminazione, è' necessario inserire la propria password. ( UNA VOLTA VERIFICATA, NON PUOI TORNARE INDIETRO! )\n");
+            printf("Per procedere all'eliminazione, e' necessario inserire la propria password.");
+            printf(ANSI_COLOR_RED ANSI_BOLD" UNA VOLTA VERIFICATA, NON PUOI TORNARE INDIETRO!\n");
+            printf(ANSI_COLOR_RESET BOLD_OFF);
+
             printf("Se si vuole annullare l'eliminazione del proprio profilo, inserire una stringa vuota.\n");
             printf("\n");
 
@@ -816,14 +824,17 @@ int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]){
             if(auth_password == 0){
                 break;
             } else {         //Altrimenti, riparte il ciclo while e l'utente riprova l'inserimento della password
-                printf("Password invalida. Riprova.\n");
+                printf(ANSI_COLOR_RED);
+                printf("\nPassword invalida. Riprova.\n");
+                printf(ANSI_COLOR_RESET);
                 continue;
             }
         }
     
         //Se la password è stata verificata con successo, procedo all'operazione di eliminazione
-        printf("Password verificata con successo!\n");
-
+        printf(ANSI_COLOR_GREEN ANSI_BOLD);
+        printf("\nPassword verificata con successo!\n");
+        printf(ANSI_COLOR_RESET BOLD_OFF);
         
         int result = remove_user(users_list_head, user_username);
 
@@ -831,7 +842,9 @@ int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]){
             return 3; //FATAL ERROR 3 (NON È STATO POSSIBILE ACCEDERE ALLA LISTA UTENTI/ L'UTENTE NON È STATO TROVATO)
         }
 
-        printf("L'UTENTE E' STATO DEFINITIVAMENTE ELIMINATO.\n");
+        printf(ANSI_COLOR_GREEN ANSI_BOLD);
+        printf("\nL'UTENTE E' STATO DEFINITIVAMENTE ELIMINATO.\n");
+        printf(ANSI_COLOR_RESET ANSI_BOLD);
         return 0;
 
 }
@@ -856,14 +869,22 @@ int sys_print_user_collections(user logged_user){
         return 1;
     }
 
+    printf(ANSI_COLOR_BLUE ANSI_BOLD "\n");
+    division_break_lines("LISTA COLLEZIONI",60);
+    printf(ANSI_COLOR_RESET BOLD_OFF);
+
+    printf(ANSI_BOLD);
+    printf("Lista delle collezioni di %s:\n",logged_user->username);
+    printf(BOLD_OFF ANSI_COLOR_CYAN);
     int result = print_collections(logged_user->collections_list_head);
+    printf(ANSI_COLOR_RESET);
 
     //La funzione print collections restituisce 1 se la lista è vuota -> gestisco questo caso:
 
     if(result == 1){
-        printf("\n");
+        printf("\n" ANSI_COLOR_RED ANSI_BOLD);
         printf("La tua lista collezioni e' vuota!\n");
-        printf("\n");
+        printf("\n"ANSI_COLOR_RESET BOLD_OFF);
         return 1;
     }
 
@@ -891,30 +912,27 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
     *user_collection = NULL;
 
     if((logged_user->collections_list_head) == NULL){\
-        printf("\n");
+        printf("\n" ANSI_COLOR_RED ANSI_BOLD);
         printf("Impossibile accedere ad una collezione, la tua lista è vuota. Creane una dal menu' collezioni.\n");
-        printf("\n");
+        printf("\n" ANSI_COLOR_RESET BOLD_OFF);
         return 3;
     }
     while(1){
         printf("\n");
-        printf("Scegli una fra le seguenti collezioni a cui accedere inserendone il nome.\n");
-        printf("E'necessario inserire correttamente maiuscole e spazi, per annullare l'accesso ad una collezione inserire una stringa vuota.\n");
-        printf("Lista collezioni di %s:\n", logged_user->username);
-        printf("\n");
-        print_collections(logged_user->collections_list_head);
-        printf("\n");
-
+        sys_print_user_collections(logged_user);
+        printf(ANSI_COLOR_MAGENTA ANSI_BOLD"Scegli una fra le seguenti collezioni a cui accedere inserendone il nome.\n");
+        printf("E'necessario inserire correttamente maiuscole e spazi, per annullare l'accesso ad una collezione inserire una stringa vuota.\n" ANSI_COLOR_RESET BOLD_OFF);
+  
         string_checker_result = sys_input_string_checker(collection_name_io_string, false,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("L'accesso ad una collezione e' stato annullato correttamente.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 1;
             case 2:
-                printf("ERRORE Critico: errore di lettura del buffer di input (codice 2), contattare un amministratore.\n");
+                printf(ANSI_COLOR_RED ANSI_BOLD "ERRORE Critico: errore di lettura del buffer di input (codice 2), contattare un amministratore.\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 2;
             default:
                 break;
@@ -925,12 +943,12 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
         switch(search_result){
             case 1: 
                 printf("\n");
-                printf("ERRORE Critico. La lista delle collezioni risulta vuota durante la ricerca della collezione (codice 4). Contattare un amministratore.\n");
+                printf(ANSI_COLOR_RED ANSI_BOLD "ERRORE Critico. La lista delle collezioni risulta vuota durante la ricerca della collezione (codice 4). Contattare un amministratore.\n"ANSI_COLOR_RESET BOLD_OFF);
                 printf("\n");
                 return 4;
             case 2:
                 printf("\n");
-                printf("La collezione non e' stata trovata. Inserire un nome della collezione a cui si desidera accedere valido.\n");
+                printf(ANSI_COLOR_RED ANSI_BOLD "La collezione non e' stata trovata. Inserire un nome valido della collezione a cui si desidera accedere.\n"ANSI_COLOR_RESET BOLD_OFF);
                 printf("\n");
                 continue;
             default:
@@ -941,7 +959,8 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
 
     }
 
-    printf("Accesso alla collezione \"%s\" effettuato con successo. Scegli una delle seguenti opzioni del menu' prodotti.\n", collection_name_io_string);
+    printf(ANSI_BOLD ANSI_COLOR_GREEN "Accesso alla collezione \"%s\" effettuato con successo. Verrai reindirizzato al menu' prodotti...\n", collection_name_io_string);
+    printf( ANSI_COLOR_RESET BOLD_OFF);
     return 0; //NB adesso *user_collection punterà alla collezione alla quale l'utente desiderava fare l'accesso.
 }
 
@@ -964,28 +983,31 @@ int sys_insert_collection(user logged_user){
     bool check_space = false; //In questo caso, le stringhe possono contenere spazi.
 
     printf("\n");
-    printf("Benvenuto/a nell'area di creazione di una nuova collezione!\n");
+    printf(ANSI_BOLD ANSI_COLOR_BLUE);
+    division_break_lines("AREA CREAZIONE NUOVA COLLEZIONE",54);
     printf("\n");
+    printf("Benvenuto/a nell'area di creazione di una nuova collezione!\n");
+    printf(ANSI_COLOR_RESET BOLD_OFF);
 
     while(1){
 
-        printf("\n");
-        printf("Per annullare l'inserimento della tua nuova collezione, inserisci una stringa vuota \n");
+        printf("\n" ANSI_BOLD);
         printf("Inserisci il nome della tua nuova collezione. \n");
-        printf("\n");
+        printf("Per annullare l'inserimento della tua nuova collezione, inserisci una stringa vuota \n");
+        printf("\n" BOLD_OFF);
 
         string_checker_result = sys_input_string_checker(collection_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("Operazione di aggiunta collezione annullata con successo.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 1;
             case 2: 
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 2;
             default: 
                 break;
@@ -993,9 +1015,9 @@ int sys_insert_collection(user logged_user){
 
             //Verifico che la collezione esiste nella lista, in tal caso ricomincia il ciclo while
             if(collection_exists(logged_user->collections_list_head,collection_name_io_string) == 0){
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                 printf("Hai gia' una collezione con questo nome, non sono consentiti duplicati. Riprova.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 continue;
             }
 
@@ -1008,21 +1030,23 @@ int sys_insert_collection(user logged_user){
 
     while(1){
 
-        printf("Per annullare l'inserimento della tua nuova collezione, inserisci una stringa vuota \n");
-        printf("Inserisci la tipologia della nuova collezione. \n\n");
+        printf(ANSI_BOLD);
+        printf("Inserisci la tipologia della nuova collezione. \n");
+        printf("Per annullare l'inserimento della tua nuova collezione, inserisci una stringa vuota \n\n");
+        printf(BOLD_OFF);
 
         string_checker_result = sys_input_string_checker(collection_type_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("Operazione di aggiunta collezione annullata con successo. \n");
-                printf("\n");
+                printf("\n"ANSI_COLOR_RESET BOLD_OFF);
                 return 1;
             case 2: 
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 2;
             default: 
                 break;
@@ -1033,15 +1057,15 @@ int sys_insert_collection(user logged_user){
 
         int result = insert_collection(&(logged_user->collections_list_head),collection_name_io_string, collection_type_io_string);
         if (result == 1){
-            printf("\n");
+            printf("\n" ANSI_COLOR_RED ANSI_BOLD);
             printf("CRITICAL ERROR 4: errore di allocazione di memoria! Contattare un amministratore.\n");
-            printf("\n");
+            printf("\n" ANSI_COLOR_RESET BOLD_OFF);
             return 4;
         }
 
-        printf("\n");
+        printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
         printf("La tua nuova collezione: (%s) e' stata aggiunta correttamente.\n\n",collection_name_io_string);
-        printf("\n");
+        printf("\n" ANSI_COLOR_RESET BOLD_OFF);
         return 0; //Tutto è andato a buon fine
     }
     
@@ -1071,21 +1095,33 @@ int sys_modify_collection(user logged_user){
 
     bool check_space = false; //In questo caso, le stringhe possono contenere spazi.
 
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
+    division_break_lines("AREA MODIFICA COLLEZIONE", 56);
+    printf("Benvenuto/a nell'area di modifica collezione.\n");
+    printf(ANSI_COLOR_RESET BOLD_OFF);
+
+    int isempty = sys_print_user_collections(logged_user);
+    if(isempty == 1) return 3;
+
     //Ricerca della collezione che l'utente desidera modificare
     while(1){
 
-        printf("Benvenuto/a nell'area di modifica collezione.\n");
-        printf("Inserisci il nome della collezione che vuoi modificare, (Attenzione, il nome deve essere lo stesso, comprese maiuscole e spazi.\n");
+        printf( ANSI_BOLD);
+        printf("Inserisci il nome della collezione che vuoi modificare, (Attenzione, il nome deve essere lo stesso, comprese maiuscole e spazi!)\n");
         printf("Se vuoi annullare la modifica, inserisci una stringa vuota.\n");
-        printf("\n");
+        printf("\n"  BOLD_OFF);
         string_checker_result = sys_input_string_checker(collection_name_io_string, check_space,MIN_STR_LEN,MAX_STR_LEN);
         printf("\n");
         switch(string_checker_result){
             case 1:
+                printf(ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("Modifica della collezione annullata con successo.\n");
+                printf(ANSI_COLOR_RESET BOLD_OFF);
                 return 1;
             case 2:
+                printf(ANSI_COLOR_RED ANSI_BOLD);
                 printf("FATAL ERROR 2: errore della lettura buffer di input. Contattare un amministartore.\n");
+                printf(ANSI_COLOR_RED BOLD_OFF);
                 return 2;
             default:
                 //verifico che la collezione esista nella lista collezioni dell'utente loggato
@@ -1093,19 +1129,19 @@ int sys_modify_collection(user logged_user){
                 
                 switch(collection_found){
                     case 1:
-                        printf("\n");
+                        printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                         printf("La tua lista collezioni è vuota, non e' presente alcuna collezione da modificare!\n");
-                        printf("\n");
+                        printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                         return 3;
                     case 2:
-                        printf("\n");
+                        printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                         printf("Non e' stata trovata una corrispondenza. Riprova. \n");
-                        printf("\n");
+                        printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                         continue;
                     default:
-                        printf("\n");
+                        printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
                         printf("Collezione (%s) trovata! Si procede con la modifica...\n",collection_name_io_string);
-                        printf("\n");
+                        printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                         break;
                 }        
             }
@@ -1116,47 +1152,47 @@ int sys_modify_collection(user logged_user){
     //Procedo con la modifica del nome della collezione
     while(1){
 
-        printf("\n");
+        printf("\n" ANSI_BOLD);
         printf("Inserisci un nuovo nome per la tua collezione. Deve essere differente da (%s) e dal nome delle tue altre collezioni.\n", collection_name_io_string);
         printf("Se vuoi lasciare invariato il nome della collezione e modificarne solo il tipo, immetti una stringa vuota.\n");
-        printf("\n");
+        printf("\n"  BOLD_OFF);
 
         string_checker_result = sys_input_string_checker(collection_new_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1: 
 
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("Il nome della collezione rimarra' invariato.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
 
                 break;
             case 2:
-                printf("\n");
+                printf("\n"ANSI_COLOR_RED ANSI_BOLD);
                 printf("FATAL ERROR 2: errore della lettura buffer di input. Contattare un amministartore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 2;
             default: 
                 if(strcmp(collection_new_name_io_string,collection_name_io_string) == 0){
-                    printf("\n");
+                    printf("\n"ANSI_COLOR_RED ANSI_BOLD);
                     printf("Inserisci un nome per la tua collezione differente da quello precedente.\n");
                     printf("Se desideri lasciare invariato il nome della tua collezione e modificarne solo il tipo, inserisci una stringa vuota, altrimenti riprova.\n");
-                    printf("\n");
+                    printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                     continue;
                 }
                 //se il nuovo nome è differente da quello precedente, allora verifico che sia univoco nella lista delle collezioni dell'utente.
                 int collection_found = collection_exists(logged_user->collections_list_head, collection_new_name_io_string); 
                 
                 if(collection_found == 0){
-                    printf("\n");
+                    printf("\n"ANSI_COLOR_RED ANSI_BOLD);
                     printf("E'gia' presente una collezione con il seguente nome :(%s). Riprova.\n",collection_new_name_io_string);
-                    printf("\n");
+                    printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                     continue;
                 }
                 //altrimenti posso procedere con la modifica del tipo.
-                printf("\n");
-                printf("Il nuovo nome: (%s) e' valido. Si procede con la modifica della tipologia.\n",collection_new_name_io_string	);
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
+                printf("Il nuovo nome: (%s) e' valido. Si procede con la modifica della tipologia...\n",collection_new_name_io_string	);
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 break;
             }
         break;
@@ -1165,27 +1201,27 @@ int sys_modify_collection(user logged_user){
     //Procedo con la modifica del tipo della collezione
     while(1){
 
-        printf("\n");
+        printf("\n"  ANSI_BOLD);
         printf("Inserisci una nuova tipologia per la tua collezione.\n");
         printf("Se vuoi lasciare invariata la tipologia della collezione, inserisci una stringa vuota.\n");
-        printf("\n");
+        printf("\n" BOLD_OFF);
         string_checker_result = sys_input_string_checker(collection_new_type_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("La tipologia della collezione rimarra' invariata.\n");
-                printf("\n");
+                printf("\n"ANSI_COLOR_RESET BOLD_OFF);
                 break;
             case 2:
-                printf("\n");
+                printf("\n"ANSI_COLOR_RED ANSI_BOLD);;
                 printf("FATAL ERROR 2: errore della lettura dle buffer di input. Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 2;
             default:
-                printf("\n");
+                printf("\n"ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("La tipologia inserita è valida.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 break;
         }
 
@@ -1196,15 +1232,22 @@ int sys_modify_collection(user logged_user){
 
     switch(final_res){
         case 1: 
+            printf(ANSI_COLOR_RED ANSI_BOLD);
             printf("ERRORE CRITICO: La lista collezioni risulta vuota al momento della modifica. Contattare un amministratore.\n");
+            printf(ANSI_COLOR_RESET BOLD_OFF);
             return 4;
         case 2:
+            printf(ANSI_COLOR_RED ANSI_BOLD);
             printf("ERRORE CRITICO: Collezione da modificare non trovata. Contattare un amministratore.\n");
+            printf(ANSI_COLOR_RESET BOLD_OFF);
             return 4;
         default: 
+            printf(ANSI_COLOR_GREEN ANSI_BOLD);
             printf("La tua collezione e' stata modificata con successo in:\n");
+            printf(BOLD_OFF ANSI_COLOR_CYAN);
             printf("Nome: %s\n", (strlen(collection_new_name_io_string) > 0 ? collection_new_name_io_string : collection_name_io_string));
             printf("Tipo: %s\n", (strlen(collection_new_type_io_string) > 0 ? collection_new_type_io_string : "Invariata"));
+            printf(ANSI_COLOR_RESET);
             break;
     }   
     return 0; //Tutto è andato a buon fine

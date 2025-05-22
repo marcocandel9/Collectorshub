@@ -10,7 +10,7 @@ int main() {
     
     
     //user_menu();
-    //collection_menu();
+    
     //products_menu();
     //admin_menu();
     //superuser_menu();
@@ -18,35 +18,41 @@ int main() {
     //superuser_products_submenu();
 
     users nuova_lista = NULL;
-
-    
-
-    
     user logged_user = NULL;
 
-    
+    login_menu();
     sys_register_user(&(nuova_lista));
     login_menu();
     logged_user = sys_login_user(&(nuova_lista));
     user_menu();
+    //sys_modify_credentials(&(logged_user),&(nuova_lista));
 
-    
-    sys_modify_credentials(&(logged_user),&(nuova_lista));
+    collection_menu();
+    sys_insert_collection(logged_user);
+    sys_insert_collection(logged_user);
+    sys_insert_collection(logged_user);
+    sys_insert_collection(logged_user);
+    collection_menu();
+    sys_print_user_collections(logged_user);
 
+    collection_menu();
 
+    //collection accessed_collection = NULL;
+    //sys_access_user_collection(logged_user,&(accessed_collection));
+
+    collection_menu();
+    sys_modify_collection(logged_user);
    
-   char user_username[MAX_STR_LEN];
-
-    get_username(logged_user,user_username);
+   
 
     //sys_delete_user(&(nuova_lista),user_username);
 
     //logged_user = sys_login_user(&(nuova_lista));
 
     //qui dovrei stampare che la lista è vuota
-    //sys_print_user_collections(logged_user);
+    
 
-    sys_insert_collection(logged_user);
+    
 
     //qui dovrei stampare che la lista è popolata
     //sys_print_user_collections(logged_user);
@@ -56,20 +62,17 @@ int main() {
 
     //sys_insert_collection(logged_user);
 
-    //sys_modify_collection(logged_user);
 
     //sys_delete_collection(logged_user);
 
     //sys_print_user_collections(logged_user);
 
-    collection accessed_collection = NULL;
-
-    sys_access_user_collection(logged_user,&(accessed_collection));
+  
 
     
 
     
-
+/*
     while (1){
         int result = products_menu();
         switch(result){
@@ -92,7 +95,7 @@ int main() {
                 continue;
         }
     }
-
+*/
     
 
     ////test menu prodotti
