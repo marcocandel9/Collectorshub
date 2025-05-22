@@ -218,14 +218,14 @@ user sys_register_user(users* users_list_head){
         
         switch(string_checker_result){
             case 1:
-                printf("\n" );
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD );
                 printf("Registrazione annullata correttamente. \n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return NULL;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return NULL;
             default: 
                 break;
@@ -263,9 +263,10 @@ user sys_register_user(users* users_list_head){
 
     
     while(1){
-        printf("\n");
+        printf("\n" ANSI_BOLD ANSI_COLOR_MAGENTA);
         printf("Inserisci la tua nuova password. (Massimo %d caratteri consentiti)\n\n", MAX_STR_LEN-1);
-        printf("La password deve contenere:\n");
+        printf(ANSI_COLOR_RESET ANSI_BOLD);
+        printf("La password deve contenere:\n" BOLD_OFF);
         printf(" - Almeno %d caratteri \n", MIN_STR_LEN-1 );
         printf(" - Almeno una maiuscola \n");
         printf(" - Almeno una minuscola \n");
@@ -279,14 +280,14 @@ user sys_register_user(users* users_list_head){
 
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("Registrazione annullata correttamente. \n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return NULL;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                 printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return NULL;
             default: 
                 break;
@@ -296,9 +297,9 @@ user sys_register_user(users* users_list_head){
         string_checker_result = validate_password(password_io_string);
         
         if(string_checker_result == 1) {
-            printf("\n");
+            printf("\n" ANSI_COLOR_RED);
             printf("Password non valida. Contiene caratteri non ammessi e/o spazi. Riprova \n");
-            printf("\n");
+            printf("\n" ANSI_COLOR_RESET);
             continue;
         }
         if(string_checker_result == 0) break; //altrimenti la password è validata, posso uscire dal ciclo while.
@@ -913,7 +914,7 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
 
     if((logged_user->collections_list_head) == NULL){\
         printf("\n" ANSI_COLOR_RED ANSI_BOLD);
-        printf("Impossibile accedere ad una collezione, la tua lista è vuota. Creane una dal menu' collezioni.\n");
+        printf("Impossibile accedere ad una collezione, la tua lista e' vuota. Creane una dal menu' collezioni.\n");
         printf("\n" ANSI_COLOR_RESET BOLD_OFF);
         return 3;
     }
@@ -1102,6 +1103,7 @@ int sys_modify_collection(user logged_user){
 
     int isempty = sys_print_user_collections(logged_user);
     if(isempty == 1) return 3;
+    printf("\n");
 
     //Ricerca della collezione che l'utente desidera modificare
     while(1){
@@ -1130,7 +1132,7 @@ int sys_modify_collection(user logged_user){
                 switch(collection_found){
                     case 1:
                         printf("\n" ANSI_COLOR_RED ANSI_BOLD);
-                        printf("La tua lista collezioni è vuota, non e' presente alcuna collezione da modificare!\n");
+                        printf("La tua lista collezioni e' vuota, non e' presente alcuna collezione da modificare!\n");
                         printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                         return 3;
                     case 2:
@@ -1276,32 +1278,38 @@ int sys_delete_collection(user logged_user){
 
     bool check_space = false;
 
+    printf(ANSI_COLOR_CYAN,ANSI_BOLD);
+    division_break_lines("AREA CANCELLAZIONE COLLEZIONE", 54);
+    printf(ANSI_COLOR_RESET, BOLD_OFF);
+
     if((logged_user->collections_list_head) == NULL){
 
-        printf("\n");
-        printf("Impossibile eliminare una collezione dell'utente poichè non possiede nessuna collezione.\n");
-        printf("\n");
+        printf("\n" ANSI_BOLD ANSI_COLOR_RED);
+        printf("Impossibile eliminare una collezione perche' la tua lista e' vuota.\n");
+        printf("\n" BOLD_OFF ANSI_COLOR_RESET);
         return 3;
     }
 
+    sys_print_user_collections(logged_user);
+
     while(1){
 
-        printf("\n");
+        printf("\n" ANSI_BOLD);
         printf("Inserisci il nome della collezione che desideri eliminare.\n");
         printf("Se vuoi annullare la modifica, inserisci una stringa vuota.\n");
-        printf("\n");
+        printf("\n" BOLD_OFF);
         string_checker_result = sys_input_string_checker(collection_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("Eliminazione della collezione annullata correttamente. \n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 1;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                 printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 2;
             default:
                 break;
@@ -1311,20 +1319,20 @@ int sys_delete_collection(user logged_user){
 
         switch(exists){
             case 1:
-                printf("\n");
-                printf("La lista delle collezioni dell'utente è vuota. Impossibile eliminare la collezione richiesta.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED ANSI_BOLD);
+                printf("La lista delle collezioni dell'utente e' vuota. Impossibile eliminare la collezione richiesta.\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 3;
         
             case 2: 
-                printf("\n");
+                printf("\n" ANSI_COLOR_MAGENTA ANSI_BOLD);
                 printf("La collezione: (%s) , non e' stata trovata. Riprova inserendo un nome collezione adeguato.\n",collection_name_io_string);
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 continue;
             default:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN );
                 printf("Corrispondenza trovata...\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 break;
         }
 
@@ -1335,31 +1343,32 @@ int sys_delete_collection(user logged_user){
     //Blocco di conferma ulteriore per la cancellazione della collezione
     while (1){
 
-        printf("\n");
+        printf("\n" ANSI_COLOR_MAGENTA);
         printf("Confermi di voler eliminare la collezione \"%s\"? (Azione definitiva)\n", collection_name_io_string);
         printf("Inserisci 0 per confermare, 1 per annullare.\n");        
-        printf("\n");
+        printf("\n" ANSI_COLOR_RESET);
 
         int confirm = ask_confirmation();
 
 
         switch(confirm){
             case 1:
-                printf("\n");
-                printf("L'operazione è stata annullata. La collezione non verra' elimianta.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
+                printf("L'operazione e' stata annullata. La collezione non verra' elimianta.\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 1;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                 printf("ERRORE Critico: 2 errore lettura del buffer di input stdin, contattare un admin.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 return 2;
             default:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
                 printf("Eliminazione confermata.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                 break;
         }
+        break;
     }
 
 
@@ -1368,19 +1377,19 @@ int sys_delete_collection(user logged_user){
 
     switch(result){
         case 1:
-            printf("\n");
+            printf("\n" ANSI_COLOR_RED ANSI_BOLD);
             printf("ERRORE CRITICO: la lista collezioni durante la fase di eliminazione e' risultata vuota. Contattare un admin.\n");
-            printf("\n");
+            printf("\n" ANSI_COLOR_RESET BOLD_OFF);
             return 4;
         case 2:
-            printf("\n");
+            printf("\n"ANSI_COLOR_RED ANSI_BOLD);
             printf("ERRORE CRITICO: la lista collezioni durante la fase di eliminazione non possedeva la collezione ricercata. Contattare un admin.\n");
-            printf("\n");
+            printf("\n"ANSI_COLOR_RESET BOLD_OFF);
             return 4;
         default:
-            printf("\n");
+            printf("\n"ANSI_COLOR_GREEN ANSI_BOLD);
             printf("La collezione (%s) e' stata definitivamente cancellata dalla lista collezioni.\n",collection_name_io_string);
-            printf("\n");
+            printf("\n"ANSI_COLOR_RESET BOLD_OFF);
             break;
     }
     //l'eliminazione è andata a buon fine, restituisco 0.
@@ -1403,36 +1412,40 @@ Restituisce:
 */
 int sys_delete_collections(user logged_user){
 
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
+    division_break_lines("AREA CANCELLAZIONE LISTA COLLEZIONI",54);
+    printf(ANSI_COLOR_RESET BOLD_OFF);
+
     if((logged_user->collections_list_head) == NULL){
-        printf("\n");
+        printf("\n" ANSI_COLOR_RED);
         printf("L'utente possiede già una lista collezioni vuota.\n");
-        printf("\n");
+        printf("\n" ANSI_COLOR_RED);
         return 3;
     }
 
 
-    printf("\n");
+    printf("\n" ANSI_COLOR_MAGENTA);
     printf("Confermi di voler eliminare tutte le tue collezioni? (Azione definitiva)\n");
     printf("Inserisci 0 per confermare, 1 per annullare.\n");     
-    printf("\n");
+    printf("\n" ANSI_COLOR_RESET);
 
     int confirm = ask_confirmation();
     
     switch(confirm){
         case 1:
-            printf("\n");
+            printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
             printf("L'operazione e' stata annullata. Le tue collezioni non verranno eliminate.\n");
-            printf("\n");
+            printf("\n" ANSI_COLOR_RESET BOLD_OFF);
             return 1;
         case 2:
-            printf("\n");
+            printf("\n" ANSI_COLOR_RED ANSI_BOLD);
             printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
-            printf("\n");
+            printf("\n" ANSI_COLOR_RED BOLD_OFF);
             return 2;
         default:
-            printf("\n");
+            printf("\n" ANSI_COLOR_GREEN);
             printf("Operazione confermata...\n");
-            printf("\n");
+            printf("\n"ANSI_COLOR_RESET);
             break;
     }
 
@@ -1440,15 +1453,15 @@ int sys_delete_collections(user logged_user){
 
     if(result == 1){
         
-        printf("\n");
+        printf("\n" ANSI_COLOR_RED ANSI_BOLD);
         printf("ERRORE Critico: la lista collezioni dell'utente e' vuota (codice 4). Contattare un amministratore.");
-        printf("\n");
+        printf("\n" ANSI_COLOR_RESET BOLD_OFF);
         return 4;
     }
 
-    printf("\n");
+    printf("\n" ANSI_COLOR_GREEN ANSI_BOLD);
     printf("Tutte le tue collezioni sono state eliminate.\n");
-    printf("\n");
+    printf("\n" ANSI_COLOR_GREEN BOLD_OFF);
     return 0;
 }
 

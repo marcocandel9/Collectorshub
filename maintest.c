@@ -41,8 +41,8 @@ int main() {
     //sys_access_user_collection(logged_user,&(accessed_collection));
 
     collection_menu();
-    sys_modify_collection(logged_user);
-   
+    //sys_modify_collection(logged_user);
+    sys_delete_collections(logged_user);
    
 
     //sys_delete_user(&(nuova_lista),user_username);
@@ -62,8 +62,6 @@ int main() {
 
     //sys_insert_collection(logged_user);
 
-
-    //sys_delete_collection(logged_user);
 
     //sys_print_user_collections(logged_user);
 
