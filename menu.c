@@ -184,11 +184,11 @@ int products_menu(){
 
     int scelta = 0, min = 1, max = 6;
 
-    printf(ANSI_COLOR_RED ANSI_BOLD);
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
     products_menu_header();
-    printf(ANSI_COLOR_RESET);
     printf("                                                                            Benvenuto/a nel menu' prodotti!\n\n" BOLD_OFF);
-    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
+    printf(ANSI_COLOR_RED ANSI_BOLD);
+    printf("                                                                            Seleziona una tra le seguenti opzioni:\n" ANSI_COLOR_RESET BOLD_OFF);
     printf("                                                                            1) Visualizza tutti i prodotti della collezione\n");
     printf("                                                                            2) Aggiungi un nuovo prodotto alla collezione\n");
     printf("                                                                            3) Cerca e modifica un prodotto\n");

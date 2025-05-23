@@ -1479,19 +1479,29 @@ Restituisce:
 */
 int sys_print_user_products(user logged_user, collection user_collection){
 
+    printf(ANSI_COLOR_BLUE ANSI_BOLD);
+    division_break_lines("LISTA PRODOTTI", 60);
+    printf(ANSI_COLOR_RESET BOLD_OFF);
+
     if(user_collection->products_list_head == NULL){
-        printf("\n");
+        printf("\n" ANSI_COLOR_RED);
         printf("%s , la tua lista collezioni \"%s\" e' vuota.\n",logged_user->username, user_collection->collection_name);
-        printf("\n");
+        printf("\n" ANSI_COLOR_RESET);
         return 1;
     }
 
+    printf("La lista prodotti della tua collezione \"%s\" e' la seguente:\n",user_collection->collection_name);
+    printf(ANSI_BOLD);
+    printf("| NOME | TIPO | CONDIZIONI | PREZZO DI ACQUISTO |\n");
+    printf(BOLD_OFF);
+    printf(ANSI_COLOR_CYAN);
     int result = print_products(user_collection->products_list_head);
+    printf(ANSI_COLOR_RESET);
 
     if(result == 1){
-        printf("\n");
+        printf("\n" ANSI_COLOR_RED);
         printf("ERRORE Critico: la lista dei prodotti risulta vuota (codice 04). Contattare un amministratore.\n");
-        printf("\n");
+        printf("\n" ANSI_COLOR_RESET);
         return 4;
     }
 
@@ -1523,40 +1533,45 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 
     bool check_space = false; //spazi consentiti
 
-    printf("\n");
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
+    division_break_lines("AREA INSERIMENTO PRODOTTO",56);
+    printf(ANSI_COLOR_RESET BOLD_OFF);
+
+    printf("\n" ANSI_COLOR_MAGENTA);
     printf("%s, stai inserendo un nuovo prodotto alla collezione \"%s\" \n",logged_user->username, user_collection->collection_name);
-    printf("\n");
+    printf("\n" ANSI_COLOR_RESET);
 
     /* CICLO NOME PRODOTTO */
     while (1){
 
+        printf(ANSI_BOLD);
         printf("Inserisci un nome per il tuo nuovo prodotto. Duplicati non consentiti. \n");
-        printf("Puoi annullare il processo in qualsiasi momento inserendo una stringa vuota.\n");
+        printf("Puoi annullare il processo in qualsiasi momento inserendo una stringa vuota.\n" BOLD_OFF);
         string_checker_result = sys_input_string_checker(product_name_io_string, check_space, MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1: 
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Operazione di inserimento prodotto annullata...\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 1;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED);
                 printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default:
                 int exists = exist_sorted(user_collection->products_list_head, product_name_io_string);
 
                 if (exists == 0){
-                    printf("\n");
+                    printf("\n" ANSI_COLOR_MAGENTA);
                     printf("E'Gia' presente un prodotto nella collezione \"%s\" con questo nome. I duplicati non sono consentiti. Riprova.\n",user_collection->collection_name);
-                    printf("\n");
+                    printf("\n"ANSI_COLOR_RESET);
                     continue;
                 } else {
-                    printf("\n");
+                    printf("\n" ANSI_COLOR_GREEN);
                     printf("Il nome e' disponibile! Si procede con l'inserimento della tipologia del prodotto... \n");
-                    printf("\n");
+                    printf("\n" ANSI_COLOR_RESET);
                     break;
                     }
                 break;
@@ -1568,25 +1583,26 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 
     while (1){
 
+        printf(ANSI_BOLD);
         printf("Inserisci una tipologia per il tuo nuovo prodotto.\n");
-        printf("Puoi annullare il processo in qualsiasi momento inserendo una stringa vuota.\n");
+        printf("Puoi annullare il processo in qualsiasi momento inserendo una stringa vuota.\n"BOLD_OFF);
         string_checker_result = sys_input_string_checker(product_type_io_string, check_space, MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1: 
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Operazione di inserimento prodotto annullata...\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 1;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED);
                 printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Tipologia del prodotto correttamente inserita. \n");
-                printf("\n");
+                printf("\n"ANSI_COLOR_RESET);
                 break;
                 }
         break;
@@ -1597,25 +1613,26 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 
     while (1){
 
+        printf(ANSI_BOLD);
         printf("Inserisci le condizioni per il tuo nuovo prodotto.\n");
-        printf("Puoi annullare il processo in qualsiasi momento inserendo una stringa vuota.\n");
+        printf("Puoi annullare il processo in qualsiasi momento inserendo una stringa vuota.\n"BOLD_OFF);
         string_checker_result = sys_input_string_checker(product_condition_io_string, check_space, MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1: 
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Operazione di inserimento prodotto annullata...\n");
-                printf("\n");
+                printf("\n"ANSI_COLOR_RESET);
                 return 1;
             case 2:
-                printf("\n");
+                printf("\n"ANSI_COLOR_RED);
                 printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n"ANSI_COLOR_RESET);
                 return 2;
             default:
-                printf("\n");
+                printf("\n"ANSI_COLOR_GREEN);
                 printf("Condizioni del prodotto correttamente inserite. \n");
-                printf("\n");
+                printf("\n"ANSI_COLOR_RESET);
                 break;
                 }
         break;
@@ -1629,8 +1646,9 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 
     while(1){
 
+        printf(ANSI_BOLD);
         printf("Inserisci il prezzo di acquisto per il tuo nuovo prodotto. (Non si accettano numeri negativi o uno zero!) \n");
-        printf("Puoi annullare il processo premendo invio. \n");
+        printf("Puoi annullare il processo premendo invio. \n" BOLD_OFF);
 
 
         //in questo caso non può contenere spazi, avrò in questo modo un controllo in meno da svolgere seguentem.
@@ -1638,14 +1656,14 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 
         switch(string_checker_result){
             case 1: 
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Operazione di inserimento prodotto annullata...\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 1;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED);
                 printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default: 
                 break;
@@ -1661,29 +1679,38 @@ int sys_insert_user_product(user logged_user, collection user_collection){
         
         //se endptr punta alla stessa area di memoria della stringa (puntatore) temp buy price, vuol dire che il primo elemento era un carattere.
         if(endptr == temp_buyprice){
+            printf(ANSI_COLOR_MAGENTA);
             printf("Hai inserito dei caratteri, non sono validi. Si accettano cifre positive non nulle. Riprova.\n");
+            printf(ANSI_COLOR_RESET);
             continue;
         } else if(*endptr != '\0'){
+            printf(ANSI_COLOR_MAGENTA);
             printf("Hai inserito in parte dei caratteri superflui non validi. Si accettano cifre positive non nulle. Riprova.\n");
+            printf(ANSI_COLOR_RESET);
             continue;
         } else if (product_buyprice <= 0){
+            printf(ANSI_COLOR_MAGENTA);
             printf("Hai inserito un numero negativo o nullo non valido. Si accettano cifre positive non nulle. Riprova.\n");
+            printf(ANSI_COLOR_RESET);
             continue;
         } else {
+            printf(ANSI_COLOR_GREEN);
             printf("Numero valido correttamente inserito...\n");
+            printf(ANSI_COLOR_RESET);
         }
 
+        printf(ANSI_BOLD);
         printf("Il prezzo di acquisto inserito e' il seguente: %.2f \n",product_buyprice); //stampo 2 cifre decimali
-        printf("Premi 0 per confermarlo, 1 per modificarne il valore.\n");
+        printf(ANSI_COLOR_MAGENTA"Premi 0 per confermarlo, 1 per modificarne il valore.\n" ANSI_COLOR_RESET BOLD_OFF);
         int confirm = ask_confirmation();
         
         switch (confirm){
             case 1: continue;
-            case 2: printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n"); return 2;
+            case 2: printf(ANSI_COLOR_RED"ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n"ANSI_COLOR_RESET); return 2;
             default: break;
         }
     
-    printf("Inserimento del prodotto \"%s\" in corso...\n",product_name_io_string);
+    printf(ANSI_COLOR_GREEN"Inserimento del prodotto \"%s\" in corso...\n"ANSI_COLOR_RESET,product_name_io_string);
     break; 
     }
 
@@ -1691,20 +1718,22 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 
     switch(result){
         case 1: 
-            printf("ERRORE Critico: errore di allocazione della memoria (codice 4). Contattare un amministratore.\n");
+            printf(ANSI_COLOR_RED"ERRORE Critico: errore di allocazione della memoria (codice 4). Contattare un amministratore.\n"ANSI_COLOR_RESET);
             return 4;
         case 2:
-            printf("ERRORE Critico: rilevato duplicato quando non dovrebbe (codice 4). Contattare un amministratore.\n");
+            printf(ANSI_COLOR_RED"ERRORE Critico: rilevato duplicato quando non dovrebbe (codice 4). Contattare un amministratore.\n"ANSI_COLOR_RESET);
             return 4;
         default:
             break;
     }
 
-    printf("Il seguente prodotto e' stato correttamente inserito nella collezione \"%s\": \n",user_collection->collection_name);
+    printf(ANSI_COLOR_GREEN ANSI_BOLD"Il seguente prodotto e' stato correttamente inserito nella collezione \"%s\": \n" ANSI_COLOR_RESET BOLD_OFF,user_collection->collection_name);
+    printf(ANSI_COLOR_CYAN);
     printf("Nome prodotto: %s\n", product_name_io_string);
     printf("Tipologia: %s\n", product_type_io_string);
     printf("Condizioni: %s\n",product_condition_io_string);
     printf("Prezzo di acquisto: %.2f\n",product_buyprice);
+    printf(ANSI_COLOR_RESET);
     return 0;
 }
 
@@ -1743,14 +1772,17 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     bool unchanged_condition = false;
     bool unchanged_buyprice = false;
 
-    //stampo la lista dei prodotti della collezione dell'utente
-    printf("\nI prodotti nella tua collezione sono i seguenti:\n");
+    printf(ANSI_BOLD ANSI_COLOR_CYAN);
+    division_break_lines("AREA MODIFICA PRODOTTO", 54);
+    printf("\n"ANSI_COLOR_RESET BOLD_OFF);
     int result = sys_print_user_products(logged_user, user_collection);
     if(result == 4){
         return 4;  //errore critico di accesso alla struttura dati, la lista risulta vuota quando non dovrebbe (codice 4)
     }
     if(result == 1){
+        printf(ANSI_COLOR_RED);
         printf("Lista vuota! Nessun prodotto modificabile.\n");
+        printf(ANSI_COLOR_RESET);
         return 3; //Lista vuota, restituisco 3
     }
 
@@ -1758,23 +1790,23 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     ////////////////////////////////////////////////////CICLO DI RICERCA PRODOTTO DA MODIFICARE/////////////////////////////////////////////////
     while(1){
         //altrimenti stampa la lista dei prodotti
-        printf("\n");
+        printf("\n" ANSI_BOLD);
         printf("Inserisci il nome del prodotto della collezione \"%s\" che desideri modificare. \n",logged_user->username, user_collection->collection_name);
         printf("Inserisci una stringa vuota per annullare l'operazione di modifica. \n");
-        printf("\n");
+        printf("\n" BOLD_OFF);
 
         string_checker_result = sys_input_string_checker(product_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n"ANSI_COLOR_GREEN);
                 printf("Modifica del prodotto annullata correttamente. \n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 1;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED);
                 printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default:
                 break;
@@ -1785,13 +1817,19 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
         switch (exists) {
             case 1: 
+                printf(ANSI_COLOR_RED);
                 printf("Lista vuota quando non dovrebbe. Errore critico di lettura dati in memeria (Codice 4). Contattare un'amministratore. \n");
+                printf(ANSI_COLOR_RESET);
                 return 4;
             case 2: 
+                printf(ANSI_COLOR_MAGENTA);
                 printf("Non e' stato trovato il prodotto nella lista. Assicurati di aver inserito correttamente spazi/maiuscole. Riprova.\n");
+                printf(ANSI_COLOR_RESET);
                 continue;
             default:
+                printf(ANSI_COLOR_GREEN);
                 printf("Prodotto trovato, si procede con la modifica...\n");
+                printf(ANSI_COLOR_RESET);
                 break;
         }
         break;
@@ -1802,37 +1840,43 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     ////////////////////////////////////////////CICLO DI MODIFICA NOME DEL PRODOTTO///////////////////////////////////////////////////////////
     while(1){
         
-        printf("\n");
+        printf("\n" ANSI_BOLD);
         printf("Inserisci un nuovo nome per il tuo prodotto. Deve essere differente dai prodotti nella tua lista e da \"%s\"\n", product_name_io_string);
         printf("Se vuoi mantenere invariato il nome del prodotto, inserisci una stringa vuota.\n");
-        printf("\n");
+        printf("\n" BOLD_OFF);
 
         string_checker_result = sys_input_string_checker(new_product_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         //controllo validità input, se lo è, nel default controllo che non sia occupato. Se non lo è, -> new_product_name_io_string è il nuovo nome validitato.
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Il nome del prodotto rimarra' invariato, si procede con la modifica della tipologia...\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 unchanged_name = true;
                 break;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED);
                 printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default: 
                 int exists = exist_sorted(user_collection->products_list_head,new_product_name_io_string); //controllo che l'input valido non sia occupato
                 switch(exists) {
-                    case 1: 
+                    case 1:
+                        printf("\n" ANSI_COLOR_RED);
                         printf("La lista e' vuota quando non dovrebbe. Errore critico di lettura dati in memeria (Codice 4). Contattare un'amministratore. \n");
+                        printf("\n" ANSI_COLOR_RESET);
                         return 4;
                     case 2: 
+                        printf("\n" ANSI_COLOR_GREEN);
                         printf("Il nuovo nome prodotto inserito e' disponibile. Si procede con la modifica della tipologia...\n");
+                        printf("\n" ANSI_COLOR_RESET);
                         break;
                     default:
+                        printf("\n" ANSI_COLOR_MAGENTA);
                         printf("Il nuovo nome prodotto non e' disponibile. Riprova.\n");
+                        printf("\n" ANSI_COLOR_RESET);
                         continue;
                     }
         }
@@ -1843,28 +1887,30 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     ////////////////////////////////////////////CICLO DI MODIFICA TIPOLOGIA DEL PRODOTTO///////////////////////////////////////////////////////////
     while(1){
 
-        printf("\n");
+        printf("\n" ANSI_BOLD);
         printf("Inserisci una nuova tipologia per il tuo prodotto.\n");
         printf("Se vuoi mantenere invariata la tipologia del prodotto, inserisci una stringa vuota.\n");
-        printf("\n");
+        printf("\n" BOLD_OFF);
 
         string_checker_result = sys_input_string_checker(new_product_type_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         //controllo validità input inserito.   Default:  new_product_type_io_string conterrà la nuova tipologia valida.
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("La tipologia del prodotto rimarra' invariata, si procede con la modifica della tipologia...\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 unchanged_type = true;
                 break;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED);
                 printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default: 
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("La tipologia inserita e' valida. Si procede con la modifica delle condizioni...\n");
+                printf("\n" ANSI_COLOR_RESET);
                 break;
         }
         break;
@@ -1875,28 +1921,30 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     /////////////////////////////////////////////CICLO DI MODIFICA CONDIZIONI DEL PRODOTTO////////////////////////////////////////////////////
     while(1){
 
-        printf("\n");
+        printf("\n" ANSI_BOLD);
         printf("Inserisci una nuova condizione per il tuo prodotto.\n");
         printf("Se vuoi mantenere invariate le condizioni del prodotto, inserisci una stringa vuota.\n");
-        printf("\n");
+        printf("\n" BOLD_OFF);
 
         string_checker_result = sys_input_string_checker(new_product_condition_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
 
         //controllo validità input inserito.   Default:  new_product_type_io_string conterrà la nuova tipologia valida.
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Le condizioni del prodotto rimarranno invariate, si procede con la modifica del prezzo di acquisto...\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 unchanged_condition = true;
                 break;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED);
                 printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default: 
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Le condizioni inserite sono valide. Si procede con la modifica del prezzo di acquisto...\n");
+                printf("\n" ANSI_COLOR_RESET);
                 break;
         }
         break;
@@ -1911,8 +1959,10 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
     while(1){
 
+        printf(ANSI_BOLD);
         printf("Inserisci il prezzo di acquisto per il tuo nuovo prodotto. (Non si accettano numeri negativi o uno zero!) \n");
         printf("Puoi annullare il processo premendo invio. \n");
+        printf(ANSI_COLOR_RESET);
 
 
         //in questo caso non può contenere spazi, avrò in questo modo un controllo in meno da svolgere seguentem.
@@ -1920,15 +1970,15 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
         switch(string_checker_result){
             case 1: 
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Il prezzo di acquisto rimarra' invariato, si procede alla conferma della modifica...\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 unchanged_buyprice = true;
                 break;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED);
                 printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n"ANSI_COLOR_RESET);
                 return 2;
             default: 
                 break;
@@ -1951,16 +2001,18 @@ int sys_modify_user_product(user logged_user, collection user_collection){
         
         //se endptr punta alla stessa area di memoria della stringa (puntatore) temp buy price, vuol dire che il primo elemento era un carattere.
         if(endptr == temp_buyprice){
-            printf("Hai inserito dei caratteri, non sono validi. Si accettano cifre positive non nulle. Riprova.\n");
+            printf(ANSI_COLOR_MAGENTA"Hai inserito dei caratteri, non sono validi. Si accettano cifre positive non nulle. Riprova.\n"ANSI_COLOR_RESET);
             continue;
         } else if(*endptr != '\0'){
-            printf("Hai inserito in parte dei caratteri superflui non validi. Si accettano cifre positive non nulle. Riprova.\n");
+            printf(ANSI_COLOR_MAGENTA"Hai inserito in parte dei caratteri superflui non validi. Si accettano cifre positive non nulle. Riprova.\n"ANSI_COLOR_RESET);
             continue;
         } else if (new_product_buyprice <= 0){
-            printf("Hai inserito un numero negativo o nullo non valido. Si accettano cifre positive non nulle. Riprova.\n");
+            printf(ANSI_COLOR_MAGENTA"Hai inserito un numero negativo o nullo non valido. Si accettano cifre positive non nulle. Riprova.\n"ANSI_COLOR_RESET);
             continue;
         } else {
+            printf("\n" ANSI_COLOR_GREEN);
             printf("Numero valido correttamente inserito...\n");
+            printf("\n"ANSI_COLOR_RESET);
         }
 
         break;
@@ -1970,7 +2022,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
 
     //////////////////////////////////////////////////////////CONFERMA NUOVO PRODOTTO INSERITO/////////////////////////////////////////
-    printf("Il prodotto modificato sara' il seguente:\n\n");
+    printf(ANSI_COLOR_CYAN ANSI_BOLD"Il prodotto modificato sara' il seguente:\n\n" ANSI_COLOR_RESET BOLD_OFF);
 
     printf("Nome: %s\n", unchanged_name ? "Invariato" : new_product_name_io_string);
     printf("Tipologia: %s\n", unchanged_type ? "Invariato" : new_product_type_io_string);
@@ -1980,15 +2032,19 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     else printf("Prezzo di acquisto: %.2f\n\n", new_product_buyprice);
 
 
-    printf("Confermi di voler procedere alla modifica? Inserisci 0 per confermare, 1 per annullare.\n");
+    printf(ANSI_COLOR_MAGENTA ANSI_BOLD"Confermi di voler procedere alla modifica? Inserisci 0 per confermare, 1 per annullare.\n" ANSI_COLOR_RESET BOLD_OFF);
     int confirm = ask_confirmation();
 
     if(confirm == 2){
+        printf("\n" ANSI_COLOR_RED);
         printf("Errore del buffer di input (codice 2). Contattare un amministratore.\n");
+        printf("\n"ANSI_COLOR_RESET);
         return 2;
     }
     if(confirm == 1){
+        printf(ANSI_COLOR_GREEN);
         printf("La modifica del prodotto e' stata annullata correttamente.\n");
+        printf(ANSI_COLOR_RESET);
         return 1;
     }
 
@@ -1998,16 +2054,24 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
     switch (final_result) {
         case 1:
+            printf("\n" ANSI_COLOR_RED);
             printf("ERRORE CRITICO: lista vuota quando non dovrebbe, errore di accesso alla struttura dati in memoria. (errore 4). Contattare un amministratore.\n");
+            printf(ANSI_COLOR_RESET);
             return 4;
         case 2:
+            printf("\n" ANSI_COLOR_RED);
             printf("ERRORE CRITICO: Prodotto non trovato, mentre precedentemente lo è stato. Errore critico (codice 4), contattare un amministratore.\n");
+            printf(ANSI_COLOR_RESET);
             return 2;
         case 3:
+            printf("\n" ANSI_COLOR_RED);
             printf("ERRORE CRITICO: errore nella modifica del prodotto durante la chiamata a search_and_modify_product. Contattare un amministratore (codice 5)\n");
+            printf(ANSI_COLOR_RESET);
             return 5;
         default: 
+            printf("\n" ANSI_COLOR_GREEN);
             printf("Prodotto correttamente modificato!\n");
+            printf(ANSI_COLOR_RESET);
     }
 
     return 0;
@@ -2034,42 +2098,56 @@ int sys_delete_user_product(user logged_user, collection user_collection){
     bool check_space = false;
     
 
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
+    division_break_lines("AREA ELIMINAZIONE PRODOTTO",56);
+    printf("\n" ANSI_COLOR_RESET BOLD_OFF);
+
     //se la lista prodotti è vuota, restituisco 3
     if(user_collection -> products_list_head == NULL){
+        printf(ANSI_COLOR_RED);
         printf("La collezione \"%s\" e' gia' vuota. Non e' presente alcun prodotto da eliminare.\n",user_collection->collection_name);
+        printf(ANSI_COLOR_RESET);
         return 3;
     }
 
     while(1){
 
-        printf("I prodotti all'interno della tua collezione \"%s\" sono i seguenti:\n\n",user_collection->collection_name);
+        printf(ANSI_COLOR_MAGENTA);
+        printf("I prodotti della collezione \"%s\" sono i seguenti:\n\n",user_collection->collection_name);
+        printf(ANSI_COLOR_CYAN);
         int print_result = print_products(user_collection->products_list_head);
+        printf(ANSI_COLOR_RESET);
 
         if(print_result == 1){
+            printf(ANSI_COLOR_RED);
             printf("ERRORE Critico, la lista risulta vuota durante l'accesso in memoria quando non dovrebbe esserlo. Codice 4. Contattare un amministratore.\n");
+            printf(ANSI_COLOR_RESET);
             return 4;
         }
         
         //altrimenti stampo correttamente i prodotti della lista.
 
+        printf("\n"ANSI_BOLD);
         printf("Digita il prodotto che desideri eliminare. Assicurati di inserire correttamente maiuscole/spazi.\n");
         printf("Per annullare l'operazione inserisci una stringa vuota. \n\n");
+        printf(BOLD_OFF);
 
         string_checker_result = sys_input_string_checker(product_name_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
         switch(string_checker_result){
             case 1:
-                printf("\n");
+                printf("\n" ANSI_COLOR_GREEN);
                 printf("Eliminazione annullata correttamente. \n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 1;
             case 2:
-                printf("\n");
+                printf("\n" ANSI_COLOR_RED);
                 printf("Errore durante la lettura del buffer di input stdin. Contattare un amministratore.\n");
-                printf("\n");
+                printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default: 
-                printf("\n");
+                printf("\n" ANSI_COLOR_MAGENTA);
                 printf("Ricerca del prodotto \"%s\" in corso...\n",product_name_io_string);
+                printf(ANSI_COLOR_RESET);
                 break;
         }
 
@@ -2077,41 +2155,47 @@ int sys_delete_user_product(user logged_user, collection user_collection){
 
         switch(exists){
             case 1:
-                printf("ERRORE Critico, la lista risulta vuota durante l'accesso in memoria quando non dovrebbe esserlo. Codice 4. Contattare un amministratore.\n");
+                printf(ANSI_COLOR_RED"ERRORE Critico, la lista risulta vuota durante l'accesso in memoria quando non dovrebbe esserlo. Codice 4. Contattare un amministratore.\n"ANSI_COLOR_RESET);
                 return 4;
             case 2:
-                printf("Il prodotto non e' stato trovato all'interno della lista. Riprova.\n");
+                printf(ANSI_COLOR_MAGENTA"Il prodotto non e' stato trovato all'interno della lista. Riprova.\n"ANSI_COLOR_RESET);
                 continue;
             default:
-                printf("Corrispondenza trovata!\n");
+                printf(ANSI_COLOR_GREEN"Corrispondenza trovata!\n"ANSI_COLOR_RESET);
                 break;
         }
         break;
     }
 
-    printf("Il prodotto che eliminerai e' il seguente: \n");
+    printf("\n");
+    printf(ANSI_COLOR_MAGENTA"Il prodotto che eliminerai e' il seguente: \n"ANSI_COLOR_RESET);
+
+    printf(ANSI_COLOR_CYAN);
     search_and_print_product(user_collection->products_list_head, product_name_io_string);
-    printf("Confermi di volerlo eliminare? Inserisci 0 per confermare, 1 per annullarne l'eliminazione.\n");
+    printf(ANSI_COLOR_RESET);
+
+    printf("\n");
+    printf(ANSI_COLOR_MAGENTA"Confermi di volerlo eliminare? Inserisci 0 per confermare, 1 per annullarne l'eliminazione.\n"ANSI_COLOR_RESET);
     int result = ask_confirmation();
 
     if(result == 1){
-        printf("Operazione annullata correttamente. Il tuo prodotto non verra' eliminato. \n");
+        printf(ANSI_COLOR_GREEN"\nOperazione annullata correttamente. Il tuo prodotto non verra' eliminato. \n"ANSI_COLOR_RESET);
         return 1;
     }
 
     int final_result = remove_product(&(user_collection->products_list_head), product_name_io_string);
 
     if(final_result == 1){
-        printf("ERRORE Critico, la lista dei prodotti risulta vuota quando non dovrebbe. (codice 4). Contattare un amministratore. \n");
+        printf(ANSI_COLOR_RED"ERRORE Critico, la lista dei prodotti risulta vuota quando non dovrebbe. (codice 4). Contattare un amministratore. \n"ANSI_COLOR_RESET);
         return 4;
     } else if (final_result == 2){
-        printf("ERRORE Critico, non e' stata trovata una corrispondenza durante l'eliminazione anche se non dovrebbe accadere (codice 4). Contattare un amministratore.\n");
+        printf(ANSI_COLOR_RED"ERRORE Critico, non e' stata trovata una corrispondenza durante l'eliminazione anche se non dovrebbe accadere (codice 4). Contattare un amministratore.\n"ANSI_COLOR_RESET);
         return 4;
     }
     
     //altrimenti il prodotto e' stato correttamente eliminato.
 
-    printf("Il prodotto \"%s\" e'stato correttamente eliminato\n",product_name_io_string);
+    printf(ANSI_COLOR_GREEN"\nIl prodotto \"%s\" e'stato correttamente eliminato\n"ANSI_COLOR_RESET,product_name_io_string);
     return 0;
 }
 
@@ -2130,38 +2214,45 @@ int sys_delete_user_products(user logged_user, collection user_collection){
 
     int string_checker_result;
 
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
+    division_break_lines("AREA ELIMINAZIONE PRODOTTI",54);
+    printf(ANSI_COLOR_RESET BOLD_OFF);
+
     if(user_collection->products_list_head == NULL){
+        printf("\n"ANSI_COLOR_RED);
         printf("La tua collezione \"%s\" e' gia' vuota, non e' presente alcun prodotto da eliminare.\n",user_collection->collection_name);
+        printf("\n"ANSI_COLOR_RESET);
         return 3;
     }
 
+    printf("\n" ANSI_COLOR_MAGENTA);
     printf("Attenzione %s, stai per eliminare tutti i prodotti dalla collezione \"%s\" definitivamente. \n",logged_user->username, user_collection->collection_name);
-    printf("Sei sicuro di voler procedere? Inserisci 0 per confermare, 1 per annullare l'eliminazione.\n");
+    printf("Sei sicuro di voler procedere? Inserisci 0 per confermare, 1 per annullare l'eliminazione.\n" ANSI_COLOR_RESET);
     int decision = ask_confirmation();
     if(decision == 1){
-        printf("\n");
+        printf("\n" ANSI_COLOR_GREEN);
         printf("Hai annullato correttamente l'operazione.\n");
-        printf("\n");
+        printf("\n" ANSI_COLOR_RESET);
         return 1;
     }
 
     if(decision == 2){
-        printf("\n");
+        printf("\n"ANSI_COLOR_RED);
         printf("Errore lettura del buffer di input. (codice 2). Contattare un amministartore.\n");
-        printf("\n");
+        printf("\n"ANSI_COLOR_RESET);
         return 2;
     }
 
     //altrimenti procedo all'eliminazione.
-    printf("Hai confermato correttamente l'eliminazione...\n");
+    printf(ANSI_COLOR_MAGENTA"\nHai confermato l'eliminazione...\n"ANSI_COLOR_RESET);
     int result = free_products(&(user_collection->products_list_head));
     
     switch(result){
         case 1:
-            printf("La lista risulta vuota quando non dovrebbe. Errore critico (codice 4). Contattare un amministratore.\n");
+            printf(ANSI_COLOR_RED"\nLa lista risulta vuota quando non dovrebbe. Errore critico (codice 4). Contattare un amministratore.\n"ANSI_COLOR_RESET);
             return 4;
         default:
-            printf("La lista prodotti della tua collezione e' stata correttamente svuotata.\n");
+            printf(ANSI_COLOR_GREEN"\nLa lista prodotti della tua collezione e' stata correttamente svuotata.\n"ANSI_COLOR_RESET);
             break;
          }
 

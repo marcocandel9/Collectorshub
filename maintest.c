@@ -33,16 +33,27 @@ int main() {
     sys_insert_collection(logged_user);
     sys_insert_collection(logged_user);
     collection_menu();
-    sys_print_user_collections(logged_user);
+    collection user_collection = NULL;
+    sys_access_user_collection(logged_user, &(user_collection));
+    products_menu();
+    sys_insert_user_product(logged_user,user_collection);
+    sys_insert_user_product(logged_user,user_collection);
+    sys_insert_user_product(logged_user,user_collection);
+    products_menu();
+    sys_delete_user_products(logged_user,user_collection);
 
-    collection_menu();
+    
+
+
+   
 
     //collection accessed_collection = NULL;
     //sys_access_user_collection(logged_user,&(accessed_collection));
 
-    collection_menu();
+    //collection_menu();
     //sys_modify_collection(logged_user);
-    sys_delete_collections(logged_user);
+    //sys_delete_collections(logged_user);
+    
    
 
     //sys_delete_user(&(nuova_lista),user_username);
