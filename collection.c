@@ -18,7 +18,7 @@ Crea una nuova collezione
 Prende in ingresso un puntatore passato per riferimento ad una struct collection, l'array di caratteri del nome della collezione,
 l'array di caratteri del  tipo di collezione
 
-Restituisce 1 in caso di errore di allocazione del nuovo nodo collezione
+Restituisce 1 in caso di errore di allocazione dinamica
 Restituisce 0 se tutto va a buon fine
 */
 int create_collection(collection* new_collection, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN]){
@@ -64,7 +64,7 @@ int  set_collection_name(collection my_collection, char new_name[MAX_STR_LEN]){
 /*
 Setta un nuovo tipo alla collezione
 
-Prende in ingresso un puntatore passato per valore ad una struct collection e il nuovo tipo della collezione
+Prende in ingresso un puntatore ad una struct collection e il nuovo tipo della collezione
 
 Restituisce 1 in caso di puntatore a NULL o non valido
 Restituisce 0 se tutto va a buon fine
@@ -215,13 +215,13 @@ int delete_collection(collection* my_collection){
 
 
 /*
-Printa il nome e il tipo della collezione
+Stampa su terminale nome e il tipo della collezione
 
 Prende in ingresso il puntatore alla collezione (passato per copia)
 
 Restituisce:
 - 1 Se la collezione non è stata ancora creata (PUNTATORE A NULL)
-- 0 e printa il contenuto se tutto va a buon fine
+- 0 e ne stampa il contenuto se tutto va a buon fine
 */
 int print_collection(collection my_collection){
     

@@ -303,7 +303,7 @@ Prende in ingresso il puntatore alla testa della lista passato come copia
 
 Restituisce:
 - 1 se la lista è vuota
-- 0 se va a buon fine e stampa i contenuti informativi di ciascun prodotto presente in ciascun nodo
+- 0 se va a buon fine e stampa il contenuto informativo di ciascun prodotto presente in ciascun nodo
 */
 int print_products(products products_list_head){
     

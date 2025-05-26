@@ -27,7 +27,7 @@ Prende in ingresso il puntatore alla testa della lista collezioni, l'array di ca
 l'array di caratteri per il tipo della nuova collezione
 
 Restituisce:
-- 1 In caso di errori di allocazione
+- 1 In caso di errori di allocazione dinamica
 - 2 In caso di inserimento di un duplicato (NON CONSENTITO)
 - 0 Inserisce la nuova collezione con esito positivo
 */
@@ -225,7 +225,7 @@ int remove_collection(collections* collections_list_head, char key_name[MAX_STR_
 /*
 Stampa il nome ed il tipo delle collezioni della lista collezioni
 
-Prende in ingresso il puntantore alla lista della testa passato come riferimento
+Prende in ingresso il puntatore alla testa della lista passato come riferimento
 
 Restituisce:
 - 1 In casi di lista collezioni non valida o vuota
