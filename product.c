@@ -1,11 +1,15 @@
 #include "product.h"
 //La direttiva #include "product.h" dice al preprocessore di inserire il contenuto del file product.h prima della compilazione.
 
-//prende in ingresso un puntatore ad una struct product passato per riferimento, lo alloca dinamicamente nell'heap e lo popola
-//NB come parametro della funzione non passo un doppio puntatore perchè product è già definito in product.h come un puntatore, quindi 
-//in questo caso scrivendo product* sto passando il puntatore come riferimento (puntatore a puntatore o indirizzo del puntatore)
+/*
+prende in ingresso un puntatore ad una struct product passato per riferimento, lo alloca dinamicamente nell'heap e lo popola
+NB come parametro della funzione non passo un doppio puntatore perchè product è già definito in product.h come un puntatore, quindi 
+in questo caso scrivendo product* sto passando il puntatore come riferimento (puntatore a puntatore o indirizzo del puntatore)
 
-
+Restituisce:
+    0 Se la creazione del nuovo prodotto va a buon fine
+    1 In caso di errore di allocazione del nuovo nodo prodotto
+*/
 int create_product(product* new_product, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
     (*new_product) = (struct product*)malloc(sizeof(struct product));
     if (*new_product == NULL)
@@ -23,7 +27,12 @@ int create_product(product* new_product, char new_name[MAX_STR_LEN], char new_ty
 
 
 
-//Prende in ingresso il puntatore al puntatore di una struct product, ritorna 0 dopo l'eliminazione
+/*Prende in ingresso il puntatore al puntatore di una struct product e ne libera il contenuto in memoria dall'heap
+
+    Restituisce:
+        0 Se tutto va a buon fine
+        1 Se il puntatore passato in ingresso punta a NULL
+*/
 int delete_product(product* product_todelete){
 
     //Restituisce 1 se il puntatore al prodotto punta a NULL (prodotto non esistente o non valido)
@@ -41,11 +50,17 @@ int delete_product(product* product_todelete){
 
 
 
+/*  FUNZIONI GETTER
+    a.	 int get_product_name(product myproduct, char myproduct_name[MAX_STR_LEN])
+    b.	int get_product_type(product myproduct, char myproduct_type[MAX_STR_LEN])
+    c.	int get_product_condition(product myproduct, char myproduct_condition[MAX_STR_LEN])
+    d.	int get_product_buyprice(product myproduct, float* myproduct_buyprice)
+    Prendono in ingresso il puntatore alla struct prodotto e, rispettivamente, le prime 3 degli array di caratteri in cui verrà memorizzato il contenuto informativo del quale si vuole prelevarne il valore, e la quarta un puntatore a float
+        Restituiscono:
+            a)	1 se il puntatore a struct prodotto passato in ingresso punta a NULL (non inizializzato)
+            b)	0 se il valore è stato letto correttamente
 
-//Funzioni getter
-//Prendono in ingresso il puntatore passato come copia e l'array di caratteri (quindi il puntatore all'array),, restituisce 0 se è success, 1 altrimenti
-//La funzione get_product_price ha come parametro formale in ingresso il puntatore a float
-
+*/
 int get_product_name(product myproduct, char myproduct_name[MAX_STR_LEN]){
     
     //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)
@@ -106,8 +121,17 @@ int get_product_buyprice(product myproduct, float* myproduct_buyprice){
 
 
 
-//funzioni setter
+/* FUNZIONI SETTER
+a.	int set_product_name(product myproduct, char new_name[MAX_STR_LEN]);
+b.	int set_product_type(product myproduct, char new_type[MAX_STR_LEN]);
+c.	int set_product_condition(product myproduct, char new_condition[MAX_STR_LEN]);
+d.	int set_product_buyprice(product myproduct, float new_buyprice);
+    Prendono in ingresso il puntatore ad una struct prodotto, settano il nuovo contenuto informativo passato nelle variabili di appoggio richieste in ingresso (array di caratteri per le prime 3 e float per l’ultima).
+    Restituiscono:
+        a)	1 se il puntatore a struct prodotto passato in ingresso punta a NULL (non inizializzato)
+        b)	0 se l’operazione è riuscita
 
+*/
 //riceve in ingresso il puntatore passato per copia e il contenuto informativo da aggiornare; ritorna 0 se success, 1 altrimenti
 int set_product_name(product myproduct, char new_name[MAX_STR_LEN]){
 
@@ -157,13 +181,12 @@ int set_product_condition(product myproduct, char new_condition[MAX_STR_LEN]){
 
 
 /*
-Funzione che modifica il contenuto informativo del prodotto. Se la stringa passata come parametro è vuota, allora non modifica 
-quel contenuto informativo
-
+modifica il contenuto informativo del prodotto. Se la stringa passata come parametro è vuota o, nel caso del float prezzo di acquisto, riceve un valore considerato come “sentinella” cioè -1.0f, allora non modifica quel contenuto informativo
 Prende in ingresso il puntatore passato come riferimento al prodotto, le stringhe del contenuto informativo del prodotto
+    Restituisce:
+        a)	1 se il puntatore a struct prodotto passato in ingresso punta a NULL (non inizializzato)
+        b)	0 se la modifica avviene con esito positivo
 
-Restituisce 1 se il puntatore al prodotto è non esistente o non valido
-Restituisce 0 se la modifica avviene con esito positivo
 */
 int modify_product(product* myproduct, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price){
 
@@ -207,7 +230,11 @@ int set_product_buyprice(product myproduct, float new_buyprice){
     return 0; //success
 }
 
-//ritorna 1 se il puntatore punta NULL, printa altrimenti i contenuti informativi da lui puntati.
+/*
+Prende in ingresso il puntatore a struct prodotto, restituisce 1 se il puntatore al prodotto punta a NULL (prodotto non inizializzato), 
+0 altrimenti (tutto va a buon fine) e stampa a schermo il contenuto informativo della struct prodotto 
+(Nome, tipologia, condizioni, prezzo di acquisto).
+*/
 int print_product(product myproduct){
 
     //Controlla se il puntatore al prodotto è NULL, restituisce 1 se lo è (prodotto non esistente o non valido)

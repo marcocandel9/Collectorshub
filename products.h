@@ -13,8 +13,6 @@ struct products{
 
 typedef struct products* products;  
 
-int create_products_list(products* head);
-
 int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price);
 
 int remove_product(products* products_list_head, char key_name [MAX_STR_LEN]);

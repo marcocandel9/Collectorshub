@@ -2,21 +2,9 @@
 
 
 
-//Crea una nuova lista prodotti VUOTA (Puntatore a NULL)
-//prende in ingresso un puntatore passato per riferimento (products è stato definito con la typdef come un puntatore)
-int create_products_list(products* head){
-    
-    (*head) = NULL;
-    return 0; //Success
-
-}
-
-
-
-
 /*
-Inserisce un nuovo prodotto nella lista. 
-Prende in ingresso il puntatore passato come riferimento alla lista prodotti e il contenuto informativo del nuovo prodotto, 
+Inserisce un nuovo prodotto nella lista. Implementa anche l'inserimento del primo elemento di una lista precedentemente vuota. 
+Prende in ingresso il puntatore passato come riferimento alla lista prodotti e il contenuto informativo del nuovo prodotto
 
 Restituisce:
 - 1 in caso di errori di allocazione memoria
@@ -95,9 +83,9 @@ int insert_product(products* products_list_head, char new_name[MAX_STR_LEN], cha
 
 
 /*
-Funzione che effettua una ricerca ORDINATA del prodotto sulla base del suo nome e lo rimuove dalla lista
+Effettua una ricerca ORDINATA alfabeticamente del prodotto sulla base del suo nome e lo rimuove dalla lista
 
-Prende in ingresso: puntatore testa passato per riferimento, array di caratteri del nome dell'elemento da ricercare ed eliminare
+Prende in ingresso: puntatore alla testa della lista passato per riferimento, array di caratteri del nome dell'elemento da ricercare ed eliminare
 
 Restituisce:
 - 0 in caso di Success
