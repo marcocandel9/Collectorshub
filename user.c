@@ -277,6 +277,32 @@ int get_password(user my_user, char my_password[MAX_STR_LEN]){
 
 
 
+/*
+Funzione che copia il ruolo dell'utente nell'array di caratteri my_user_role passato in ingresso
+
+Restituisce:
+- 1 Se l'utente non è stato ancora inizializzato e quindi non esiste (puntatore a null)
+- 0 Se tutto va a buon fine
+*/
+int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]){
+    
+    if(my_user == NULL) return 1;
+
+    switch(my_user->role) {
+        case USER:
+            strcpy(my_user_role, "USER");
+            break;
+        case ADMIN:
+            strcpy(my_user_role, "ADMIN");
+            break;
+        default:
+            strcpy(my_user_role, "ERRORE");
+            break;
+    }
+
+    return 0;
+}
+
 
 
 /*

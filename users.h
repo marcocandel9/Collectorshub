@@ -94,6 +94,9 @@ Restituisce:
 int search_and_modify_user_credentials(users* users_list_head, char key_username[MAX_STR_LEN], char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN]);
 
 
+int search_and_promote_user(users* users_list_head, char key_username[MAX_STR_LEN], user_role new_role);
+
+
 
 /*
 Libera l'intera lista utenti, deallocando completamente anche tutte le strutture dati gerarchicamente inferiori

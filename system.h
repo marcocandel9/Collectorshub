@@ -104,8 +104,7 @@ Restituisce:
 int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]);
 
 
-//WIP
-int sys_promote_user(users* users_list_head , user user_to_promote);
+
 
 
 //////////////////////////////////////////////////////MENÙ COLLEZIONI///////////////////////////////////////////////////////////////////
@@ -254,4 +253,25 @@ int load_products(products* products_list_head, FILE* fp);
 int sys_save_files(users users_list_head);  // apre il file, chiama save_users
 int sys_load_files(users* users_list_head); // apre il file, chiama load_users
 */
+
+
+
+
+
+/*Permette rispettivamente:
+(LA SOLUZIONE QUI IMPLEMENTATA È OVVIAMENTE UNA SOLUZIONE NON SICURA, LA PASSWORD Per ottenere i privilegi di admin non dovrebbe essere "hardcoded" nel codice sorgente ma andrebbe ad esempio
+letta da un file/sorgente sicura). 
+
+    //Agli utenti base di venire convertiti in utenti ADMIN se superano il controllo di accesso e accedere al menu admin
+    //Agli utenti admin di accedere direttamente al menu admin
+    
+    Restituisce: 
+        1 In caso di annullamento da parte dell'utente
+        2 In caso di errore di lettura del buffer di input
+        4 In caso di errore critico restituito dalla funzione search and promote user (Non dovrebbe accadere secondo la logica dell'interfaccia logica)
+        0 In caso di success
+
+*/
+int sys_access_admin_menu(user logged_user, users* users_list_head);
+
 #endif

@@ -351,6 +351,55 @@ int search_and_modify_user_credentials(users* users_list_head, char key_username
 
 
 /*
+Cerca un utente nella lista utenti con ordinamento alfabetico e ne promuove il ruolo a quello specificato nel parametro di ingresso
+Utilizza la funzione set_user_role di user.h 
+
+Restituisce:
+- 0 Se tutto va a buon fine
+- 1 Se la lista utenti è vuota
+- 2 Se non è stata trovata una corrispondenza
+- 3 Utente non inizializzato (Improbabile)
+*/
+int search_and_promote_user(users* users_list_head, char key_username[MAX_STR_LEN], user_role new_role){
+
+    if(*users_list_head == NULL) return 1; //Restituisce 1, lista vuota o non inizializzata 
+
+    //Puntatore di appoggio per scorrere la lista utenti
+    users q = *users_list_head;
+    char my_username[MAX_STR_LEN];
+
+    //Ricerca ordinata sulla base del nome utente (array di caratteri key_username)
+    while(q != NULL){
+        get_username(q->user_elem,my_username); 
+
+        //strcmp restituisce:
+        // - un valore negativo se key_username è alfabeticamente inferiore al nome dell'utente -> devo interrompere la ricerca
+        // - 0 se key_username == username
+        // - un valore positivo se key_username è alfabeticamente superiore al nome dell'utente -> devo continuare a cercare
+        int is_equal = strcmp(key_username,my_username);
+
+        if(is_equal == 0) break; //Corrispondenza trovata, esco dal ciclo while
+
+        if(is_equal < 0) return 2; //Utente non trovato, restituisci 2
+
+        q= q-> next;
+    }
+
+    if(q == NULL) return 2; //Se arrivo alla coda della lista, q sarà uguale a NULL, restituisco 2 (Utente non trovato)
+
+    //Modifico le credenziali dell'utente
+    int result = set_user_role(q->user_elem, new_role);
+
+    if(result == 1) return 3; // Utente non inizializzato (improbabile)
+
+    return 0; //Success
+}
+
+
+
+
+
+/*
 Libera l'intera lista utenti, deallocando completamente anche tutte le strutture dati gerarchicamente inferiori
 
 Restituisce: 

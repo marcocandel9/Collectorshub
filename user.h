@@ -60,6 +60,8 @@ int get_username(user my_user, char my_username[MAX_STR_LEN]);
 
 int get_password(user my_user, char my_password[MAX_STR_LEN]);
 
+int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]);
+
 int delete_user(user* my_user); 
 
 int save_credentials(user my_user);

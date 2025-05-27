@@ -94,14 +94,15 @@ Restituisce:
 - 1 Se l'utente desidera accedere al menù collezioni
 - 2 Se l'utente desidera modificare le sue credenziali
 - 3 Se l'utente desidera cancellarsi dal sistema in via definitiva
-- 4 per effettuare il log-out
+- 4 per accedere al menù admin
+- 5 Per effettuare il logout
 
 */
 int user_menu(){
 
     clear_screen();
 
-    int scelta = 0, min = 1, max = 4;
+    int scelta = 0, min = 1, max = 5;
 
     printf(ANSI_COLOR_CYAN ANSI_BOLD);
     user_menu_header();
@@ -110,7 +111,8 @@ int user_menu(){
     printf("                                                                            1) Accedi al menu' collezioni\n");
     printf("                                                                            2) Modifica le tue credenziali\n");
     printf("                                                                            3) Cancella il tuo utente (DEFINITIVO!)\n");
-    printf("                                                                            4) Esci (log-out) \n");
+    printf("                                                                            4) Accedi al menu' ADMIN\n");
+    printf("                                                                            5) Esci (log-out) \n");
     printf("\n");
     printf("\n");
     printf("\n");
@@ -211,7 +213,7 @@ Implementa l'I/O del menù Admin
 
 Restituisce:
 - 1 Se l'admin desidera visualizzare tutti gli utenti della lista utenti
-- 2 Se l'admin desidera cancellare definitivamente un utente
+- 2 Se l'admin desidera cancellare definitivamente un utente (solo utenti base possono essere eliminati)
 - 3 Se l'admin desidera promuovere un utente base ad Admin
 - 4 Se l'admin desidera accedere al menù collezioni
 - 5 Se l'admin desidera effettuare il log - out (torna al menù login)
@@ -245,7 +247,7 @@ int admin_menu(){
 
 
 /*
-Implementa l'I/O del menù Superuser
+Implementa l'I/O del menù Superuser   (NON UTILIZZATO NELLA VERSIONE 1.0)
 
 Restituisce:
 - 1 Se il superuser desidera visualizzare tutti gli utenti della lista utenti
@@ -281,77 +283,3 @@ int superuser_menu(){
 
 
 
-
-/*
-Implementa l'I/O del SOTTO menù collezioni di un utente (RISERVATO ALLA GESTIONE DI UN SUPERUSER)
-
-Restituisce:
-- 1 Se il superuser desidera visualizzare tutte le collezioni di un utente
-- 2 Se il superuser desidera modificare una collezione di un utente
-- 3 Se il superuser desidera eliminare una collezione dell'utente
-- 4 Se il superuser desidera eliminare tutte le collezioni dell'utente
-- 5 Se il superuser desidera accedere ad una collezione dell'utente
-- 6 Se desidera ritornare al menù superuser
-*/
-int superuser_collections_submenu(){
-
-    clear_screen();
-
-    int scelta = 0, min = 1, max = 6;
-
-    printf(ANSI_COLOR_RED ANSI_BOLD);
-    superuser_menu_header();
-    printf(ANSI_COLOR_RESET);
-    printf("                                                                            Benvenuto/a nel menu' SU di gestione dei prodotti della collezione utente!\n\n" BOLD_OFF);
-    printf("                                                                            Cosa desideri fare con questo utente:\n");
-    printf("                                                                            1) Visualizza tutte le sue collezioni\n");
-    printf("                                                                            2) Modifica una collezione\n");
-    printf("                                                                            3) Elimina definitivamente una collezione\n");
-    printf("                                                                            4) Elimina definitivamente tutte le sue collezioni \n");
-    printf("                                                                            5) Accedi ad una sua collezione\n");
-    printf("                                                                            6) Ritorna al menu' superuser\n");
-    printf("\n");
-    printf("\n");
-    printf("\n");
-
-    scelta = get_valid_input(min,max);
-    return scelta;
-}
-
-
-
-
-
-/*
-Implementa l'I/O del SOTTO menù prodotti di un utente (RISERVATO ALLA GESTIONE DI UN SUPERUSER)
-
-Restituisce:
-- 1 Se il superuser desidera visualizzare tutti i prodotti della collezione dell'utente
-- 2 Se il superuser desidera modificare un prodotto dell'utente
-- 3 Se il superuser desidera eliminare un prodotto dell'utente
-- 4 Se il superuser desidera eliminare tutti i prodotto della collezione dell'utente
-- 5 Se il superuser desidera accedere ritornare al sotto menù SU collezioni
-*/
-int superuser_products_submenu(){
-
-    clear_screen();
-
-    int scelta = 0, min = 1, max = 5;
-
-    printf(ANSI_COLOR_RED ANSI_BOLD);
-    superuser_menu_header();
-    printf(ANSI_COLOR_RESET);
-    printf("                                                                            Benvenuto/a nel menu' SU di gestione dei prodotti della collezione utente!\n\n" BOLD_OFF);
-    printf("                                                                            Cosa desideri fare con questo utente:\n");
-    printf("                                                                            1) Visualizza tutti i prodotti della collezione dell'utente\n");
-    printf("                                                                            2) Modifica un prodotto\n");
-    printf("                                                                            3) Elimina definitivamente un prodotto\n");
-    printf("                                                                            4) Elimina definitivamente tutti i prodotti \n");
-    printf("                                                                            5) Ritorna al sotto-menu' collezioni\n");
-    printf("\n");
-    printf("\n");
-    printf("\n");
-
-    scelta = get_valid_input(min,max);
-    return scelta;
-}

@@ -27,6 +27,17 @@ int main() {
     user_menu();
     //sys_modify_credentials(&(logged_user),&(nuova_lista));
 
+    sys_access_admin_menu(logged_user,&(nuova_lista));
+
+    char new_role[MAX_STR_LEN];
+
+    get_user_role(logged_user,new_role);
+
+    printf("%s",new_role);
+    
+    
+
+    /*
     collection_menu();
     sys_insert_collection(logged_user);
     sys_insert_collection(logged_user);
@@ -41,7 +52,7 @@ int main() {
     sys_insert_user_product(logged_user,user_collection);
     products_menu();
     sys_delete_user_products(logged_user,user_collection);
-
+    */
     
 
 

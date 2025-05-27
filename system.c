@@ -2259,3 +2259,83 @@ int sys_delete_user_products(user logged_user, collection user_collection){
     return 0;
     
 }
+
+
+
+/*Permette rispettivamente:
+(LA SOLUZIONE QUI IMPLEMENTATA È OVVIAMENTE UNA SOLUZIONE NON SICURA, LA PASSWORD Per ottenere i privilegi di admin non dovrebbe essere "hardcoded" nel codice sorgente ma andrebbe ad esempio
+letta da un file/sorgente sicura). 
+
+    //Agli utenti base di venire convertiti in utenti ADMIN se superano il controllo di accesso e accedere al menu admin
+    //Agli utenti admin di accedere direttamente al menu admin
+    
+    Restituisce: 
+        1 In caso di annullamento da parte dell'utente
+        2 In caso di errore di lettura del buffer di input
+        4 In caso di errore critico restituito dalla funzione search and promote user (Non dovrebbe accadere secondo la logica dell'interfaccia logica)
+        0 In caso di success
+
+*/
+int sys_access_admin_menu(user logged_user, users* users_list_head){
+
+    int string_checker_result;
+    char input_string[MAX_STR_LEN];
+    char admin_access_secret_string[MAX_STR_LEN] = "SecretAdminPass";   ///LA CHIAVE DI ACCESSO NON DOVREBBE ESSERE OVVIAMENTE HARDCODED, ANDREBBE LETTA DA UN FILE CRITTOGRAFATO. È A SCOPO DIMOSTRATIVO.
+
+    printf(ANSI_COLOR_GREEN ANSI_BOLD);
+    division_break_lines("AREA ACCESSO AI PRIVILEGI DI ADMIN",54);
+    printf(ANSI_COLOR_RESET BOLD_OFF);
+
+    //Se l'utente loggato è già un ADMIN, allora la funzione restituirà 0.
+    if(logged_user->role == ADMIN){
+        printf(ANSI_BOLD ANSI_COLOR_CYAN"/n Benvenuto/a Admin! Verrai reindirizzato al menù...\n"BOLD_OFF ANSI_COLOR_RESET);
+        return 0;
+    }
+
+    printf("%s, attualmente disponi soltanto dei privilegi base. Inserisci la ",logged_user->username);
+    printf(ANSI_COLOR_MAGENTA"chiave segreta di accesso "ANSI_COLOR_RESET);
+    printf("per ottenerne i privilegi e accedere al menu.\n");
+    printf("Puoi inserire una stringa vuota premendo invio per annullare l'operazione.\n");
+        
+    while(1){
+        //Altrimenti devo effettuare il controllo sull'accesso ai privilegi da admin e cambiare il ruolo dell'utente da base ad ADMIN.
+
+        string_checker_result = sys_input_string_checker(input_string,true,MIN_STR_LEN,MAX_STR_LEN);
+        switch(string_checker_result){
+            case 1:
+                printf("\n"ANSI_COLOR_GREEN);
+                printf("Hai annullato correttamente l'operazione...\n");
+                printf("\n"ANSI_COLOR_RESET);
+                return 1;
+            case 2:
+                printf("\n" ANSI_COLOR_RED);
+                printf("Errore Critico (codice 2): errore di lettura del buffer di input. Contattare un amministratore.\n");
+                printf("\n" ANSI_COLOR_RESET);
+                return 2;
+            case 0:
+                int is_equal = strcmp(input_string,admin_access_secret_string);
+                if(is_equal != 0){
+                    printf(ANSI_COLOR_RED"Chiave di accesso errata. Riprova.\n"ANSI_COLOR_RESET);
+                    continue;
+                }
+                break; //altrimenti la chiave è corretta esco dallo switch case
+        }
+    
+        printf(ANSI_COLOR_GREEN"\nHai inserito la chiave di accesso corretta!\n"ANSI_COLOR_RESET);
+        break;
+    }
+
+    char username[MAX_STR_LEN];
+    get_username(logged_user,username);
+
+    int result = search_and_promote_user(users_list_head, username, ADMIN);
+
+    if(result != 0){
+        printf( "ERORRE CRITICO: (codice 4), errore di utilizzo funzione search and promote user. Contattare un amministratore.\n");
+        return 4;
+    }
+
+    printf(ANSI_COLOR_MAGENTA"Adesso il tuo utente gode dei privilegi admin. Verrai reindirizzato al menu richiesto...\n"ANSI_COLOR_RESET);
+    return 0;
+
+}
