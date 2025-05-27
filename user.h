@@ -14,20 +14,15 @@ Un utente BASE (USER) può solo accedere al menù di base, menù nel quale sarà
 - Modificare username e password 
 - cancellare il proprio profilo utente
 
-Un utente ADMIN può accedere al menù ADMIN, menù nel quale sarà possibile: 
-- Aggiungere o rimuovere utenti dalla lista utenti
-- Promuovere utenti base ad ADMIN (Ma non superuser)
-
-Un utente SUPERUSER può accedere al menù SUPERUSER, menù nel quale sarà possibile:
+Un utente ADMIN può accedere al menù ADMIN, menù nel quale sarà possibile:
 - Avere pieno controllo di tutti gli utenti (promozione ad admin o superuser, eliminazione)
 - Cancellazione della lista collezioni di ciascun utente
 - Cancellazione della lista prodotti di ciascuna collezione di ciascun utente
 
 */
 typedef enum {
-    USER,
-    ADMIN,
-    SUPERUSER,
+    USER,   //0
+    ADMIN,  //1 
 } user_role;
 
 
@@ -47,7 +42,7 @@ typedef struct user* user;
 
 int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN], user_role new_user_role);
 
-int check_user_privilege(user_role my_user_role, user_role new_user);
+int confront_user_privilege(user_role my_user_role, user_role new_user);
 
 int validate_password(char password[MAX_STR_LEN]);
 

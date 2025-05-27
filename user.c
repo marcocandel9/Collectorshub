@@ -42,21 +42,26 @@ int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_passwor
 
 
 /*
-Dati due ruoli in ingresso, ne confronta l'ordine di importanza
-Nella logica del programma, un utente base non può compiere azioni da utente di gerarchia superiore (ADMIN o SUPERUSER)
-Analogalmente, un ADMIN non può compiere azioni da SUPERUSER. Un SUPERUSER ha piena libertà, e in quel caso il controllo
-
-Restituisce:
-- 1 Se il primo ruolo è inferiore al secondo o uguale (accesso negato)
-- 0 Se il primo ruolo è superiore al secondo o se sono entrambi di grado massimo (SUPERUSER) (accesso consentito)
-*/
-int check_user_privilege(user_role this_user_role, user_role that_user_role){
+  Confronta due ruoli utente in termini di priorità gerarchica.
+  
+   Parametri:
+    - this_user_role: ruolo del chiamante (chi chiede di eseguire un'azione)
+    - that_user_role: ruolo del bersaglio (su cui si vuole agire)
+ 
+   Restituisce:
+    - 1 se il ruolo del chiamante è inferiore o uguale a quello del bersaglio → accesso negato
+    - 0 se il ruolo del chiamante è superiore → accesso consentito
+  
+   Questo confronto è valido anche se in futuro verranno aggiunti altri ruoli alla enum definita in user.h.
+   I ruoli devono essere ordinati in `enum user_role` in ordine crescente di privilegi.
+  
+   Esempi:
+    - USER vs ADMIN  → 1 (negato)
+    - ADMIN vs USER  → 0 (consentito)
+    - ADMIN vs ADMIN → 1 (negato)
+ */
+int confront_user_privilege(user_role this_user_role, user_role that_user_role){
     
-     // Se entrambi i ruoli sono SUPERUSER
-     if (this_user_role == SUPERUSER && that_user_role == SUPERUSER) {
-        return 0;  // Entrambi hanno il massimo livello di privilegio
-    }
-
     // Se il primo ruolo è uguale o inferiore al secondo, restituisce 1 (accesso negato)
     if (this_user_role <= that_user_role) {
         return 1;  // Ruolo inferiore o uguale
