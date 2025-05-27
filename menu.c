@@ -224,11 +224,11 @@ int admin_menu(){
 
     int scelta = 0, min = 1, max = 5;
 
-    printf(ANSI_COLOR_RED ANSI_BOLD);
+    printf(ANSI_COLOR_YELLOW ANSI_BOLD);
     admin_menu_header();
-    printf(ANSI_COLOR_RESET);
-    printf("                                                                            Benvenuto/a nel menu' ADMIN!\n\n" BOLD_OFF);
-    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
+    printf(ANSI_COLOR_YELLOW ANSI_BOLD);
+    printf("                                                                            Benvenuto/a nel menu' ADMIN!\n\n" );
+    printf("                                                                            Seleziona una tra le seguenti opzioni:\n"BOLD_OFF);
     printf("                                                                            1) Visualizza tutti gli utenti\n");
     printf("                                                                            2) Cancella definitivamente un utente\n");
     printf("                                                                            3) Promuovi ad Admin un utente\n");

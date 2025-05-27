@@ -107,4 +107,19 @@ Restituisce:
 */
 int free_users(users* users_list_head);
 
+
+
+
+/*
+Stampa l'username ed il ruolo di ogni utente della lista utenti. 
+
+Prende in ingresso il puntatore alla testa della lista passato come riferimento
+
+Restituisce:
+- 1 In casi di lista collezioni non valida o vuota
+- 0 In caso di Successo
+*/
+int print_users(users users_list_head);
+
+
 #endif

@@ -42,7 +42,7 @@ typedef struct user* user;
 
 int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN], user_role new_user_role);
 
-int confront_user_privilege(user_role my_user_role, user_role new_user);
+int compare_user_privilege(user_role this_user_role, user_role that_user_role);
 
 int validate_password(char password[MAX_STR_LEN]);
 
@@ -62,9 +62,11 @@ int get_password(user my_user, char my_password[MAX_STR_LEN]);
 
 int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]);
 
+int role_checker(user my_user, user_role required_role);
+
 int delete_user(user* my_user); 
 
-int save_credentials(user my_user);
+int print_user(user my_user);
 
 
 

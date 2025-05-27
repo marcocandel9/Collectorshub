@@ -42,35 +42,42 @@ int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_passwor
 
 
 /*
-  Confronta due ruoli utente in termini di priorità gerarchica.
+  Confronta due ruoli utente in termini di priorità gerarchica. È utilizzabile sia per verificare la gerarchia di due ruoli passati in ingresso, sia per verificare che siano uguali. 
   
    Parametri:
-    - this_user_role: ruolo del chiamante (chi chiede di eseguire un'azione)
-    - that_user_role: ruolo del bersaglio (su cui si vuole agire)
+    - this_user_role: primo ruolo del confronto (di solito, il chiamante)
+    - that_user_role: secondo ruolo del confronto (di solito, o è il ruolo di un utente sul quale si vuole eseguire una operazione, o uno specifico ruolo richiesto)
  
    Restituisce:
-    - 1 se il ruolo del chiamante è inferiore o uguale a quello del bersaglio → accesso negato
-    - 0 se il ruolo del chiamante è superiore → accesso consentito
+    - 2 se il ruolo del chiamante è uguale a quello del bersaglio
+    - 1 se il ruolo del chiamante è inferiore a quello del bersaglio 
+    - 0 se il ruolo del chiamante è superiore 
   
    Questo confronto è valido anche se in futuro verranno aggiunti altri ruoli alla enum definita in user.h.
    I ruoli devono essere ordinati in `enum user_role` in ordine crescente di privilegi.
   
    Esempi:
-    - USER vs ADMIN  → 1 (negato)
-    - ADMIN vs USER  → 0 (consentito)
-    - ADMIN vs ADMIN → 1 (negato)
+    - USER vs ADMIN  → 1 
+    - ADMIN vs USER  → 0 
+    - ADMIN vs ADMIN → 2
  */
-int confront_user_privilege(user_role this_user_role, user_role that_user_role){
+int compare_user_privilege(user_role this_user_role, user_role that_user_role){
     
-    // Se il primo ruolo è uguale o inferiore al secondo, restituisce 1 (accesso negato)
-    if (this_user_role <= that_user_role) {
-        return 1;  // Ruolo inferiore o uguale
+    // Se il primo ruolo è inferiore al secondo, restituisce 1 
+    if (this_user_role < that_user_role) {
+        return 1;  // Ruolo inferiore 
     }
 
-    // Se il primo ruolo è superiore al secondo, restituisce 0 (accesso consentito)
+    // Se il primo ruolo è uguale al secondo, restituisce 2
+    if (this_user_role == that_user_role){
+        return 2; // Ruolo uguale
+    }
+
+    // Se il primo ruolo è superiore al secondo, restituisce 0 
     return 0;
 
 }
+
 
 
 
@@ -305,6 +312,38 @@ int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]){
 
 
 
+
+/*
+Controlla che un utente, passato come parametro in ingresso alla funzione, abbia ESATTAMENTE il ruolo richiesto dal parametro anch'esso passato in ingresso. 
+
+Parametri:
+    my_user: utente del quale si vuole verificare che il ruolo sia uguale a required_role
+    required_role: ruolo di riferimento per il confronto
+
+Restituisce: 
+    - 1 Se l'utente non è stato inizializzato
+    - 2 Se il ruolo dell'utente non è lo stesso di required_role
+    - 0 Se l'utente ha lo stesso ruolo richiesto in required_role
+
+*/
+int role_checker(user my_user, user_role required_role){
+
+    char my_user_role[MAX_STR_LEN];
+    
+    int result = get_user_role (my_user, my_user_role);
+
+    if(result == 1) return 1; //Utente non inizializzato, errore
+
+    //Altrimenti controlla che l'utente abbia quel ruolo specifico
+    
+    result = compare_user_privilege(my_user->role , required_role);
+
+}
+
+
+
+
+
 /*
 Dealloca la memoria riservata ad un utente e a tutte le sue strutture dati associate, cancellandolo e impostanto il suo puntatore a NULL
 
@@ -326,3 +365,18 @@ int delete_user(user* my_user){
     return 0;
 }
 
+
+
+int print_user(user my_user){
+
+    char my_user_username[MAX_STR_LEN];
+    char my_user_role[MAX_STR_LEN];
+
+    //Passa agli array di caratteri nome e ruolo alle funzioni getter
+    get_username(my_user, my_user_username);
+    get_user_role(my_user, my_user_role);
+
+
+    printf("%s, %s\n", my_user_username, my_user_role);
+    return 0; //Success
+}

@@ -4,13 +4,13 @@
 
 
 
-sys_admin_priviledge_checker(user logged_user);
 
-sys_admin_print_users(users users_list_head);
+int sys_admin_print_users(user logged_user, users users_list_head);
 
-sys_admin_delete_user(users* users_list_head, char key_username[MAX_STR_LEN]);
+int sys_admin_delete_user(user logged_user, users* users_list_head);
 
-sys_admin_promote_base_user(users users_list_head, char key_username[MAX_STR_LEN]);
+int sys_admin_promote_base_user(user logged_user, users* users_list_head);
+
 
 
 

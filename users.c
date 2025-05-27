@@ -427,3 +427,26 @@ int free_users(users* users_list_head){
 
     return 0; //Success
 }
+
+
+/*
+Stampa l'username ed il ruolo di ogni utente della lista utenti. 
+
+Prende in ingresso il puntatore alla testa della lista passato come riferimento
+
+Restituisce:
+- 1 In casi di lista utenti non valida o vuota
+- 0 In caso di Successo
+*/
+int print_users(users users_list_head){
+
+     //Puntatore alla testa della lista utenti uguale a NULL -> Lista vuota , restitusisce 1
+    if(users_list_head == NULL) return 1;
+
+    //Altrimenti stampa la lista
+    while(users_list_head != NULL){
+        print_user((users_list_head)->user_elem);
+        users_list_head = users_list_head->next;
+    }
+    return 0; //Success, lista printata
+}

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "system.h"
+#include "system_admin.h"
 #include "menu.h"
 
 int main() {
@@ -20,8 +20,11 @@ int main() {
     users nuova_lista = NULL;
     user logged_user = NULL;
 
-    login_menu();
+   
     sys_register_user(&(nuova_lista));
+    sys_register_user(&(nuova_lista));
+    sys_register_user(&(nuova_lista));
+
     login_menu();
     logged_user = sys_login_user(&(nuova_lista));
     user_menu();
@@ -29,12 +32,15 @@ int main() {
 
     sys_access_admin_menu(logged_user,&(nuova_lista));
 
-    char new_role[MAX_STR_LEN];
+    admin_menu();
 
-    get_user_role(logged_user,new_role);
+    sys_admin_delete_user(logged_user,&(nuova_lista));
 
-    printf("%s",new_role);
-    
+    admin_menu();
+
+    sys_admin_promote_base_user(logged_user,&(nuova_lista));
+
+    sys_admin_print_users(logged_user, nuova_lista);
     
 
     /*
