@@ -7,12 +7,17 @@ const char allowed_symbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 Crea un nuovo utente allocandone la memoria dinamicamente e associandone un proprio username, ruolo e password, quest'ultima validata 
 dalla funzione validate_password.
 
+Parametri:
+    - new_user: puntatore passato per riferimento ad una struct user dell'utente che si vuole allocare dinamicamente
+    - new_username: array di caratteri contenenti il nuovo username utente
+    - new_password: array di caratteri contenente la nuova password utente
+    - new_user_role ruolo dell'utente (base o admin)
 
 Restituisce:
-- 1 Se l'utente è già esistente (puntatore a struct user diverso da null quindi già inizializzato)
-- 2 Se la password non è validata correttamente
-- 3 In caso di errori di allocazione del nuovo utente
-- 0 Se tutto va a buon fine
+    - 1 Se l'utente è già esistente (puntatore a struct user diverso da null quindi già inizializzato)
+    - 2 Se la password non è validata correttamente
+    - 3 In caso di errori di allocazione del nuovo utente
+    - 0 Se tutto va a buon fine
 
 */
 int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN], user_role new_user_role){
@@ -42,25 +47,30 @@ int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_passwor
 
 
 /*
-  Confronta due ruoli utente in termini di priorità gerarchica. È utilizzabile sia per verificare la gerarchia di due ruoli passati in ingresso, sia per verificare che siano uguali. 
-  
-   Parametri:
-    - this_user_role: primo ruolo del confronto (di solito, il chiamante)
-    - that_user_role: secondo ruolo del confronto (di solito, o è il ruolo di un utente sul quale si vuole eseguire una operazione, o uno specifico ruolo richiesto)
- 
-   Restituisce:
-    - 2 se il ruolo del chiamante è uguale a quello del bersaglio
-    - 1 se il ruolo del chiamante è inferiore a quello del bersaglio 
-    - 0 se il ruolo del chiamante è superiore 
-  
-   Questo confronto è valido anche se in futuro verranno aggiunti altri ruoli alla enum definita in user.h.
-   I ruoli devono essere ordinati in `enum user_role` in ordine crescente di privilegi.
-  
-   Esempi:
-    - USER vs ADMIN  → 1 
-    - ADMIN vs USER  → 0 
-    - ADMIN vs ADMIN → 2
- */
+    Confronta due ruoli utente in termini di priorità gerarchica.
+
+    Questa funzione può essere utilizzata sia per confrontare la gerarchia relativa tra due ruoli, 
+    sia per verificarne l’uguaglianza. È progettata per essere estendibile nel caso in cui vengano 
+    aggiunti nuovi ruoli all’enumerazione `user_role`.
+
+    I ruoli devono essere definiti in ordine crescente di privilegi all'interno della enum `user_role`
+    (es. USER < ADMIN < SUPERADMIN ...).
+
+    Parametri:
+        - this_user_role: ruolo dell’utente chiamante (chi effettua l’azione)
+        - that_user_role: ruolo dell’utente bersaglio (su cui si vuole agire, o ruolo richiesto)
+
+    Valori di ritorno:
+        - 0 -> il ruolo del chiamante è gerarchicamente superiore
+        - 1 -> il ruolo del chiamante è gerarchicamente inferiore
+        - 2 -> i due ruoli sono **equivalenti**
+
+    Esempi:
+        - compare_user_privilege(USER, ADMIN)  → 1
+        - compare_user_privilege(ADMIN, USER)  → 0
+        - compare_user_privilege(ADMIN, ADMIN) → 2
+*/
+
 int compare_user_privilege(user_role this_user_role, user_role that_user_role){
     
     // Se il primo ruolo è inferiore al secondo, restituisce 1 
@@ -83,19 +93,30 @@ int compare_user_privilege(user_role this_user_role, user_role that_user_role){
 
 
 /*
-Verifica che la password abbia le seguenti caratteristiche:
-- Lunga almeno 7 caratteri (MIN STR LEN -1)
-- Contiene almeno una maiuscola
-- Contiene almeno una minuscola
-- Contiene almeno un numero
-- Contiene almeno un simbolo (SPAZI ESCLUSI), ammessi i seguenti:  (N.B È POSSIBILE MODIFICARE I CARATTERI MODIFICANDO L'ARRAY DI CARATTERI ALLOWED_SYMBOLS IN USER.H)
-! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _
+    Verifica la validità della password secondo i criteri di sicurezza predefiniti.
 
-Utilizza la libreria <ctype.h> per il controllo dei singoli caratteri
+    Una password è considerata valida se rispetta tutte le seguenti condizioni:
+    - Lunghezza minima di (MIN_STR_LEN - 1) caratteri
+    - Presenza di almeno una lettera maiuscola
+    - Presenza di almeno una lettera minuscola
+    - Presenza di almeno una cifra numerica
+    - Presenza di almeno un simbolo tra quelli consentiti (escludendo spazi)
 
-Restituisce:
-- 1 Se la password non è valida
-- 0 Se la password è validata con successo
+    L’elenco dei simboli ammessi è definito nel file user.h, tramite la stringa:
+        `const char allowed_symbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_";`
+    È possibile personalizzare i simboli modificando direttamente questo array.
+
+    La funzione utilizza <ctype.h> per l’analisi carattere per carattere:
+    - `isupper`, `islower`, `isdigit` per controlli su lettere e cifre
+    - `ispunct` e `isspace` per isolare i simboli ammessi
+    - `strchr` per verificare la presenza del simbolo nella stringa allowed_symbols
+
+    Parametri:
+        - password: array di caratteri contenente la password da validare
+
+    Valori di ritorno:
+        - 0 → la password è valida
+        - 1 → la password non rispetta almeno uno dei requisiti
 */
 int validate_password(char password[MAX_STR_LEN]){
 
@@ -198,10 +219,21 @@ int set_user_role(user my_user, user_role new_user_role){
 
 
 /*
-Aggancia una nuova lista collezioni all'utente
+    Associa una nuova lista di collezioni a un utente esistente.
 
-Restituisce:
-- 1 Se l'utente è non esistente o non ancora inizializzato
+    La funzione aggiorna il campo 'collections_list_head' della struttura 'user', 
+    assegnandogli il puntatore alla nuova lista di collezioni fornita in ingresso.  
+    È utilizzata in fase di inizializzazione dell’utente o quando si 
+    vuole sovrascrivere la sua lista di collezioni con una nuova.
+
+    Parametri:
+        - my_user: puntatore alla struttura utente a cui associare la lista.
+        - new_collections_list_head: puntatore alla lista di collezioni da assegnare.
+
+    Valori di ritorno:
+        - 1 -> l’utente non è stato inizializzato (my_user == NULL)
+        - 0 -> operazione completata con successo
+
 */
 int insert_user_collections_list(user my_user, collections new_collections_list_head){
 
@@ -217,13 +249,25 @@ int insert_user_collections_list(user my_user, collections new_collections_list_
 
 
 /*
-Modifica le credenziali di un utente già esistente, dopo aver validato la nuova password
+    Modifica le credenziali (username e/o password) di un utente esistente.
 
-Restituisce:
-- 1 Se l'utente non è stato ancora inizializzato
-- 2 Se la nuova password non è valida
-- 0 Se le modifiche vanno a buon fine
+    La funzione aggiorna i dati sensibili della struttura 'user' solo se i nuovi valori 
+    passati come parametro non sono stringhe vuote. In particolare:
+    - Se 'new_password' non è una stringa vuota, la password viene prima validata tramite `validate_password()`.
+      Se la validazione ha esito positivo, viene aggiornata.
+    - Se 'new_username' non è una stringa vuota, l username viene aggiornato direttamente.
+
+    Parametri:
+        - my_user: puntatore alla struttura utente da modificare.
+        - new_username: nuova stringa per lo username (se vuota, non viene modificato).
+        - new_password: nuova stringa per la password (se vuota, non viene modificata).
+
+    Valori di ritorno:
+        - 1 -> l’utente non è stato ancora inizializzato (my_user == NULL)
+        - 2 -> la nuova password non è valida (secondo i criteri di sicurezza)
+        - 0 -> modifiche eseguite correttamente
 */
+
 int modify_credentials(user my_user, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN]){
 
     if(my_user == NULL) return 1; //Utente non ancora inizializzato
@@ -314,16 +358,20 @@ int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]){
 
 
 /*
-Controlla che un utente, passato come parametro in ingresso alla funzione, abbia ESATTAMENTE il ruolo richiesto dal parametro anch'esso passato in ingresso. 
+    Verifica che l'utente specificato abbia esattamente il ruolo richiesto.
 
-Parametri:
-    my_user: utente del quale si vuole verificare che il ruolo sia uguale a required_role
-    required_role: ruolo di riferimento per il confronto
+    La funzione controlla che il ruolo associato alla struttura 'user' corrisponda
+    esattamente al ruolo specificato nel parametro 'required_role'.  
+    Non viene considerata la gerarchia tra ruoli, ma l'equivalenza esatta.
 
-Restituisce: 
-    - 1 Se l'utente non è stato inizializzato
-    - 2 Se il ruolo dell'utente non è lo stesso di required_role
-    - 0 Se l'utente ha lo stesso ruolo richiesto in required_role
+    Parametri:
+        - my_user: puntatore alla struttura utente da verificare.
+        - required_role: ruolo richiesto per il confronto (es. ADMIN, USER).
+
+    Valori di ritorno:
+        - 1 -> l'utente non è stato inizializzato (my_user == NULL o invalido)
+        - 2 -> il ruolo dell'utente è diverso da quello richiesto
+        - 0 -> l'utente ha esattamente il ruolo richiesto
 
 */
 int role_checker(user my_user, user_role required_role){
@@ -338,6 +386,9 @@ int role_checker(user my_user, user_role required_role){
     
     result = compare_user_privilege(my_user->role , required_role);
 
+    if (result == 2) return 0; // Ruolo corrispondente
+    return 2; // Ruolo diverso
+
 }
 
 
@@ -345,11 +396,18 @@ int role_checker(user my_user, user_role required_role){
 
 
 /*
-Dealloca la memoria riservata ad un utente e a tutte le sue strutture dati associate, cancellandolo e impostanto il suo puntatore a NULL
+    Dealloca completamente la memoria associata a un utente e a tutte le sue strutture dati collegate.
 
-Restituisce:
-- 1 Se l'utente non è stato ancora inizializzato e quindi non esiste (puntatore a null)
-- 0 Se l'eliminazione va a buon fine
+    La funzione libera prima la memoria riservata alla lista di collezioni dell'utente, 
+    e successivamente libera la struttura `user` stessa, impostando il puntatore a `NULL`
+    per evitare dangling pointer.
+
+    Parametri:
+        - my_user: doppio puntatore alla struttura utente da eliminare (passato per riferimento).
+
+    Valori di ritorno:
+        - 1 -> l’utente non è stato inizializzato (puntatore nullo)
+        - 0 -> eliminazione completata con successo
 */
 int delete_user(user* my_user){
     
@@ -366,6 +424,22 @@ int delete_user(user* my_user){
 }
 
 
+/*
+    Stampa le informazioni principali di un utente: username e ruolo.
+
+    Utilizza le funzioni getter per estrarre i dati dalla struttura `user` 
+    e stampa una riga in formato: `<username>, <ruolo>`.
+
+    Parametri:
+        - my_user: puntatore alla struttura utente da stampare.
+
+    Valori di ritorno:
+        - 0 → operazione completata con successo
+
+    Nota:
+        La funzione assume che l’utente sia già stato inizializzato.
+        Nessun controllo su `NULL` viene effettuato internamente.
+*/
 
 int print_user(user my_user){
 
