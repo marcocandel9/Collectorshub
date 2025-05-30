@@ -11,10 +11,16 @@ Funzione che implementa il controllo della stringa in input. Controlla i seguent
     4) Se il flag check_space è impostato su true, allora controlla anche che la stringa non contenga spazi.
     3) Rimuove il carattere a capo dalla stringa prelevata dal buffer di input
 
+    Parametri:
+        output_string: array di caratteri nel quale verrà inserita la stringa una volta superati i controlli
+        check_space: valore booleano true o false che attiva o disattiva il controllo sulla presenza di spazi
+        min_len_plus1: il numero minimo di caratteri che la stringa immessa in input da utente deve contenere, più 1
+        max_len_plus1: il numero massimo di caratteri che la stringa immessa in input da utente deve contenere, più 1
+
     Restituisce:
-         0 Se la stringa passata in input è stata correttamente inserita e viene passata al chiamante tramite la stringa output_string
-         1 Se l'utente immette in input una stringa vuota, indicando l'operazione di ANNULLAMENTO.
-         2 In caso di errori di lettura del buffer di input (FATAL ERROR:2)
+         0 -> Se la stringa passata in input è stata correttamente inserita e viene passata al chiamante tramite la stringa output_string
+         1 -> Se l'utente immette in input una stringa vuota, indicando l'operazione di ANNULLAMENTO.
+         2 -> In caso di errori di lettura del buffer di input (FATAL ERROR:2)
 
     N.B: max_len_plus1 e min_len_plus1 RAPPRESENTANO LA DIMENSIONE MINIMA E MASSIMA DEGLI ARRAY ACCETTATI IN INPUT, COMPRESO IL TERMINATORE DI STRINGA. 
     //ES. Se MAX_LEN_PLUS1 sarà 20, il numero di caratteri effettivi accettati in input (escludendo il terminatore) saranno 19.
@@ -116,9 +122,9 @@ int sys_input_string_checker(char output_string[MAX_STR_LEN], bool check_space, 
 Semplice funzione che restituisce 0 se l'utente immette 0 in input, restituisce 1 se l'utente inserisce 1 in input.
 
 Restituisce:
-    2 In caso di errori di lettura del buffer di input
-    1 Se l'utente inserisce 1
-    0 Se l'utente inserisce 0
+    2 -> In caso di errori di lettura del buffer di input
+    1 -> Se l'utente inserisce 1
+    0 -> Se l'utente inserisce 0
     
 */
 int ask_confirmation(){
@@ -177,8 +183,11 @@ int ask_confirmation(){
 
 
 /*
-Implementa l'I/O per la registrazione di un nuovo utente. Chiede in input da tastiera un nuovo username, controlla che questo username non sia già utilizzato (sia già presente nella lista utenti), controlla che la password sia valida secondo la logica dell'ADT
-(utilizzando la funzione validate_password di user.h) e in caso di esito positivo richiama la funzione insert_user_sorted di users.h per inserire il nuovo utente nella struttura dati utenti, con algoritmo di inserimento ordinato alfabeticamente.
+Implementa l'I/O per la registrazione di un nuovo utente. Chiede in input da tastiera un nuovo username invocando la funzione
+sys_input_string_checker, controlla che questo username non sia già utilizzato (sia già presente nella lista utenti), 
+controlla che la password sia valida secondo la logica dell'ADT (utilizzando la funzione validate_password di user.h) e 
+in caso di esito positivo richiama la funzione insert_user_sorted di users.h per inserire il nuovo utente nella struttura dati utenti, 
+con algoritmo di inserimento ordinato alfabeticamente.
 
 Restituisce:
 - un puntatore al nuovo utente creato
@@ -246,7 +255,7 @@ user sys_register_user(users* users_list_head){
 
         //Altrimenti notifica l'utente che l'username e già occupato e ricomincia il ciclo while.
         printf("\n"ANSI_COLOR_RED ANSI_BOLD);
-        printf("L'username e' già occupato.\n");
+        printf("L'username e' gia' occupato.\n");
         printf("\n"ANSI_COLOR_RESET BOLD_OFF);
         continue;
     }
@@ -322,12 +331,31 @@ user sys_register_user(users* users_list_head){
 
 
 
-/*
-Implementa l'I/O Per il login di un utente
 
-Restituisce:
-    - un puntatore al nuovo utente creato in caso di corretta autenticazione
-    - un puntatore a NULL in caso di errori del buffer o di annullamento da parte dell'utente
+/*
+Gestisce la procedura di login da terminale per un utente registrato.
+
+La funzione richiede all’utente l’inserimento dello username e della password,
+validando l’input tramite sys_input_string_checker.  
+Se l' username esiste nella lista utenti, la funzione confronta la password 
+inserita con quella associata all’utente nella struttura user.
+
+Utilizza:
+- division_break_lines() per la stampa grafica dell’intestazione
+- user_exists() per verificare la presenza dell’utente
+- search_user() e get_password() per il recupero delle credenziali
+- strcmp() per il confronto diretto tra stringhe di password
+
+Parametri:
+- users_list_head: puntatore alla testa della lista degli utenti registrati.
+
+Valori di ritorno:
+- Puntatore all’utente autenticato (struttura user) se login corretto
+- NULL se l’utente annulla il login o si verifica un errore di input
+
+Note:
+- Il login è case-sensitive per username e password.
+- L’annullamento può essere effettuato in qualsiasi fase (username o password).
 */
 
 
@@ -448,16 +476,34 @@ user sys_login_user(users* users_list_head){
 
 
 
-
 /*
-Implementa l'I/O per la modifica dell'username di un utente, richiede in ingresso la stringa del nome utente attuale dell'utente e la lista degli utenti
-    Restituisce:
-        1 In caso di annullamento dell'operazione da parte dell'utente
-        2 In caso di errori di lettura del buffer di input
-        3 In caso di errori di modifica dell'utente nella struttura dati (FATAL ERROR)
-        0 Se tutto va a buon fine
-    N.B: La stringa current_username, nel caso di effettuata modifica, viene modificata con il nuovo nome utente inserito dall'user da terminale.
+Gestisce l’I/O per la modifica dello username di un utente registrato.
+
+L’utente inserisce un nuovo username da terminale. Se lo username è valido e disponibile,
+viene modificato all’interno della struttura dati mediante la funzione 
+search_and_modify_user_credentials.
+
+Utilizza:
+- sys_input_string_checker() per validare l’input da terminale
+- user_exists() per verificare la disponibilità del nuovo username
+- search_and_modify_user_credentials() per aggiornare lo username all’interno della lista utenti
+- strcpy() per aggiornare la variabile current_username con il nuovo valore
+
+Parametri:
+- current_username: stringa contenente lo username attuale. Se la modifica ha successo, viene aggiornato con il nuovo valore.
+- users_list_head: puntatore alla testa della lista utenti (passato per riferimento).
+
+Valori di ritorno:
+- 1 -> operazione annullata dall’utente (username lasciato invariato)
+- 2 -> errore di lettura del buffer di input
+- 3 -> errore interno nella modifica dello username (utente non trovato)
+- 0 -> modifica completata correttamente
+
+Note:
+- Se l’utente inserisce una stringa vuota, l' username resta invariato.
+- Lo username non può contenere spazi e deve rispettare i limiti di lunghezza MIN/MAX.
 */
+
 int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_head){
 
     
@@ -530,7 +576,7 @@ int sys_modify_username(char current_username[MAX_STR_LEN], users* users_list_he
 
 
 /*
-Implementa l'I/O per la modifica della password di un utente, richiede in ingresso la stringa del nome utente attuale dell'utente e la lista degli utenti
+Analogo a sys_modify_username, con aggiuntiva chiamata alla funzione validate_password di user.h.
     Restituisce:
         1 In caso di annullamento dell'operazione da parte dell'utente
         2 In caso di errori di lettura del buffer di input
@@ -616,7 +662,7 @@ int sys_modify_password(char user_username[MAX_STR_LEN], char current_password[M
 
 /*
 Implementa l'I/O Per la modifica delle credenziali di un utente. 
-RICHIEDE: 
+Parametri: 
 Il puntatore passato per riferimento all'utente GIÀ LOGGATO
 Il puntatore alla testa della lista utenti
 
@@ -758,15 +804,30 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
 
 
 /*
-Implementa l'I/O Per l'eliminazione di un utente. Non effettua la ricerca dell'utente stesso, utile quindi quando
-un utente vuole eliminare il proprio profilo. 
+Gestisce l'I/O per l'eliminazione dell’account da parte di un utente loggato.
 
-Restituisce:
-    1: Se l'utente immette una stringa vuota e annulla l'eliminazione del proprio profilo
-    2: in caso di errore di lettura del buffer di input
-    3: Se non è stato possiible trovare l'utente nella lista utenti
-    0: Se l'eliminazione va a buon fine
+La funzione non esegue la ricerca dell' username, ma assume che il nome utente 
+sia già noto (es. utente attualmente loggato).  
+Richiede all’utente di confermare l’operazione inserendo la propria password.  
+Solo dopo verifica della correttezza della password, l’eliminazione viene eseguita
+tramite la funzione remove_user.
 
+Utilizza:
+- sys_input_string_checker() per acquisire e validare la password da terminale
+- search_user() per ottenere il puntatore alla struttura user corrispondente
+- get_password() per recuperare la password dell’utente
+- remove_user() per effettuare la rimozione effettiva dalla lista utenti
+- strcmp() per confrontare le password
+
+Parametri:
+- users_list_head: puntatore alla testa della lista utenti (passato per riferimento)
+- user_username: stringa contenente lo username dell’utente da eliminare
+
+Valori di ritorno:
+- 1 -> l’utente ha annullato volontariamente l’eliminazione
+- 2 -> errore di lettura del buffer di input
+- 3 -> utente non trovato o errore nella rimozione dalla lista
+- 0 -> eliminazione eseguita correttamente
 */
 int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]){
 
@@ -855,10 +916,22 @@ int sys_delete_user(users* users_list_head, char user_username[MAX_STR_LEN]){
 
 
 /*
-Implementa l'I/O per la visualizzazione della lista collezioni di un utente.
-Restituisce:
-    1: Se la lista è vuota 
-    0: Se tutto va a buon fine
+Gestisce l’I/O per la visualizzazione della lista delle collezioni associate a un utente.
+
+La funzione verifica che l’utente loggato sia valido e utilizza print_collections per stampare 
+a terminale tutte le collezioni a lui associate.  
+In caso di lista vuota o utente non inizializzato, viene restituito un codice di errore.
+
+Utilizza:
+- division_break_lines() per stampare l’intestazione decorativa della sezione
+- print_collections() per stampare la lista delle collezioni associate all’utente
+
+Parametri:
+- logged_user: puntatore alla struttura user attualmente loggata
+
+Valori di ritorno:
+- 1 -> l’utente è NULL o non possiede alcuna collezione
+- 0 -> stampa effettuata correttamente
 */
 int sys_print_user_collections(user logged_user){
 
@@ -895,15 +968,31 @@ int sys_print_user_collections(user logged_user){
 
 
 
-/*
-Implementa l'I/O per l'accesso ad una collezione, e il conseguente ingresso nel menù prodotti. 
 
-Restituisce:
-    4 Se la lista delle collezioni risulta vuota durante l'accesso ai dati utente.
-    3 Se la lista collezioni è vuota', (*user_collection = NULL)
-    2 In caso di errore di lettura del buffer di input stdin
-    1 Se l'utente annulla l'accesso alla collezione. (*user_collection = NULL)
-    0 Se tutto va a buon fine (*user_collection = collezione a cui si vuole accedere)
+/*
+Gestisce l'I/O per l’accesso a una collezione dell’utente loggato e, in caso di successo,
+prepara l’ingresso al menù prodotti collegando il puntatore user_collection 
+alla collezione selezionata.
+
+Utilizza:
+- sys_input_string_checker() per validare l’input da terminale
+- sys_print_user_collections() per stampare le collezioni disponibili
+- search_collection() per cercare la collezione richiesta
+
+Parametri:
+- logged_user: puntatore alla struttura user attualmente loggata
+- user_collection: parametro di uscita; se l’operazione va a buon fine, punterà alla collezione selezionata
+
+Valori di ritorno:
+- 4 -> errore durante l’accesso ai dati utente (lista collezioni inconsistente)
+- 3 -> lista collezioni vuota (accesso non possibile)
+- 2 -> errore di lettura del buffer di input
+- 1 -> l’utente ha annullato volontariamente l’accesso alla collezione
+- 0 -> accesso alla collezione eseguito con successo
+
+Note:
+- L’input richiede corrispondenza esatta con il nome della collezione (inclusi spazi e maiuscole).
+- In caso di annullamento o errore, *user_collection resta NULL.
 */
 int sys_access_user_collection(user logged_user, collection* user_collection){
 
@@ -968,13 +1057,31 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
 
 
 /*
-Implementa l'I/O per l'aggiunta di una nuova collezione nella lista delle collezioni di un utente già loggato (Richiede in ingresso il puntatore all'utente loggato.)
-Restituisce:
-    1: In caso di annullamento da parte dell'utente
-    2: In caso di errore di lettura del buffer di input
-    4: In caso di errore critico di allocazione di memoria
-    0: Se tutto va bene
+Gestisce l’I/O per la creazione e l’inserimento di una nuova collezione 
+nella lista dell’utente attualmente loggato.
+
+La funzione richiede all’utente di inserire un nome per la collezione e una tipologia.
+Effettua controlli di validità sull’input e verifica che non esistano collezioni con lo stesso nome
+(per evitare duplicati).  
+Se tutti i controlli vengono superati, chiama insert_collection per aggiungere
+la nuova collezione alla lista.
+
+Utilizza:
+- division_break_lines() per l’intestazione dell’interfaccia
+- sys_input_string_checker() per acquisire e validare input da terminale
+- collection_exists() per verificare l’assenza di duplicati
+- insert_collection() per inserire la nuova collezione nella lista dell’utente
+
+Parametri:
+- logged_user: puntatore alla struttura user attualmente loggata
+
+Valori di ritorno:
+- 1 -> l’utente ha annullato l’operazione (in una qualsiasi fase dell’inserimento)
+- 2 -> errore nella lettura del buffer di input
+- 4 -> errore critico in fase di allocazione memoria (in insert_collection)
+- 0 -> collezione aggiunta correttamente
 */
+
 int sys_insert_collection(user logged_user){
 
     int string_checker_result;
@@ -1075,12 +1182,25 @@ int sys_insert_collection(user logged_user){
 
 
 /*
-Implementa l'I/O Per la modifica della collezione di un utente già loggato.
-Restituisce:
-    1) In caso di annullamento dell'operazione di modifica della collezione da parte dell'utente
-    2) In caso di errore della lettura del buffer di input stdin
-    3) Se la lista collezioni dell'utente è vuota (Non c'è alcuna collezione modificabile)
-    4) Per errori critici nella modifica finale, RARO!
+Gestisce l’I/O per la modifica del nome e/o della tipologia di una collezione
+associata all’utente attualmente loggato.
+
+Utilizza:
+- division_break_lines() per la stampa dell’intestazione grafica
+- sys_print_user_collections() per visualizzare l’elenco delle collezioni disponibili
+- sys_input_string_checker() per validare l’input utente
+- collection_exists() per verificare che la collezione da modificare esista
+- search_and_modify_collection() per applicare le modifiche
+
+Parametri:
+- logged_user: puntatore alla struttura user loggata, su cui si opera
+
+Valori di ritorno:
+- 1 -> l’utente ha annullato la modifica
+- 2 -> errore nella lettura del buffer di input
+- 3 -> lista collezioni vuota o collezione non trovata
+- 4 -> errore critico nella modifica (caso raro)
+- 0 -> modifica effettuata con successo (una volta completata la funzione)
 */
 int sys_modify_collection(user logged_user){
 
@@ -1260,14 +1380,26 @@ int sys_modify_collection(user logged_user){
     
 
 /*
-Implementa l'I/O Per la eliminazione di UNA collezione da parte di un utente loggato.
+Gestisce l’I/O per l’eliminazione di una singola collezione dalla lista collezioni 
+dell’utente attualmente loggato.
 
-Restituisce:
-    1 In caso di annullamento dell'operazione da parte dell'utente
-    2 In caso di errore critico di lettura del buffer di input stdin
-    3 Se la lista collezioni dell'utente è vuota.
-    4 In caso di errori critici durante l'eliminazione della collezione (RARI!)
-    0 Se tutto va a buon fine
+Utilizza:
+- division_break_lines() per stampare l’intestazione decorativa
+- sys_print_user_collections() per visualizzare le collezioni attuali
+- sys_input_string_checker() per validare l’input da terminale
+- collection_exists() per verificare che la collezione sia presente
+- ask_confirmation() per chiedere conferma prima della rimozione
+- remove_collection() per eseguire l’eliminazione
+
+Parametri:
+- logged_user: puntatore all’utente attualmente loggato
+
+Valori di ritorno:
+- 1 -> l’utente ha annullato l’eliminazione
+- 2 -> errore critico di lettura dal buffer di input
+- 3 -> la lista collezioni dell’utente è vuota
+- 4 -> errore critico durante la rimozione (collezione non trovata o lista incoerente)
+- 0 -> eliminazione eseguita correttamente
 */
 int sys_delete_collection(user logged_user){
 
@@ -1400,15 +1532,27 @@ int sys_delete_collection(user logged_user){
 
    
 
-/*
-Implementa l'I/O Per la eliminazione di TUTTE le collezioni da parte di un utente.
 
-Restituisce:
-    1 In caso di annullamento dell'operazione da parte dell'utente
-    2 In caso di errore critico di lettura del buffer di input stdin
-    3 Se la lista collezioni dell'utente è vuota.
-    4 In caso di errori critici durante l'eliminazione delle collezioni (RARI!)
-    0 Se tutto va a buon fine
+/*
+Gestisce l’I/O per l’eliminazione di TUTTE LE collezioni dalla lista collezioni 
+dell’utente attualmente loggato.
+
+Utilizza:
+- division_break_lines() per stampare l’intestazione decorativa
+- sys_print_user_collections() per visualizzare le collezioni attuali
+- sys_input_string_checker() per validare l’input da terminale
+- ask_confirmation() per chiedere conferma prima della rimozione
+- remove_collection() per eseguire l’eliminazione
+
+Parametri:
+- logged_user: puntatore all’utente attualmente loggato
+
+Valori di ritorno:
+- 1 -> l’utente ha annullato l’eliminazione
+- 2 -> errore critico di lettura dal buffer di input
+- 3 -> la lista collezioni dell’utente è vuota
+- 4 -> errore critico durante la rimozione 
+- 0 -> eliminazione eseguita correttamente
 */
 int sys_delete_collections(user logged_user){
 
@@ -1470,12 +1614,21 @@ int sys_delete_collections(user logged_user){
 
 
 /*
-Funzione che implementa l'I/O della stampa della lista prodotti di una collezione di un utente. 
+Gestisce l’I/O per la stampa della lista dei prodotti contenuti in una specifica collezione
+dell’utente attualmente loggato.
 
-Restituisce:
-    1 Se la lista prodotti della collezione è vuota.
-    0 Se tutto va a buon fine
-    4 Se al momento della chiamata della funzione print_products risulta vuota (non dovrebbe accadere, raro, codice 4)
+Utilizza:
+- division_break_lines() per stampare l’intestazione visiva
+- print_products() per effettuare la stampa effettiva della lista prodotti
+
+Parametri:
+- logged_user: puntatore all’utente attualmente loggato (utilizzato per stampare il nome)
+- user_collection: puntatore alla collezione di cui si vogliono visualizzare i prodotti
+
+Valori di ritorno:
+- 1 -> la lista prodotti della collezione è vuota
+- 4 -> errore critico: la funzione print_products ha rilevato lista incoerente (raro)
+- 0 -> la stampa è andata a buon fine
 */
 int sys_print_user_products(user logged_user, collection user_collection){
 
@@ -1511,14 +1664,33 @@ int sys_print_user_products(user logged_user, collection user_collection){
 
 
 /*
-@implementa l'I/O Per l'inserimento di un nuovo prodotto in una determinata collezione passata in ingresso
+Gestisce l’interfaccia I/O per l’inserimento di un nuovo prodotto nella collezione di un utente loggato.
 
-    Restituisce:
-        0 Se tutto va a buon fine
-        1 In caso di annullamento da parte dell'utente
-        2 In caso di errori di lettura del buffer di input (codice 2)
-        4 In caso di errori di accesso alla memoria (Codice 4)
+Il flusso della funzione guida l’utente attraverso la compilazione dei campi informativi del prodotto:
+- nome
+- tipologia
+- condizioni
+- prezzo di acquisto
+
+Parametri:
+- logged_user: puntatore all’utente attualmente loggato
+- user_collection: puntatore alla collezione nella quale si desidera inserire il prodotto
+
+Utilizza:
+- sys_input_string_checker
+- exist_sorted
+- strtof
+- ask_confirmation
+- insert_product
+- division_break_lines (per interfaccia grafica)
+
+Valori di ritorno:
+- 1 -> l’utente ha annullato l’operazione
+- 2 -> errore di lettura del buffer di input
+- 4 -> errore critico di allocazione o gestione dati (duplicato rilevato quando non previsto)
+- 0 -> inserimento effettuato correttamente
 */
+
 int sys_insert_user_product(user logged_user, collection user_collection){
 
     int string_checker_result;
@@ -1741,16 +1913,36 @@ int sys_insert_user_product(user logged_user, collection user_collection){
 
 
 /*
-@Implementa l'I/O per la modifica di un prodotto di un utente, a partire dalla collezione dell'utente passata in ingresso.
+Gestisce l’I/O per la modifica di un prodotto appartenente ad una collezione di un utente loggato.
+La funzione guida l’utente attraverso:
+- Selezione del prodotto da modificare
+- Modifica facoltativa di nome, tipologia, condizioni e prezzo di acquisto
+- Verifica dell’esistenza del prodotto e della validità dei dati inseriti
+- Conferma finale della modifica prima dell’applicazione
+I campi non modificati possono essere lasciati invariati tramite stringa vuota, e la modifica avviene tramite la funzione `search_and_modify_product`.
 
-    Restituisce:
-        0 Se tutto va a buon fine
-        1 In caso di annullamento da parte dell'utente
-        2 in caso di errori di lettura del buffer di input stdin (codice 2)
-        3 In caso di lista prodotti dell'utente vuota.
-        4 In caso di errori logici di accesso alla struttura dati in memoria (codice 4)
-        5 In caso di errori di modifica del prodotto durante la chiamata alla funzione search_and_modify_products (libreria products.h) (codice 5)
+Parametri:
+- logged_user: utente attualmente loggato
+- user_collection: collezione da cui prelevare il prodotto da modificare
+
+Utilizza:
+- sys_input_string_checker
+- sys_print_user_products
+- exist_sorted
+- strtof
+- ask_confirmation
+- search_and_modify_product
+- division_break_lines 
+
+Valori di ritorno:
+- 0 -> modifica eseguita con successo
+- 1 -> operazione annullata dall’utente
+- 2 -> errore di lettura del buffer di input (codice 2)
+- 3 -> lista prodotti vuota
+- 4 -> errore logico/strutturale durante l’accesso ai dati
+- 5 -> errore nella modifica del prodotto (ritorno dalla funzione `search_and_modify_product`)
 */
+
 int sys_modify_user_product(user logged_user, collection user_collection){
 
     int string_checker_result;
@@ -2082,14 +2274,31 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
 
 /*
-Implementa l'I/O Per l'eliminazione di un prodotto data una collezione passata in ingresso. 
+Gestisce l’I/O per la cancellazione definitiva di un prodotto da una collezione appartenente a un utente loggato.
+La funzione:
+- Mostra i prodotti esistenti nella collezione selezionata
+- Richiede il nome del prodotto da eliminare
+- Verifica l'esistenza del prodotto
+- Chiede conferma definitiva prima di procedere con la rimozione
 
-    Restituisce: 
-        0 In caso di eliminazione avvenuta con successo
-        1 In caso di annullamento da parte dell'utente
-        2 In caso di errore di lettura del buffer di input stdin
-        3 Se la lista dei prodotti della collezione dell'utente e' gia' vuota. 
-        4 Se la lista risulta vuota quando non dovrebbe durante l'accesso alla struttura dati in memoria, codice 4
+Parametri:
+- logged_user: utente attualmente loggato
+- user_collection: collezione da cui eliminare il prodotto
+
+Utilizza:
+- sys_input_string_checker
+- sys_print_user_products
+- exist_sorted
+- ask_confirmation
+- remove_product
+- division_break_lines 
+
+Valori di ritorno:
+- 0 -> prodotto eliminato correttamente
+- 1 -> operazione annullata dall’utente
+- 2 -> errore di lettura del buffer di input
+- 3 -> lista prodotti vuota (nessun elemento eliminabile)
+- 4 -> errore critico durante l’accesso alla memoria (struttura dati incoerente)
 */
 int sys_delete_user_product(user logged_user, collection user_collection){
 
@@ -2203,12 +2412,28 @@ int sys_delete_user_product(user logged_user, collection user_collection){
 
 
 /*
-Implementa l'I/O Per l'eliminazione di tutti i prodotti di una lista prodotti di una collezione di un utente. 
+Gestisce l'I/O per la cancellazione definitiva di tutti i prodotti presenti nella collezione di un utente loggato.
 
-    Restituisce:
-        1 In caso di annullamento da parte dell'utente
-        2 in caso di errori di lettura del buffer di input stdin
-        4 In caso di errore critico durante l'eliminazione dei prodotti, in particolare se la lista risulta vuota quando non dovrebbe. 
+La funzione:
+- Verifica se la lista prodotti è già vuota
+- Chiede conferma all'utente prima di procedere all'eliminazione
+- In caso di conferma, svuota la lista prodotti associata alla collezione
+
+Parametri:
+- logged_user: utente attualmente loggato
+- user_collection: collezione da cui eliminare tutti i prodotti
+
+Utilizza:
+- division_break_lines
+- ask_confirmation
+- free_products
+
+Restituisce:
+- 0 -> eliminazione completata con successo
+- 1 -> operazione annullata dall’utente
+- 2 -> errore di lettura del buffer di input
+- 3 -> lista già vuota, nessun prodotto da eliminare
+- 4 -> errore critico durante la deallocazione della lista prodotti
 */
 int sys_delete_user_products(user logged_user, collection user_collection){
 
@@ -2262,19 +2487,32 @@ int sys_delete_user_products(user logged_user, collection user_collection){
 
 
 
-/*Permette rispettivamente:
-(LA SOLUZIONE QUI IMPLEMENTATA È OVVIAMENTE UNA SOLUZIONE NON SICURA, LA PASSWORD Per ottenere i privilegi di admin non dovrebbe essere "hardcoded" nel codice sorgente ma andrebbe ad esempio
-letta da un file/sorgente sicura). 
+/*
+Gestisce l'accesso al menù admin da parte di un utente.
 
-    //Agli utenti base di venire convertiti in utenti ADMIN se superano il controllo di accesso e accedere al menu admin
-    //Agli utenti admin di accedere direttamente al menu admin
-    
-    Restituisce: 
-        1 In caso di annullamento da parte dell'utente
-        2 In caso di errore di lettura del buffer di input
-        4 In caso di errore critico restituito dalla funzione search and promote user (Non dovrebbe accadere secondo la logica dell'interfaccia logica)
-        0 In caso di success
+Funzionalità:
+- Se l’utente è già un ADMIN, accede direttamente al menù.
+- Se l’utente ha ruolo BASE, può accedere al menù admin solo previa verifica di una chiave segreta.
+  In caso di verifica superata, viene promosso ad ADMIN tramite `search_and_promote_user`.
 
+ Sicurezza: la chiave segreta è attualmente hardcoded nel codice (come stringa "admin_access_secret_string").
+In una soluzione reale andrebbe letta da una sorgente sicura (file crittografato)
+
+Parametri:
+- logged_user: puntatore alla struct dell’utente loggato
+- users_list_head: riferimento alla testa della lista utenti (per promozione)
+
+Utilizza:
+- division_break_lines
+- sys_input_string_checker
+- get_username
+- search_and_promote_user
+
+Restituisce:
+- 0 -> accesso admin eseguito con successo
+- 1 -> operazione annullata dall’utente
+- 2 -> errore di lettura del buffer di input
+- 4 -> errore critico durante la promozione a ruolo ADMIN (funzione `search_and_promote_user`)
 */
 int sys_access_admin_menu(user logged_user, users* users_list_head){
 

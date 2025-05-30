@@ -18,13 +18,24 @@ int create_users_list(users* users_list_head){
 
 
 /*
-Inserisce un nuovo utente con algoritmo di inserimento ordinato alfabeticamente
+    Inserisce un nuovo utente all’interno della lista utenti in modo ordinato alfabeticamente 
+    sulla base dell'username. L’inserimento non consente duplicati.
 
-Restituisce:
-- 1 Se la password passata come parametro è non valida (Impossibile aggiungere l'utente)
-- 2 Errore di allocazione del nuovo nodo
-- 3 In caso di inserimento duplicato (NON CONSENTITO)
-- 0 Se tutto va a buon fine
+    La funzione alloca dinamicamente un nuovo nodo e una nuova struttura utente tramite `create_user`.
+    Se la password fornita non è valida o si verifica un errore di allocazione, la funzione fallisce.  
+    L’inserimento avviene in modo ordinato (ordine alfabetico crescente) confrontando gli username.
+
+    Parametri:
+        - users_list_head: puntatore alla testa della lista utenti, passato per riferimento.
+        - new_username: stringa contenente il nome utente da inserire.
+        - new_password: stringa contenente la password dell’utente.
+        - new_user_role: ruolo da assegnare al nuovo utente (USER o ADMIN).
+
+    Valori di ritorno:
+        - 1 -> errore di allocazione durante la creazione dell’utente
+        - 2 -> la password fornita non è valida
+        - 3 -> esiste già un utente con lo stesso username (duplicato non ammesso)
+        - 0 -> inserimento completato con successo
 */
 int insert_user_sorted(users* users_list_head, char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN], user_role new_user_role){
 
@@ -106,15 +117,23 @@ int insert_user_sorted(users* users_list_head, char new_username[MAX_STR_LEN], c
 
 
 /*
-Inserisce una lista collezioni all'utente desiderato della lista utenti con INSERIMENTO ORDINATO ALFABETICO sulla base del NOME UTENTE
+    Inserisce una lista di collezioni all'interno di uno specifico utente già presente nella lista utenti.
 
-Prende in ingresso il puntatore alla lista utenti passato per riferimento, il nome dell'utente da ricercare in cui inserire la lista collezioni, il puntatore alla testa della lista collezioni da inserire
+    La ricerca dell’utente avviene in modo ordinato alfabeticamente sulla base dello username.  
+    Una volta trovato l’utente corrispondente, la funzione associa al suo campo 'collections_list_head'
+    la lista di collezioni fornita in ingresso, utilizzando la funzione 'insert_user_collections_list'.
 
-Restituisce:
-- 1 In caso di lista utenti vuota
-- 2 In caso di corrispondenza non trovata
-- 0 Se tutto va a buon fine
+    Parametri:
+        - users_list_head: puntatore alla testa della lista utenti (passato per riferimento).
+        - key_username: stringa contenente l'username dell’utente da cercare.
+        - new_collections_list_head: puntatore alla lista collezioni da assegnare all’utente.
+
+    Valori di ritorno:
+        - 1 -> la lista utenti è vuota o non inizializzata
+        - 2 -> l’utente specificato non è stato trovato nella lista
+        - 0 -> operazione completata con successo
 */
+
 int insert_sorted_user_collections(users* users_list_head, char key_username[MAX_STR_LEN], collections new_collections_list_head){
 
     //Puntatore alla testa della lista utenti uguale a NULL -> lista vuota, restituisce 1
@@ -154,12 +173,25 @@ int insert_sorted_user_collections(users* users_list_head, char key_username[MAX
 
 
 /*
-Cerca un utente nella lista utenti sulla base del suo username e ne restituisce un puntatore alla struct utente
 
-Restituisce:
-- 1 Se la lista utenti è vuota
-- 2 Se non è stata trovata una corrispondenza
-- 0 Se tutto va a buon fine e restituisce il parametro user my_user con il puntatore alla struct utente
+    Ricerca un utente all’interno della lista utenti sulla base dello username specificato.
+
+    La funzione effettua una ricerca ordinata alfabeticamente sul campo 'username' 
+    all’interno della lista utenti. In caso di corrispondenza, restituisce tramite 
+    parametro il puntatore alla struttura 'user' trovata.
+
+    Parametri:
+        - users_list_head: puntatore alla testa della lista utenti da scorrere.
+        - key_username: stringa contenente lo username da cercare.
+        - my_user: parametro di uscita; se la ricerca ha successo, conterrà il puntatore all’utente trovato.
+
+    Valori di ritorno:
+        - 1 -> la lista utenti è vuota o non inizializzata
+        - 2 -> nessun utente trovato con lo username specificato
+        - 0 -> utente trovato correttamente; il puntatore viene restituito tramite `my_user`
+
+    Nota:
+        - L’utente viene confrontato utilizzando `strcmp` in modo sensibile al maiuscolo/minuscolo.
 */
 int search_user(users users_list_head, char key_username[MAX_STR_LEN], user* my_user){
 
@@ -197,12 +229,19 @@ int search_user(users users_list_head, char key_username[MAX_STR_LEN], user* my_
 
 
 /*
-Cerca un utente nella lista utenti sulla base del suo username e restituisce 0 se è presente
+    Verifica l’esistenza di un utente all’interno della lista utenti, sulla base dello username fornito.
 
-Restituisce:
-- 1 Se la lista utenti è vuota
-- 2 Se non è stata trovata una corrispondenza
-- 0 Se l'utente è stato trovato
+    La funzione esegue una ricerca ordinata alfabeticamente nella lista 'users', confrontando il campo 'username'
+    di ciascun nodo con il valore specificato in 'key_username'.
+
+    Parametri:
+        - users_list_head: puntatore alla testa della lista utenti da scorrere.
+        - key_username: stringa contenente lo username da cercare.
+
+    Valori di ritorno:
+        - 1 -> la lista utenti è vuota o non inizializzata
+        - 2 -> nessun utente trovato con lo username specificato
+        - 0 -> utente presente nella lista
 */
 int user_exists(users users_list_head, char key_username[MAX_STR_LEN]){
 
@@ -239,13 +278,26 @@ int user_exists(users users_list_head, char key_username[MAX_STR_LEN]){
 
 
 /*
-Cerca un user da eliminare dalla lista utenti e lo rimuove, deallocando gerarchicamente tutte le strutture dati a lui associate
+    Rimuove un utente dalla lista utenti sulla base dello username e dealloca 
+    ricorsivamente tutte le strutture dati ad esso associate.
 
-Restituisce: 
+    La funzione effettua una ricerca ordinata alfabeticamente all'interno della lista 'users'.  
+    In caso di corrispondenza, elimina il nodo corrispondente aggiornando i puntatori di lista,
+    e invoca 'delete_user'per liberare la memoria associata alla struttura 'user'
+    (inclusa la lista di collezioni e i prodotti)
 
-- 1 Se la lista utenti è vuota (Puntatore a NULL)
-- 2 Se la corrispondenza non è stata trovata
-- 0 Se tutto va a buon fine
+    Parametri:
+        - users_list_head: puntatore alla testa della lista utenti (passato per riferimento).
+        - key_username: stringa contenente lo username dell’utente da eliminare.
+
+    Valori di ritorno:
+        - 1 -> la lista utenti è vuota o non inizializzata
+        - 2 -> l’utente non è stato trovato nella lista
+        - 0 -> utente rimosso correttamente
+
+    Note:
+        - Se l’utente da eliminare si trova in testa alla lista, la funzione aggiorna correttamente la testa.
+        - L’ordinamento alfabetico viene utilizzato per interrompere anticipatamente la ricerca in caso di mancata corrispondenza.
 */
 int remove_user(users* users_list_head, char key_username[MAX_STR_LEN]){
 
@@ -300,15 +352,30 @@ int remove_user(users* users_list_head, char key_username[MAX_STR_LEN]){
 
 
 /*
-Cerca un utente nella lista utenti con ordinamento alfabetico e ne modifica username,password e ruolo. 
-Utilizza la funzione modify user che controlla anche la validità della password
 
-Restituisce:
-- 0 Se tutto va a buon fine
-- 1 Se la lista utenti è vuota
-- 2 Se non è stata trovata una corrispondenza
-- 3 Utente non inizializzato (Improbabile)
-- 4 Se la password non è valida
+    Cerca un utente all'interno della lista utenti (ordinata alfabeticamente per username) 
+    e ne modifica le credenziali: username e/o password.
+
+    La funzione utilizza `modify_credentials', che gestisce internamente la validazione 
+    della nuova password e l'aggiornamento condizionato dei campi.  
+    Se una delle stringhe 'new_username' o `new_password` è vuota, il rispettivo campo 
+    non viene modificato.
+
+    Parametri:
+        - users_list_head: puntatore alla testa della lista utenti (passato per riferimento).
+        - key_username: stringa contenente lo username dell’utente da modificare.
+        - new_username: nuova stringa per aggiornare lo username (opzionale).
+        - new_password: nuova stringa per aggiornare la password (opzionale).
+
+    Valori di ritorno:
+        - 0 -> modifica eseguita con successo
+        - 1 -> la lista utenti è vuota o non inizializzata
+        - 2 -> l’utente non è stato trovato nella lista
+        - 3 -> l’utente trovato non è stato inizializzato (caso limite)
+        - 4 -> la nuova password non è valida (secondo i criteri definiti)
+
+    Note:
+        - Se entrambe le stringhe sono vuote, l’utente resta invariato.
 */
 int search_and_modify_user_credentials(users* users_list_head, char key_username[MAX_STR_LEN], char new_username[MAX_STR_LEN], char new_password[MAX_STR_LEN]){
 
@@ -351,14 +418,28 @@ int search_and_modify_user_credentials(users* users_list_head, char key_username
 
 
 /*
-Cerca un utente nella lista utenti con ordinamento alfabetico e ne promuove il ruolo a quello specificato nel parametro di ingresso
-Utilizza la funzione set_user_role di user.h 
+    Cerca un utente all’interno della lista utenti (ordinata alfabeticamente per username) 
+    e ne aggiorna il ruolo con quello specificato nel parametro 'new_role'.
 
-Restituisce:
-- 0 Se tutto va a buon fine
-- 1 Se la lista utenti è vuota
-- 2 Se non è stata trovata una corrispondenza
-- 3 Utente non inizializzato (Improbabile)
+    La funzione utilizza'`set_user_role' per aggiornare il campo 'role' all’interno della 
+    struttura 'user'. La promozione può essere utilizzata, ad esempio, per elevare un utente 
+    da USER a ADMIN.
+
+    Parametri:
+        - users_list_head: puntatore alla testa della lista utenti (passato per riferimento).
+        - key_username: stringa contenente lo username dell’utente da promuovere.
+        - new_role: valore della enum `user_role` da assegnare all’utente (es. ADMIN).
+
+    Valori di ritorno:
+        - 0 -> aggiornamento del ruolo eseguito correttamente
+        - 1 -> la lista utenti è vuota o non inizializzata
+        - 2 -> l’utente non è stato trovato nella lista
+        - 3 -> l’utente trovato non è stato inizializzato (caso limite)
+
+    Note:
+        - La lista utenti deve essere ordinata alfabeticamente affinché la ricerca funzioni correttamente.
+        - Nessuna azione viene eseguita se il ruolo specificato è già assegnato all’utente.
+
 */
 int search_and_promote_user(users* users_list_head, char key_username[MAX_STR_LEN], user_role new_role){
 
@@ -398,14 +479,28 @@ int search_and_promote_user(users* users_list_head, char key_username[MAX_STR_LE
 
 
 
-
 /*
-Libera l'intera lista utenti, deallocando completamente anche tutte le strutture dati gerarchicamente inferiori
+    Libera completamente la memoria occupata dalla lista utenti.
 
-Restituisce: 
-- 1 Se la lista utenti è vuota
-- 0 Se tutto va a buon fine
+    La funzione scorre l’intera lista 'users' e, per ciascun nodo, dealloca:
+    - la struttura `user` associata (tramite 'delete_user')
+    - il nodo della lista stessa
+
+    Alla fine dell'operazione, il puntatore alla testa della lista viene azzerato 
+    per evitare dangling pointer.
+
+    Parametri:
+        - users_list_head: puntatore alla testa della lista utenti (passato per riferimento).
+
+    Valori di ritorno:
+        - 1 -> la lista utenti è già vuota o non inizializzata
+        - 0 -> deallocazione completata correttamente
+
+    Nota:
+        - Tutte le strutture gerarchicamente inferiori all’utente (collezioni, prodotti, ecc.)
+          vengono automaticamente liberate dalla funzione 'delete_user' di user.h.
 */
+
 int free_users(users* users_list_head){
 
     if(*users_list_head == NULL) return 1;
@@ -430,13 +525,21 @@ int free_users(users* users_list_head){
 
 
 /*
-Stampa l'username ed il ruolo di ogni utente della lista utenti. 
+    Stampa le informazioni principali (username e ruolo) di tutti gli utenti presenti nella lista.
 
-Prende in ingresso il puntatore alla testa della lista passato come riferimento
+    La funzione itera su ciascun nodo della lista 'users' e invoca 'print_user' per stampare 
+    le informazioni relative al singolo utente in formato leggibile.
 
-Restituisce:
-- 1 In casi di lista utenti non valida o vuota
-- 0 In caso di Successo
+    Parametri:
+        - users_list_head: puntatore alla testa della lista utenti.
+
+    Valori di ritorno:
+        - 1 -> la lista è vuota o non valida
+        - 0 -> stampa eseguita correttamente
+
+    Nota:
+        - La funzione stampa il contenuto informativo in maniera molto semplice. È pensata per 
+          essere usata come parte di funzioni ad alto livello che gestiscono la formattazione.
 */
 int print_users(users users_list_head){
 

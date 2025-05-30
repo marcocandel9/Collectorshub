@@ -17,9 +17,17 @@ void clear_screen(){
 
 
 /*
-Prende in ingresso due valori minimi min e max, e implementa il controllo dell'input inserito dall'utente. Se l'utente inserisce un valore non compreso fra min e max o un valore non corrispondente ad un intero, richiede nuovamente l'input.abort
+    Richiede un input numerico all’utente compreso tra min e max (inclusi).
+    
+    Se l’utente inserisce un valore non intero o fuori dal range specificato, 
+    il prompt viene ripetuto fino a ottenere un input valido.
 
-Restituisce l'input corretto inserito dall'utente
+    Parametri:
+        - min: valore minimo accettato
+        - max: valore massimo accettato
+
+    Ritorna:
+        - Il valore intero validato inserito dall’utente
 */
 int get_valid_input(int min, int max){
 
@@ -51,12 +59,16 @@ int get_valid_input(int min, int max){
 
 
 /*
-Implementa l'I/O del menù di login
+    Mostra il menù principale di login e gestisce l'input dell’utente.
 
-Restituisce:
-- 1 Se l'utente desidera effettuare il login
-- 2 Se l'utente desidera effettuare una registrazione
-- 3 Se l'utente desidera terminare il programma
+    L’utente può scegliere se effettuare il login, registrarsi, oppure uscire dal programma.
+    L’input viene validato tramite 'get_valid_input'. Per l'arricchimento grafico del menù,
+    viene invocata la funzione collectors_hub_header() della libreria ascii_graphics.h. 
+
+    Valori di ritorno:
+        - 1 -> login
+        - 2 -> registrazione
+        - 3 -> uscita dal programma
 */
 int login_menu(){
 
@@ -88,14 +100,19 @@ int login_menu(){
 
 
 /*
-Implementa l'I/O del menù utente
+    Mostra il menù dell'area utente e gestisce la selezione delle opzioni.
 
-Restituisce:
-- 1 Se l'utente desidera accedere al menù collezioni
-- 2 Se l'utente desidera modificare le sue credenziali
-- 3 Se l'utente desidera cancellarsi dal sistema in via definitiva
-- 4 per accedere al menù admin
-- 5 Per effettuare il logout
+    Permette di accedere alla gestione delle collezioni, modificare le credenziali, 
+    eliminare il proprio profilo, accedere al menù admin (se autorizzati) o effettuare il logout.
+    Per l'arricchimento grafico del menu, invoca la funzoine user_menu_header e clear_screen di 
+    ascii_graphics.h. 
+
+    Valori di ritorno:
+        - 1 -> accesso al menù collezioni
+        - 2 -> modifica credenziali
+        - 3 -> cancellazione dell'utente
+        - 4 -> accesso al menù admin
+        - 5 -> logout
 
 */
 int user_menu(){
@@ -238,43 +255,6 @@ int admin_menu(){
     printf("\n");
     printf("\n");
 
-
-    scelta = get_valid_input(min,max);
-    return scelta;
-}
-
-
-
-
-/*
-Implementa l'I/O del menù Superuser   (NON UTILIZZATO NELLA VERSIONE 1.0)
-
-Restituisce:
-- 1 Se il superuser desidera visualizzare tutti gli utenti della lista utenti
-- 2 Se il superuser desidera cancellare definitivamente un utente
-- 3 Se il superuser desidera mmodificare il ruolo di un utente
-- 4 Se il superuser desidera accedere al menu' collezioni di un utente, per poter visualizzare/modificare/cancellare le sue collezioni
-- 5 Se il superuser desidera effettuare il log - out (torna al menù login)
-*/
-int superuser_menu(){
-
-    clear_screen();
-
-    int scelta = 0, min = 1, max = 5;
-
-    printf(ANSI_COLOR_RED ANSI_BOLD);
-    superuser_menu_header();
-    printf(ANSI_COLOR_RESET);
-    printf("                                                                            Benvenuto/a nel menu' SUPERUSER!\n\n" BOLD_OFF);
-    printf("                                                                            Seleziona una tra le seguenti opzioni:\n");
-    printf("                                                                            1) Visualizza tutti gli utenti\n");
-    printf("                                                                            2) Cancella definitivamente un utente\n");
-    printf("                                                                            3) Modifica ruolo di un utente\n");
-    printf("                                                                            4) Seleziona un utente ed accedi al suo menu' collezioni \n");
-    printf("                                                                            5) Esci (log-out)\n");
-    printf("\n");
-    printf("\n");
-    printf("\n");
 
     scelta = get_valid_input(min,max);
     return scelta;

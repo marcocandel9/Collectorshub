@@ -113,8 +113,25 @@ void superuser_menu_header(){
 
 
 
-//Stampa la seguente stringa ======================== [TESTO_CENTRALE] =========================== 
-//lateral padding width è il numero di = stampati a destra e sinistra del testo centrale
+/* 
+    Stampa una linea divisoria decorativa con un testo centrale evidenziato, 
+    racchiuso tra simboli di padding (=).
+
+    Il formato della linea stampata sarà:
+        ======================== [TESTO_CENTRALE] ===========================
+
+    La funzione è utile per migliorare la leggibilità dell’interfaccia testuale,
+    ad esempio per separare sezioni o titoli nei menu CLI.
+
+    Parametri:
+        - central_text: stringa da visualizzare al centro della linea.
+        - lateral_padding_width: numero di caratteri `=` da stampare a sinistra e a destra del testo centrale.
+
+    Esempio di output con `central_text = "MENU"` 
+        ==================== [MENU] ====================
+
+*/
+
 void division_break_lines(const char *central_text,int lateral_padding_width){
     
     int len = strlen(central_text);

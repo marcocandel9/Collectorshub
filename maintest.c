@@ -34,13 +34,17 @@ int main() {
 
     admin_menu();
 
+    sys_admin_print_users(logged_user, nuova_lista);
+
+    admin_menu();
+
     sys_admin_delete_user(logged_user,&(nuova_lista));
 
     admin_menu();
 
     sys_admin_promote_base_user(logged_user,&(nuova_lista));
 
-    sys_admin_print_users(logged_user, nuova_lista);
+    
     
 
     /*
