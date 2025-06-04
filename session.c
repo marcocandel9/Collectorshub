@@ -1,27 +1,6 @@
 #include "session.h"
 
 
-/*
-    users users_list = NULL; //poi devo caricare la lista utenti
-    user user = NULL;
-    collection collection = NULL;
-    collections collections = NULL;
-    product product = NULL;
-
-    //verràpopolati durante il login/registrazione
-    char username[MAX_STR_LEN] = "";
-
-
-    //verrà popolato durante l'accesso alla collezione
-    char collection_name[MAX_STR_LEN] ="";
-
-    int login_chosen_action = 0;
-    int user_chosen_action = 0;
-    int collection_chosen_action = 0;
-    int product_chosen_action = 0;
-
-    int user_choose_result = 0;
-*/
 
 
     
