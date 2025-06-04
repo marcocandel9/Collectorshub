@@ -7,4 +7,6 @@ int login_menu_session(user* user, users* users_list);
 
 int user_menu_session(user* user, users* users_list, collection* collection, collections* collections);
 
+int collection_menu_session(user* user,  collection* collection);
+
 #endif

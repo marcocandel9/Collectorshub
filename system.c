@@ -1003,7 +1003,33 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
 
     if((logged_user->collections_list_head) == NULL){\
         printf("\n" ANSI_COLOR_RED ANSI_BOLD);
-        printf("Impossibile accedere ad una collezione, la tua lista e' vuota. Creane una dal menu' collezioni.\n");
+        printf("Impossibile accedere ad una collezione, la tua lista e' vuota, devi prima crearne una.\n");
+        printf(ANSI_COLOR_MAGENTA"Vuoi creare una nuova collezione? Premi 0 per confermare, 1 per annullare e tornare al menu utenti.\n"ANSI_COLOR_RESET);
+        int choice = ask_confirmation();
+        if(choice == 0){
+
+            int collection_result = sys_insert_collection(logged_user);
+
+            switch(collection_result){
+                case 1:
+                    return 3;
+                case 2:
+                    printf("\n" ANSI_COLOR_RED ANSI_BOLD);
+                    printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
+                    printf("\n" ANSI_COLOR_RESET BOLD_OFF);
+                    return 2;
+                case 3:
+                    printf("\n"ANSI_COLOR_RED ANSI_BOLD);
+                    printf("FATAL ERROR: Lista inconsistente. Contattare un amministratore.\n");
+                    printf("\n"ANSI_COLOR_RESET BOLD_OFF);
+                default:
+                    printf("\n"ANSI_COLOR_GREEN);
+                    printf("Collezione aggiunta con successo. Verrai reindirizzato al menu collezioni...\n");
+                    printf("\n"ANSI_COLOR_RESET);
+                    return 0;
+            }
+
+        }
         printf("\n" ANSI_COLOR_RESET BOLD_OFF);
         return 3;
     }
@@ -1081,7 +1107,6 @@ Valori di ritorno:
 - 4 -> errore critico in fase di allocazione memoria (in insert_collection)
 - 0 -> collezione aggiunta correttamente
 */
-
 int sys_insert_collection(user logged_user){
 
     int string_checker_result;
@@ -1198,9 +1223,9 @@ Parametri:
 Valori di ritorno:
 - 1 -> l’utente ha annullato la modifica
 - 2 -> errore nella lettura del buffer di input
-- 3 -> lista collezioni vuota o collezione non trovata
+- 3 -> lista collezioni vuota o collezione non trovata  (ERRORE CRITICO! LISTA INCONSISTENTE)
 - 4 -> errore critico nella modifica (caso raro)
-- 0 -> modifica effettuata con successo (una volta completata la funzione)
+- 0 -> modifica effettuata con successo 
 */
 int sys_modify_collection(user logged_user){
 
@@ -1399,7 +1424,10 @@ Valori di ritorno:
 - 2 -> errore critico di lettura dal buffer di input
 - 3 -> la lista collezioni dell’utente è vuota
 - 4 -> errore critico durante la rimozione (collezione non trovata o lista incoerente)
-- 0 -> eliminazione eseguita correttamente
+- 0 -> eliminazione eseguita correttamente -> È NECESSARIO ESSERE REINDIRIZZATI IN QUESTO CASO AL MENU UTENTI VEDI NOTA
+
+N.B: PER LA SEMPLICITÀ DELLA FUNZIONE, NON È STATO IMPLEMENTATO UN CONTROLLO NEL CASO IN CUI L'UTENTE DESIDERI CANCELLARE LA COLLEZIONE A CUI HA CORRETTAMENTE FATTO ACCESSO. 
+Motivo per cui è necessario che l'utente venga reindirizzato al menu utente dopo ogni cancellazione di una delle sue collezioni. 
 */
 int sys_delete_collection(user logged_user){
 
@@ -1525,6 +1553,8 @@ int sys_delete_collection(user logged_user){
             break;
     }
     //l'eliminazione è andata a buon fine, restituisco 0.
+
+    printf(ANSI_BOLD ANSI_COLOR_MAGENTA"Verrai reindirizzato al menu utente da cui puoi riaccedere ad una delle tue collezioni...\n"BOLD_OFF ANSI_COLOR_RESET);
     return 0;
 }
 

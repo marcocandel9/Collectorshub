@@ -148,11 +148,12 @@ Implementa l'I/O del menù collezione
 
 Restituisce:
 - 1 Se l'utente desidera visualizzare le proprie collezioni
-- 2 Se l'utente desidera accedere ad una collezione
-- 3 Se l'utente desidera  Modificare il nome/tipologia di una collezione
-- 4 Se l'utente desidera cancellare definitivamente una collezione
-- 5 Se l'utente desidera cancellare definitivamente tutte le sue collezioni
-- 6 Per tornare al menù utente
+- 2 Se l'utente desidera accedere ad una collezione (ingresso al menu prodotti relativo a quella collezione)
+- 3 Se l'utente desidera  Creare una nuova collezione
+- 4 Se l'utente desidera modificare il nome/tipologia di una collezione
+- 5 Se l'utente desidera cancellare definitivamente una collezione
+- 6 Se l'utente desidera cancellare definitivamente tutte le sue collezioni
+- 7 Per tornare al menù utente
 
 */
 int collection_menu(){
