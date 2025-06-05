@@ -22,8 +22,7 @@ int main() {
     while (1) {
         force_logout = false;
 
-        if (login_menu_session(&logged_user, &users_list) == 1)
-            break;
+        if (login_menu_session(&logged_user, &users_list) == 1) break;
 
         while (1) {
             int user_result = user_menu_session(&logged_user, &users_list, &collection, &collections);
@@ -33,7 +32,7 @@ int main() {
                 
                 if(admin_result == -1)  //Errore critico
                     return -1;
-                //if(admin_result == 4)   //Accedo al menu collezioni ( NON DEVO FARE NULLA PER ACCEDERCI, CI ANDRÀ IN AUTOMATICO. LASCIO L'IF PER CHIAREZZA.)
+                //if(admin_result == 1)   //Accedo al menu collezioni ( NON DEVO FARE NULLA PER ACCEDERCI, CI ANDRÀ IN AUTOMATICO. LASCIO L'IF COMMENTATO PER CHIAREZZA.)
                 
                 if(admin_result == 5){  //Forzo il logout per evitare di entrare nel menu collezioni
                     force_logout = true;
@@ -45,12 +44,13 @@ int main() {
 
             while (1) {
                 int collection_result = collection_menu_session(&logged_user, &collection);
-
+                
                 if (collection_result == -1)
                     return -1;
-                if (collection_result == 2) {
-                    // TODO: products_menu_session
-                    continue;
+                if (collection_result == 2) { //Accedo al menu prodotti
+                    int product_result = products_menu_session(&(logged_user),&(collection));
+                    if(product_result == -1) return -1; //errore critico
+                    if(product_result == 6) continue; //Altrimenti voglio tornare al menu collezioni, faccio ripartire il ciclo while
                 }
                 if (collection_result == 4 || collection_result == 5 || collection_result == 6)
                     break;

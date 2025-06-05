@@ -11,4 +11,7 @@ int collection_menu_session(user* user,  collection* collection);
 
 int admin_menu_session(user* user, users* users_list, collection* collection);
 
+int products_menu_session(user* user, collection* collection);
+
+
 #endif

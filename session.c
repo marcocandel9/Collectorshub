@@ -86,33 +86,7 @@ int user_menu_session(user* user, users* users_list, collection* collection, col
      
             //CASE 1: ACCESSO AL MENU COLLEZIONI
             case 1:
-                user_choice_result = sys_access_user_collection(*user, collection);
-                switch(user_choice_result){
-                    //L'utente ha annullato l'operazione, torno al menu utenti
-                    case 1:
-                        //resetto il risultato della scelta per coerenza della logica
-                        user_choice_result = 0;
-                        //faccio ripartire il ciclo while
-                        continue;
-
-                    //errore di lettura del buffer di input
-                    case 2:
-                        return -1;
-                        
-                    //lista delle collezioni vuota, riparte il ciclo while
-                    case 3:
-                        continue;
-
-                    //errore durante l'accesso alla memoria (errore logico dati, lista inconsistente)
-                    case 4:
-                        return -1;
-
-                    //accesso eseguito correttamente
-                    default:
-                        //ACCESSO ALLA COLLEZIONE RIUSCITO
-                        return 1;
-                    }
-                break;
+                return 1;
 
             //CASE 2: MODIFICA CREDENZIALI                    
             case 2:
@@ -189,6 +163,8 @@ int user_menu_session(user* user, users* users_list, collection* collection, col
 
 
 
+
+
 /*
 Gestisce la sessione del menu collezioni per l’utente attualmente loggato.
 
@@ -233,8 +209,11 @@ int collection_menu_session(user* user,  collection* collection){
                 continue; //torno al menu collezioni
             //CASO 2: L'UTENTE DESIDERA ACCEDERE AD UNA COLLEZIONE (E Quindi al menu prodotti)
             case 2:
-                return 2;
-
+                user_choice_result = sys_access_user_collection(*user, collection);
+                if(user_choice_result == 1) return 1;
+                if(user_choice_result == 2 || user_choice_result == 4 || user_choice_result == 3) return -1; 
+                return 2; //altrimenti devo accedere al menu prodotti
+              
             //CASO 3: L'utente desidera creare una nuova collezione
             case 3:
                 user_choice_result = sys_insert_collection(*user);
@@ -395,12 +374,6 @@ int admin_menu_session(user* user, users* users_list, collection* collection){
                     continue;
                 //CASO 4: [ACCESSO AL MENU COLLEZIONI]
                 case 4:
-                    user_choice_result = sys_access_user_collection(*user, collection);
-                    if(user_choice_result == 4 || user_choice_result == 3 || user_choice_result == 2) return -1; //ERRORE CRITICO
-                    //ANNULLAMENTO DA PARTE DELL'UTENTE => torno al menu admin
-                    if(user_choice_result == 1) continue;
-                    
-                    //altrimenti accedo correttamente, restituisco 4
                     return 4;
                 //CASO 5: [LOGOUT]
                 case 5:
@@ -413,13 +386,59 @@ int admin_menu_session(user* user, users* users_list, collection* collection){
 }
 
 
-int product_menu_session(user* user, users* users_list, collection* collection){
+
+
+/*
+Gestisce la sessione del menu prodotti
+
+Parametri:
+- user: puntatore all’utente attualmente loggato con privilegi admin
+- collection: puntatore alla collezione selezionata (in caso di accesso al menu collezioni)
+
+Restituisce:
+- -1 in caso di errore critico
+-  6 in caso di accesso al menu collezioni
+*/
+int products_menu_session(user* user, collection* collection){
 
     int user_chosen_action = 0;
     int user_choice_result = 0;
     
-    
-    
+    while(1){
+
+        user_chosen_action = products_menu();
+
+        switch(user_chosen_action){
+            //CASO 1: [STAMPA DEI PRODOTTI DELLA COLLEZIONE]
+            case 1:
+                user_choice_result = sys_print_user_products(*user,*collection);
+                if(user_choice_result ==  4) return -1; //errore critico
+                continue; //altrimenti torno al menu prodotti facendo ripartire il ciclo while
+            //CASO 2: [AGGIUNTA PRODOTTO ALLA COLLEZIONE]
+            case 2:
+                user_choice_result = sys_insert_user_product(*user,*collection);
+                if(user_choice_result == 2 || user_choice_result == 4) return -1; //Errore critico
+                continue; //altrimenti torno al menu prodotti sia in caso di annullamento sia in caso di aggiunta riuscita
+            //CASO 3: [MODIFICA DI UN PRODOTTO]
+            case 3:
+                user_choice_result = sys_modify_user_product(*user,*collection);
+                if(user_choice_result == 0 || user_choice_result == 1 || user_choice_result == 3) continue;
+                return -1; //altrimenti ho un errore critico, restituisco -1
+            //CASO 4: [CANCELLAZIONE DI UN PRODOTTO]
+            case 4:
+                user_choice_result = sys_delete_user_product(*user,*collection);
+                if(user_choice_result == 0 || user_choice_result == 1 || user_choice_result == 3) continue;
+                return -1; //Altrimenti ho un errore critico, restituisco -1
+            //CASO 5: [ELIMINAZIONE DI TUTTI I PRODOTTI]
+            case 5:
+                user_choice_result = sys_delete_user_products(*user,*collection);
+                if(user_choice_result == 0 || user_choice_result == 1 || user_choice_result == 3) continue;
+                return -1; //Altrimenti ho un errore critico, restituisco -1
+            case 6:
+                *collection == NULL; //inizializzo a NULL il puntatore collezione (devo annullare l'accesso a questa collezione!)
+                return 6; //desidero tornare al menu collezioni
+        }
+    }
 }
 
 

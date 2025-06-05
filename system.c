@@ -985,7 +985,6 @@ Parametri:
 
 Valori di ritorno:
 - 4 -> errore durante l’accesso ai dati utente (lista collezioni inconsistente)
-- 3 -> lista collezioni vuota (accesso non possibile)
 - 2 -> errore di lettura del buffer di input
 - 1 -> l’utente ha annullato volontariamente l’accesso alla collezione
 - 0 -> accesso alla collezione eseguito con successo
@@ -1012,7 +1011,7 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
 
             switch(collection_result){
                 case 1:
-                    return 3;
+                    return 1;
                 case 2:
                     printf("\n" ANSI_COLOR_RED ANSI_BOLD);
                     printf("FATAL ERROR 2: Errore lettura buffer di input! Contattare un amministratore\n");
@@ -1031,7 +1030,7 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
 
         }
         printf("\n" ANSI_COLOR_RESET BOLD_OFF);
-        return 3;
+        return 1;
     }
     while(1){
         printf("\n");
@@ -1720,7 +1719,6 @@ Valori di ritorno:
 - 4 -> errore critico di allocazione o gestione dati (duplicato rilevato quando non previsto)
 - 0 -> inserimento effettuato correttamente
 */
-
 int sys_insert_user_product(user logged_user, collection user_collection){
 
     int string_checker_result;
@@ -1972,7 +1970,6 @@ Valori di ritorno:
 - 4 -> errore logico/strutturale durante l’accesso ai dati
 - 5 -> errore nella modifica del prodotto (ritorno dalla funzione `search_and_modify_product`)
 */
-
 int sys_modify_user_product(user logged_user, collection user_collection){
 
     int string_checker_result;
