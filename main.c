@@ -11,11 +11,17 @@ int main() {
     user logged_user = NULL;
     collection collection = NULL;
     collections collections = NULL;
+    product product = NULL;
+    products products = NULL;
+
+    bool force_logout = false;
     
     //Inizio ciclo del programma: Accedo al menu login, se l'utente desidera uscira dal programma, esco dal ciclo while
 
     //Menu login (WHILE LOOP 1)
     while (1) {
+        force_logout = false;
+
         if (login_menu_session(&logged_user, &users_list) == 1)
             break;
 
@@ -23,11 +29,18 @@ int main() {
             int user_result = user_menu_session(&logged_user, &users_list, &collection, &collections);
 
             if (user_result == 3) {
-                // TODO: admin_menu_session
-                break;
+                int admin_result = admin_menu_session(&(logged_user),&(users_list),&(collection));
+                
+                if(admin_result == -1)  //Errore critico
+                    return -1;
+                //if(admin_result == 4)   //Accedo al menu collezioni ( NON DEVO FARE NULLA PER ACCEDERCI, CI ANDRÀ IN AUTOMATICO. LASCIO L'IF PER CHIAREZZA.)
+                
+                if(admin_result == 5){  //Forzo il logout per evitare di entrare nel menu collezioni
+                    force_logout = true;
+                }
             }
 
-            if (user_result == 2 || user_result == 4)
+            if (user_result == 2 || user_result == 4 || force_logout == true)
                 break; // eliminazione o logout
 
             while (1) {

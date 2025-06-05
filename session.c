@@ -346,6 +346,83 @@ int collection_menu_session(user* user,  collection* collection){
 
 
 
+/*
+Gestisce la sessione del menu admin, permettendo all’amministratore di:
+
+- Visualizzare la lista degli utenti
+- Eliminare un utente
+- Promuovere un utente base ad admin
+- Accedere al menu collezioni
+- Effettuare il logout
+
+Parametri:
+- user: puntatore all’utente attualmente loggato con privilegi admin
+- users_list: puntatore alla lista completa degli utenti
+- collection: puntatore alla collezione selezionata (in caso di accesso al menu collezioni)
+
+Restituisce:
+- -1 in caso di errore critico
+-  4 in caso di accesso al menu collezioni
+-  5 in caso di logout
+*/
+int admin_menu_session(user* user, users* users_list, collection* collection){
+
+    int user_chosen_action = 0;
+    int user_choice_result = 0;
+
+    //WHILE LOOP DEL MENU ADMIN
+    while(1){
+
+        user_chosen_action = admin_menu();
+        switch(user_chosen_action){
+                //CASO 1: [VISUALIZZAZIONE LISTA UTENTI]
+                case 1:
+                    user_choice_result = sys_admin_print_users(*user, *users_list);
+                    if(user_choice_result == 1 || user_choice_result == 2) return -1; //ERRORE CRITICO
+                    //Altrimenti ritorno al menu admin
+                    continue;
+                //CASO 2: [CANCELLAZIONE UTENTE]
+                case 2:
+                    user_choice_result = sys_admin_delete_user(*user, users_list);
+                    if(user_choice_result == 1 || user_choice_result == 2 || user_choice_result == 4) return -1; //ERRORE CRITICO
+                    //ALTRIMENTI, sia nel caso di eliminazione avvenuta correttamente sia nel caso di annullamento da parte dell'utente, ritorno al menu admin
+                    continue;
+                //CASO 3: [PROMOZIONE AD ADMIN]
+                case 3:
+                    user_choice_result = sys_admin_promote_base_user(*user, users_list);
+                    if(user_choice_result == 1 || user_choice_result == 2 || user_choice_result == 4) return -1; //ERRORE CRITICO
+                    //ALTRIMENTI, sia nel caso di promozione avvenuta correttamente, sia nel caso di annullamento da parte dell'utente, ritorno al menu admin
+                    continue;
+                //CASO 4: [ACCESSO AL MENU COLLEZIONI]
+                case 4:
+                    user_choice_result = sys_access_user_collection(*user, collection);
+                    if(user_choice_result == 4 || user_choice_result == 3 || user_choice_result == 2) return -1; //ERRORE CRITICO
+                    //ANNULLAMENTO DA PARTE DELL'UTENTE => torno al menu admin
+                    if(user_choice_result == 1) continue;
+                    
+                    //altrimenti accedo correttamente, restituisco 4
+                    return 4;
+                //CASO 5: [LOGOUT]
+                case 5:
+                    return 5;
+                default:
+                    continue; //difensivo
+                
+        }
+    }
+}
+
+
+int product_menu_session(user* user, users* users_list, collection* collection){
+
+    int user_chosen_action = 0;
+    int user_choice_result = 0;
+    
+    
+    
+}
+
+
 
 
 

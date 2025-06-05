@@ -9,4 +9,6 @@ int user_menu_session(user* user, users* users_list, collection* collection, col
 
 int collection_menu_session(user* user,  collection* collection);
 
+int admin_menu_session(user* user, users* users_list, collection* collection);
+
 #endif
