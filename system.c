@@ -2385,7 +2385,7 @@ int sys_delete_user_product(user logged_user, collection user_collection){
     printf("\n" ANSI_COLOR_RESET BOLD_OFF);
 
     //se la lista prodotti è vuota, restituisco 3
-    if(user_collection -> products_list_head == NULL){
+    if(products_list == NULL){
         printf(ANSI_COLOR_RED);
         printf("La collezione \"%s\" e' vuota. Non e' presente alcun prodotto da eliminare.\n",collection_name);
         printf(ANSI_COLOR_RESET);
@@ -2514,6 +2514,8 @@ int sys_delete_user_products(user logged_user, collection user_collection){
     get_username(logged_user,username);
     char collection_name[MAX_STR_LEN];
     get_collection_name(user_collection,collection_name);
+    products products_list = NULL;
+    get_products_list(user_collection,&(products_list));
 
     int string_checker_result;
 
@@ -2521,7 +2523,7 @@ int sys_delete_user_products(user logged_user, collection user_collection){
     division_break_lines("AREA ELIMINAZIONE PRODOTTI",54);
     printf(ANSI_COLOR_RESET BOLD_OFF);
 
-    if(user_collection->products_list_head == NULL){
+    if(products_list == NULL){
         printf("\n"ANSI_COLOR_RED);
         printf("La tua collezione \"%s\" e' vuota, non e' presente alcun prodotto da eliminare.\n",collection_name);
         printf("\n"ANSI_COLOR_RESET);
@@ -2596,6 +2598,8 @@ int sys_access_admin_menu(user logged_user, users* users_list_head){
 
     char username[MAX_STR_LEN];
     get_username(logged_user,username);
+    char user_role[MAX_STR_LEN];
+    get_user_role(logged_user,user_role);
 
 
     int string_checker_result;
@@ -2607,8 +2611,8 @@ int sys_access_admin_menu(user logged_user, users* users_list_head){
     printf(ANSI_COLOR_RESET BOLD_OFF);
 
     //Se l'utente loggato è già un ADMIN, allora la funzione restituirà 0.
-    if(logged_user->role == ADMIN){
-        printf(ANSI_BOLD ANSI_COLOR_CYAN"/n Benvenuto/a Admin! Verrai reindirizzato al menù...\n"BOLD_OFF ANSI_COLOR_RESET);
+    if((strcmp(user_role,"ADMIN")) == 0){
+        printf(ANSI_BOLD ANSI_COLOR_CYAN"\n Benvenuto/a Admin! Verrai reindirizzato al menu richiesto...\n"BOLD_OFF ANSI_COLOR_RESET);
         return 0;
     }
 
