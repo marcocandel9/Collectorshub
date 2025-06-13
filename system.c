@@ -948,9 +948,13 @@ int sys_print_user_collections(user logged_user){
     printf(ANSI_COLOR_RESET BOLD_OFF);
 
     printf(ANSI_BOLD);
-    printf("Lista delle collezioni di %s:\n",logged_user->username);
+    char username[MAX_STR_LEN];
+    get_username(logged_user,username);
+    printf("Lista delle collezioni di %s:\n",username);
     printf(BOLD_OFF ANSI_COLOR_CYAN);
-    int result = print_collections(logged_user->collections_list_head);
+    collections user_collections = NULL;
+    get_collection_list(logged_user,&(user_collections));
+    int result = print_collections(user_collections);
     printf(ANSI_COLOR_RESET);
 
     //La funzione print collections restituisce 1 se la lista è vuota -> gestisco questo caso:
@@ -1000,10 +1004,12 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
     bool check_space = false;
     *user_collection = NULL;
 
-    if((logged_user->collections_list_head) == NULL){
+    collections collections_list = NULL;
+    get_collection_list(logged_user,&(collections_list));
+    if(collections_list == NULL){
         printf("\n" ANSI_COLOR_MAGENTA);
         printf("Impossibile accedere ad una collezione, la tua lista e' vuota, devi prima crearne una. L'operazione verra' annullata.\n");
-        printf("\n" ANSI_COLOR_RESET);;
+        printf("\n" ANSI_COLOR_RESET);
         return 1; }
     
     while(1){
@@ -1028,7 +1034,7 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
         }
 
         collections collections_list = NULL;
-        get_collection_list(logged_user,collections_list);
+        get_collection_list(logged_user,&(collections_list));
         
         int search_result = search_collection(collections_list,collection_name_io_string,user_collection);
 
@@ -1409,7 +1415,7 @@ Parametri:
 - logged_user: puntatore all’utente attualmente loggato
 
 Valori di ritorno:
-- 1 -> l’utente ha annullato l’eliminazione
+- 1 -> l’utente ha annullato l’eliminazione / non ha ancora creato nessuna collezione
 - 2 -> errore critico di lettura dal buffer di input
 - 3 -> la lista collezioni dell’utente è vuota
 - 4 -> errore critico durante la rimozione (collezione non trovata o lista incoerente)
@@ -1437,9 +1443,9 @@ int sys_delete_collection(user logged_user){
     if((user_collections) == NULL){
 
         printf("\n" ANSI_BOLD ANSI_COLOR_RED);
-        printf("Impossibile eliminare una collezione perche' la tua lista e' vuota.\n");
+        printf("Non hai ancora creato nessuna collezione.\n");
         printf("\n" BOLD_OFF ANSI_COLOR_RESET);
-        return 3;
+        return 1;
     }
 
     sys_print_user_collections(logged_user);
@@ -1570,10 +1576,10 @@ Parametri:
 - logged_user: puntatore all’utente attualmente loggato
 
 Valori di ritorno:
-- 1 -> l’utente ha annullato l’eliminazione
+- 1 -> l’utente ha annullato l’eliminazione / non è ancora stata creata nessuna collezione
 - 2 -> errore critico di lettura dal buffer di input
-- 3 -> la lista collezioni dell’utente è vuota
-- 4 -> errore critico durante la rimozione 
+- 3 -> la lista collezioni dell’utente è vuota (ERRORE CRITICO: LISTA INCONSISTENTE)
+- 4 -> errore critico durante la rimozione (LISTA INCONSISTENTE) 
 - 0 -> eliminazione eseguita correttamente
 */
 int sys_delete_collections(user logged_user){
@@ -1587,9 +1593,9 @@ int sys_delete_collections(user logged_user){
 
     if((user_collections) == NULL){
         printf("\n" ANSI_COLOR_RED);
-        printf("L'utente possiede già una lista collezioni vuota.\n");
+        printf("Non hai ancora creato nessuna collezione.\n");
         printf("\n" ANSI_COLOR_RED);
-        return 3;
+        return 1;
     }
 
 
@@ -1608,7 +1614,7 @@ int sys_delete_collections(user logged_user){
             return 1;
         case 2:
             printf("\n" ANSI_COLOR_RED ANSI_BOLD);
-            printf("ERRORE CRITICO: lettura del buffer di input fallita (codice 2). Contattare un amministratore.\n");
+            printf("ERRORE CRITICO: lettura del buffer di input fallit. Contattare un amministratore.\n");
             printf("\n" ANSI_COLOR_RED BOLD_OFF);
             return 2;
         default:
@@ -1618,12 +1624,18 @@ int sys_delete_collections(user logged_user){
             break;
     }
 
-    int result = free_collections(&(user_collections));
-
+    int result = delete_user_collections(logged_user);
+    
     if(result == 1){
+        printf("\n" ANSI_COLOR_RED ANSI_BOLD);
+        printf("ERRORE Critico: utente non inizializzato e/o lista risulta vuota quando non dovrebbe (Lista inconsistente). Contattare un amministratore");
+        printf("\n" ANSI_COLOR_RESET BOLD_OFF);
+        return 4;
+    }
+    if(result == 2){
         
         printf("\n" ANSI_COLOR_RED ANSI_BOLD);
-        printf("ERRORE Critico: la lista collezioni dell'utente e' vuota (codice 4). Contattare un amministratore.");
+        printf("ERRORE Critico: la lista collezioni dell'utente e' vuota (Lista inconsistente)). Contattare un amministratore.");
         printf("\n" ANSI_COLOR_RESET BOLD_OFF);
         return 4;
     }
@@ -1652,28 +1664,38 @@ Parametri:
 
 Valori di ritorno:
 - 1 -> la lista prodotti della collezione è vuota
-- 4 -> errore critico: la funzione print_products ha rilevato lista incoerente (raro)
+- 4 -> errore critico: la funzione print_  ha rilevato lista incoerente (raro)
 - 0 -> la stampa è andata a buon fine
 */
 int sys_print_user_products(user logged_user, collection user_collection){
 
+    char username[MAX_STR_LEN];
+    char collection_name[MAX_STR_LEN];
+    get_username(logged_user,username);
+    get_collection_name(user_collection,collection_name);
+
+    products products_list = NULL;
+    get_products_list(user_collection,&(products_list));
+
     printf(ANSI_COLOR_BLUE ANSI_BOLD);
     division_break_lines("LISTA PRODOTTI", 60);
     printf(ANSI_COLOR_RESET BOLD_OFF);
+    
 
-    if(user_collection->products_list_head == NULL){
+    
+    if(products_list == NULL){
         printf("\n" ANSI_COLOR_RED);
-        printf("%s , la tua lista collezioni \"%s\" e' vuota.\n",logged_user->username, user_collection->collection_name);
+        printf("%s , la tua lista collezioni \"%s\" e' vuota.\n",username, collection_name);
         printf("\n" ANSI_COLOR_RESET);
         return 1;
     }
 
-    printf("La lista prodotti della tua collezione \"%s\" e' la seguente:\n",user_collection->collection_name);
+    printf("La lista prodotti della tua collezione \"%s\" e' la seguente:\n", collection_name);
     printf(ANSI_BOLD);
     printf("| NOME | TIPO | CONDIZIONI | PREZZO DI ACQUISTO |\n");
     printf(BOLD_OFF);
     printf(ANSI_COLOR_CYAN);
-    int result = print_products(user_collection->products_list_head);
+    int result = print_products(products_list);
     printf(ANSI_COLOR_RESET);
 
     if(result == 1){
@@ -1712,17 +1734,22 @@ Utilizza:
 Valori di ritorno:
 - 1 -> l’utente ha annullato l’operazione
 - 2 -> errore di lettura del buffer di input
-- 4 -> errore critico di allocazione o gestione dati (duplicato rilevato quando non previsto)
+- 3 -> errore di allocazione dinamica
+- 4 -> struttura dati inconsistente (duplicato rilevato quando non previsto)
 - 0 -> inserimento effettuato correttamente
 */
 int sys_insert_user_product(user logged_user, collection user_collection){
 
+    char username[MAX_STR_LEN];
+    char collection_name[MAX_STR_LEN];
+    get_username(logged_user,username);
+    get_collection_name(user_collection, collection_name);
+    products products_list = NULL;
+    get_products_list(user_collection,&(products_list));
+
     int string_checker_result;
-
     char product_name_io_string[MAX_STR_LEN];
-
     char product_type_io_string[MAX_STR_LEN];
-
     char product_condition_io_string[MAX_STR_LEN];
 
     float product_buyprice;
@@ -1734,7 +1761,7 @@ int sys_insert_user_product(user logged_user, collection user_collection){
     printf(ANSI_COLOR_RESET BOLD_OFF);
 
     printf("\n" ANSI_COLOR_MAGENTA);
-    printf("%s, stai inserendo un nuovo prodotto alla collezione \"%s\" \n",logged_user->username, user_collection->collection_name);
+    printf("%s, stai inserendo un nuovo prodotto alla collezione \"%s\" \n",username, collection_name);
     printf("\n" ANSI_COLOR_RESET);
 
     /* CICLO NOME PRODOTTO */
@@ -1757,11 +1784,11 @@ int sys_insert_user_product(user logged_user, collection user_collection){
                 printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default:
-                int exists = exist_sorted(user_collection->products_list_head, product_name_io_string);
+                int exists = exist_sorted(products_list, product_name_io_string);
 
                 if (exists == 0){
                     printf("\n" ANSI_COLOR_MAGENTA);
-                    printf("E'Gia' presente un prodotto nella collezione \"%s\" con questo nome. I duplicati non sono consentiti. Riprova.\n",user_collection->collection_name);
+                    printf("E'Gia' presente un prodotto nella collezione \"%s\" con questo nome. I duplicati non sono consentiti. Riprova.\n",collection_name);
                     printf("\n"ANSI_COLOR_RESET);
                     continue;
                 } else {
@@ -1910,20 +1937,23 @@ int sys_insert_user_product(user logged_user, collection user_collection){
     break; 
     }
 
-    int result = insert_product(&(user_collection->products_list_head),product_name_io_string,product_type_io_string,product_condition_io_string,product_buyprice);
+    int result = insert_collection_product(user_collection,product_name_io_string,product_type_io_string,product_condition_io_string,product_buyprice);
 
     switch(result){
         case 1: 
-            printf(ANSI_COLOR_RED"ERRORE Critico: errore di allocazione della memoria (codice 4). Contattare un amministratore.\n"ANSI_COLOR_RESET);
+            printf(ANSI_COLOR_RED"ERRORE Critico: La collezione risulta non inizializzata. (Dati inconsistenti). Contattare un amministratore.\n"ANSI_COLOR_RESET);
             return 4;
         case 2:
-            printf(ANSI_COLOR_RED"ERRORE Critico: rilevato duplicato quando non dovrebbe (codice 4). Contattare un amministratore.\n"ANSI_COLOR_RESET);
+            printf(ANSI_COLOR_RED"ERRORE Critico: rilevato duplicato quando non dovrebbe. Contattare un amministratore.\n"ANSI_COLOR_RESET);
             return 4;
+        case 3:
+            printf(ANSI_COLOR_RED"ERRORE Critico: errore di allocazione dinamica della memoria. Contattare un amministratore.\n"ANSI_COLOR_RESET);
+            return 3;
         default:
             break;
     }
 
-    printf(ANSI_COLOR_GREEN ANSI_BOLD"Il seguente prodotto e' stato correttamente inserito nella collezione \"%s\": \n" ANSI_COLOR_RESET BOLD_OFF,user_collection->collection_name);
+    printf(ANSI_COLOR_GREEN ANSI_BOLD"Il seguente prodotto e' stato correttamente inserito nella collezione \"%s\": \n" ANSI_COLOR_RESET BOLD_OFF,collection_name);
     printf(ANSI_COLOR_CYAN);
     printf("Nome prodotto: %s\n", product_name_io_string);
     printf("Tipologia: %s\n", product_type_io_string);
@@ -1968,6 +1998,14 @@ Valori di ritorno:
 */
 int sys_modify_user_product(user logged_user, collection user_collection){
 
+    char username[MAX_STR_LEN];
+    char collection_name[MAX_STR_LEN];
+    get_username(logged_user,username);
+    get_collection_name(user_collection,collection_name);
+    products products_list = NULL;
+    get_products_list(user_collection, &(products_list));
+
+
     int string_checker_result;
 
     //informazioni prodotto prima della modifica
@@ -2006,7 +2044,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     while(1){
         //altrimenti stampa la lista dei prodotti
         printf("\n" ANSI_BOLD);
-        printf("Inserisci il nome del prodotto della collezione \"%s\" che desideri modificare. \n",logged_user->username, user_collection->collection_name);
+        printf("Inserisci il nome del prodotto della collezione \"%s\" che desideri modificare. \n",username, collection_name);
         printf("Inserisci una stringa vuota per annullare l'operazione di modifica. \n");
         printf("\n" BOLD_OFF);
 
@@ -2028,7 +2066,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
         }
 
         //controllo se il nome del prodotto inserito in input esista nella lista dei prodotti
-        int exists = exist_sorted(user_collection->products_list_head, product_name_io_string);
+        int exists = exist_sorted(products_list, product_name_io_string);
 
         switch (exists) {
             case 1: 
@@ -2076,7 +2114,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
                 printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default: 
-                int exists = exist_sorted(user_collection->products_list_head,new_product_name_io_string); //controllo che l'input valido non sia occupato
+                int exists = exist_sorted(products_list,new_product_name_io_string); //controllo che l'input valido non sia occupato
                 switch(exists) {
                     case 1:
                         printf("\n" ANSI_COLOR_RED);
@@ -2265,12 +2303,12 @@ int sys_modify_user_product(user logged_user, collection user_collection){
 
     //altrimenti, se result == 0 modifico il prodotto.
 
-    int final_result = search_and_modify_product(&(user_collection->products_list_head), product_name_io_string,new_product_name_io_string, new_product_type_io_string, new_product_condition_io_string,new_product_buyprice);
+    int final_result = modify_collection_product(user_collection, product_name_io_string,new_product_name_io_string, new_product_type_io_string, new_product_condition_io_string,new_product_buyprice);
 
     switch (final_result) {
         case 1:
             printf("\n" ANSI_COLOR_RED);
-            printf("ERRORE CRITICO: lista vuota quando non dovrebbe, errore di accesso alla struttura dati in memoria. (errore 4). Contattare un amministratore.\n");
+            printf("ERRORE CRITICO: Lista inconsistente, collezione risulta == NULL. Contattare un amministratore.\n");
             printf(ANSI_COLOR_RESET);
             return 4;
         case 2:
@@ -2279,6 +2317,11 @@ int sys_modify_user_product(user logged_user, collection user_collection){
             printf(ANSI_COLOR_RESET);
             return 2;
         case 3:
+            printf("\n" ANSI_COLOR_RED);
+            printf("ERRORE CRITICO: Lista inconsistente, collezione risulta == NULL. Contattare un amministratore.\n");
+            printf(ANSI_COLOR_RESET);
+            return 4;
+        case 4:
             printf("\n" ANSI_COLOR_RED);
             printf("ERRORE CRITICO: errore nella modifica del prodotto durante la chiamata a search_and_modify_product. Contattare un amministratore (codice 5)\n");
             printf(ANSI_COLOR_RESET);
@@ -2320,10 +2363,17 @@ Valori di ritorno:
 - 0 -> prodotto eliminato correttamente
 - 1 -> operazione annullata dall’utente
 - 2 -> errore di lettura del buffer di input
-- 3 -> lista prodotti vuota (nessun elemento eliminabile)
+- 3 -> lista prodotti vuota  (errore critico, lista inconsistente)
 - 4 -> errore critico durante l’accesso alla memoria (struttura dati incoerente)
 */
 int sys_delete_user_product(user logged_user, collection user_collection){
+
+    char username[MAX_STR_LEN];
+    char collection_name[MAX_STR_LEN];
+    get_username(logged_user,username);
+    get_collection_name(user_collection,collection_name);
+    products products_list = NULL;
+    get_products_list(user_collection, &(products_list));
 
     int string_checker_result;
     char product_name_io_string[MAX_STR_LEN];
@@ -2337,7 +2387,7 @@ int sys_delete_user_product(user logged_user, collection user_collection){
     //se la lista prodotti è vuota, restituisco 3
     if(user_collection -> products_list_head == NULL){
         printf(ANSI_COLOR_RED);
-        printf("La collezione \"%s\" e' gia' vuota. Non e' presente alcun prodotto da eliminare.\n",user_collection->collection_name);
+        printf("La collezione \"%s\" e' vuota. Non e' presente alcun prodotto da eliminare.\n",collection_name);
         printf(ANSI_COLOR_RESET);
         return 3;
     }
@@ -2345,9 +2395,9 @@ int sys_delete_user_product(user logged_user, collection user_collection){
     while(1){
 
         printf(ANSI_COLOR_MAGENTA);
-        printf("I prodotti della collezione \"%s\" sono i seguenti:\n\n",user_collection->collection_name);
+        printf("I prodotti della collezione \"%s\" sono i seguenti:\n\n",collection_name);
         printf(ANSI_COLOR_CYAN);
-        int print_result = print_products(user_collection->products_list_head);
+        int print_result = print_products(products_list);
         printf(ANSI_COLOR_RESET);
 
         if(print_result == 1){
@@ -2383,7 +2433,7 @@ int sys_delete_user_product(user logged_user, collection user_collection){
                 break;
         }
 
-        int exists = exist_sorted(user_collection->products_list_head,product_name_io_string);
+        int exists = exist_sorted(products_list,product_name_io_string);
 
         switch(exists){
             case 1:
@@ -2403,7 +2453,7 @@ int sys_delete_user_product(user logged_user, collection user_collection){
     printf(ANSI_COLOR_MAGENTA"Il prodotto che eliminerai e' il seguente: \n"ANSI_COLOR_RESET);
 
     printf(ANSI_COLOR_CYAN);
-    search_and_print_product(user_collection->products_list_head, product_name_io_string);
+    search_and_print_product(products_list, product_name_io_string);
     printf(ANSI_COLOR_RESET);
 
     printf("\n");
@@ -2415,13 +2465,13 @@ int sys_delete_user_product(user logged_user, collection user_collection){
         return 1;
     }
 
-    int final_result = remove_product(&(user_collection->products_list_head), product_name_io_string);
+    int final_result = delete_collection_product(user_collection, product_name_io_string);
 
-    if(final_result == 1){
-        printf(ANSI_COLOR_RED"ERRORE Critico, la lista dei prodotti risulta vuota quando non dovrebbe. (codice 4). Contattare un amministratore. \n"ANSI_COLOR_RESET);
+    if(final_result == 1 || final_result == 3){
+        printf(ANSI_COLOR_RED"ERRORE Critico, la collezione risulta non inizializzata (lista inconsistente) o non è stato trovato il prodotto. Contattare un amministratore. \n"ANSI_COLOR_RESET);
         return 4;
     } else if (final_result == 2){
-        printf(ANSI_COLOR_RED"ERRORE Critico, non e' stata trovata una corrispondenza durante l'eliminazione anche se non dovrebbe accadere (codice 4). Contattare un amministratore.\n"ANSI_COLOR_RESET);
+        printf(ANSI_COLOR_RED"ERRORE Critico, non e' stata trovata una corrispondenza durante l'eliminazione anche se non dovrebbe accadere. Contattare un amministratore.\n"ANSI_COLOR_RESET);
         return 4;
     }
     
@@ -2460,6 +2510,11 @@ Restituisce:
 */
 int sys_delete_user_products(user logged_user, collection user_collection){
 
+    char username[MAX_STR_LEN];
+    get_username(logged_user,username);
+    char collection_name[MAX_STR_LEN];
+    get_collection_name(user_collection,collection_name);
+
     int string_checker_result;
 
     printf(ANSI_COLOR_CYAN ANSI_BOLD);
@@ -2468,13 +2523,13 @@ int sys_delete_user_products(user logged_user, collection user_collection){
 
     if(user_collection->products_list_head == NULL){
         printf("\n"ANSI_COLOR_RED);
-        printf("La tua collezione \"%s\" e' gia' vuota, non e' presente alcun prodotto da eliminare.\n",user_collection->collection_name);
+        printf("La tua collezione \"%s\" e' vuota, non e' presente alcun prodotto da eliminare.\n",collection_name);
         printf("\n"ANSI_COLOR_RESET);
         return 3;
     }
 
     printf("\n" ANSI_COLOR_MAGENTA);
-    printf("Attenzione %s, stai per eliminare tutti i prodotti dalla collezione \"%s\" definitivamente. \n",logged_user->username, user_collection->collection_name);
+    printf("Attenzione %s, stai per eliminare tutti i prodotti dalla collezione \"%s\" definitivamente. \n",username, collection_name);
     printf("Sei sicuro di voler procedere? Inserisci 0 per confermare, 1 per annullare l'eliminazione.\n" ANSI_COLOR_RESET);
     int decision = ask_confirmation();
     if(decision == 1){
@@ -2493,7 +2548,7 @@ int sys_delete_user_products(user logged_user, collection user_collection){
 
     //altrimenti procedo all'eliminazione.
     printf(ANSI_COLOR_MAGENTA"\nHai confermato l'eliminazione...\n"ANSI_COLOR_RESET);
-    int result = free_products(&(user_collection->products_list_head));
+    int result = delete_collection_products(user_collection);
     
     switch(result){
         case 1:
@@ -2539,6 +2594,10 @@ Restituisce:
 */
 int sys_access_admin_menu(user logged_user, users* users_list_head){
 
+    char username[MAX_STR_LEN];
+    get_username(logged_user,username);
+
+
     int string_checker_result;
     char input_string[MAX_STR_LEN];
     char admin_access_secret_string[MAX_STR_LEN] = "SecretAdminPass";   ///LA CHIAVE DI ACCESSO NON DOVREBBE ESSERE OVVIAMENTE HARDCODED, ANDREBBE LETTA DA UN FILE CRITTOGRAFATO. È A SCOPO DIMOSTRATIVO.
@@ -2553,7 +2612,7 @@ int sys_access_admin_menu(user logged_user, users* users_list_head){
         return 0;
     }
 
-    printf("%s, attualmente disponi soltanto dei privilegi base. Inserisci la ",logged_user->username);
+    printf("%s, attualmente disponi soltanto dei privilegi base. Inserisci la ", username);
     printf(ANSI_COLOR_MAGENTA"chiave segreta di accesso "ANSI_COLOR_RESET);
     printf("per ottenerne i privilegi e accedere al menu.\n");
     printf("Puoi inserire una stringa vuota premendo invio per annullare l'operazione.\n");
@@ -2586,8 +2645,6 @@ int sys_access_admin_menu(user logged_user, users* users_list_head){
         break;
     }
 
-    char username[MAX_STR_LEN];
-    get_username(logged_user,username);
 
     int result = search_and_promote_user(users_list_head, username, ADMIN);
 
@@ -2613,6 +2670,8 @@ Restituisce:
 */
 int sys_user_overview(user logged_user){
 
+    char collection_name[MAX_STR_LEN];
+    
     printf(ANSI_COLOR_MAGENTA ANSI_BOLD);
     division_break_lines("PANORAMICA UTENTE", 56);
     printf(ANSI_COLOR_RESET BOLD_OFF);
@@ -2621,38 +2680,10 @@ int sys_user_overview(user logged_user){
 
     printf(ANSI_COLOR_CYAN"La tua panoramica dati e' la seguente:\n\n"ANSI_COLOR_RESET);
 
-    //Puntatore di appoggio per scorrere la lista collezioni
-    collections collections = logged_user ->collections_list_head;
+    
+    user_overview(logged_user);
 
-    if(collections == NULL){
-        printf(ANSI_COLOR_MAGENTA "Non hai ancora creato nessuna collezione. Non c'e' nulla da visualizzare nella tua panoramica.\n" ANSI_COLOR_RESET);
-        printf("\n");
-        return 1;
-    }
-   
-
-     //Stampa la panoramica: Per ogni collezione, stampa la lista dei prodotti. Se la collezione è ancora vuota, verrà stampata la stringa informativa apposita.
-    while(collections != NULL){
-        
-        int collection_counter;
-        
-        printf(ANSI_COLOR_BLUE );
-        division_break_lines((collections->collection_elem->collection_name), 26);
-        printf(ANSI_COLOR_RESET );
-
-        printf(ANSI_COLOR_CYAN);
-        print_collection(collections->collection_elem);
-        printf(ANSI_COLOR_RESET);
-            
-        if(collections->collection_elem->products_list_head == NULL){
-           printf("La collezione non contiene ancora alcun prodotto.\n");
-        }
-            
-        else print_products(collections->collection_elem->products_list_head);
-
-        collections = collections->next;
-    }
-    return 0; //Success, lista printata
+    return 0; //Success, overview printato correttamente
 }
 
 

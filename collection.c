@@ -186,6 +186,24 @@ int get_collection_type(collection my_collection, char my_type[MAX_STR_LEN]){
 
 
 
+/*
+Restituisce tramite il parametro in ingresso products_list, passato come riferimento, il puntatore
+alla testa della lista dei prodotti associati alla collezione my_collection (anch'esso parametro)
+
+Restituisce:
+- 1: Collezione vuota
+- 0: Restituzione avvenuta con successo. 
+*/
+int get_products_list(collection my_collection, products* products_list){
+    if(my_collection == NULL) return 1; //Collezione invalida o vuota
+
+    *products_list = my_collection->products_list_head;
+    return 0;
+}
+
+
+
+
 
 /*
 Elimina una collezione liberandone l'area di memoria riservata alla lista dei prodotti associata alla collezione e la struct collection stessa
@@ -237,4 +255,101 @@ int print_collection(collection my_collection){
 
     printf("%s, %s\n", my_collection_name, my_collection_type);
     return 0; //Success
+}
+
+
+
+//FUNZIONI WRAPPER CHE INCAPSULANO LE FUNZIONI DI PRODUCTS.H 
+
+/*
+Permette l'inserimento di un prodotto ad una collezione passata come parametro. Richiede come parametri in ingresso inoltre i contenuti informativi del prodotto. 
+Effettua il controllo sui duplicati nella lista dei prodotti associata a user_collection. 
+Restituisce: 
+- 1: In caso di collezione non inizializzata(punta a null)
+- 2: in caso di prodotto già esistente nella lista
+- 3: Errore di allocazione dinamica
+- 0: L'inserimento è andato a buoan fine
+*/
+int insert_collection_product(collection user_collection, char product_name[MAX_STR_LEN], char product_type[MAX_STR_LEN], char product_condition[MAX_STR_LEN], float product_buyprice){
+    if(user_collection == NULL) return 1; //Collezione non inizializzata
+
+    int exists = exist_sorted(user_collection->products_list_head, product_name);
+    if(exists == 0) return 2; //Prodotto già esistente nella lista, non consente duplicati
+
+    int result = insert_product(&(user_collection->products_list_head),product_name,product_type,product_condition,product_buyprice);
+    if(result == 1) return 3; //Fatal error: errore di allocazione dinamica
+    return 0; //altrimenti tutto è andato a buon fine.
+}
+
+
+
+/*
+Permette la modifica di un prodotto ad una collezione passata come parametro. Richiede come parametri in ingresso inoltre i contenuti informativi del prodotto. 
+Effettua il controllo sui duplicati nella lista dei prodotti associata a user_collection. 
+Restituisce: 
+- 1: In caso di collezione non inizializzata(== a null)
+- 2: Prodotto non esistente nella lista
+- 3: Lista inconsistente
+- 4: Elemento non valido (stringhe o float non conformi all'aggiunta del prodotto)
+- 0: La modifica è andata a buoan fine
+*/
+int modify_collection_product(collection user_collection, char key_product_name[MAX_STR_LEN], char new_product_name[MAX_STR_LEN], char new_product_type[MAX_STR_LEN], char new_product_condition[MAX_STR_LEN], float new_product_buyprice){
+    if(user_collection == NULL) return 1; //Collezione non inizializzata
+
+    int exists = exist_sorted(user_collection->products_list_head, key_product_name);
+    if(exists != 0) return 2; //Prodotto non esistente nella lista
+
+    int result = search_and_modify_product(&(user_collection->products_list_head),key_product_name,new_product_name,new_product_type,new_product_condition,new_product_buyprice);
+    switch(result){
+        case 1:
+            return 3; //ERRORE 3: LISTA INCONSISTENTE: lista prodotti vuota (non dovrebbe accadere!)
+        case 2:
+            return 3; //ERRORE 3: LISTA INCONSISTENTE: lista prodotti vuota (non dovrebbe accadere!)
+        case 3:
+            return 4; //ERRORE 4: Elemento non valido
+        default:
+            return 0; //modifica avvenuta correttamente
+    }
+}
+
+
+
+/*
+Permette l'eliminazione di un prodotto da una collezione. Richiede in ingresso la collezione da cui si vuole eliminare il prodotto e il nome del prodotto da eliminare
+
+Restituisce:
+- 1: In caso di collezione non inizializzata(== a null)
+- 2: Prodotto non esistente nella lista
+- 3: Lista inconsistente
+- 0: L'eliminazione e' andata a buon fine
+*/
+int delete_collection_product(collection user_collection, char key_product_name[MAX_STR_LEN]){
+    
+    if(user_collection == NULL) return 1; //Collezione non inizializzata
+
+    int exists = exist_sorted(user_collection->products_list_head, key_product_name);
+    if(exists != 0) return 2; //Prodotto non esistente nella lista
+
+    int result = remove_product(&(user_collection->products_list_head),key_product_name);
+
+    if(result == 1 || result == 2) return 3; //Errore critico: lista inconsistente (non dovrebbe accadere, controllo difensivo)
+
+    return 0; //Successo
+}
+
+
+
+/*
+Permette l'eliminazione di tutti i prodotti di una collezione. Richiede in ingresso la collezione da cui si vuole eliminare i prodotti
+
+Restituisce:
+- 1: In caso di collezione non inizializzata(== a null)
+- 0: L'eliminazione e' andata a buon fine
+*/
+int delete_collection_products(collection user_collection){
+
+    if(user_collection == NULL) return 1; //Collezione non inizializzata
+
+    int result = free_products(&(user_collection->products_list_head));
+    return 0;
 }

@@ -24,8 +24,21 @@ int get_collection_name(collection my_collection, char my_name[MAX_STR_LEN]);
 
 int get_collection_type(collection my_collection, char my_type[MAX_STR_LEN]);
 
+int get_products_list(collection my_collection, products* products_list);
+
 int delete_collection(collection* my_collection);
 
 int print_collection(collection my_collection);
+
+//funzioni wrapper che incapsulano le funzioni di products 
+
+int insert_collection_product(collection user_collection, char product_name[MAX_STR_LEN], char product_type[MAX_STR_LEN], char product_condition[MAX_STR_LEN], float product_buyprice);
+
+int modify_collection_product(collection user_collection, char key_product_name[MAX_STR_LEN], char new_product_name[MAX_STR_LEN], char new_product_type[MAX_STR_LEN], char new_product_condition[MAX_STR_LEN], float new_product_buyprice);
+
+int delete_collection_product(collection user_collection, char key_product_name[MAX_STR_LEN]);
+
+int delete_collection_products(collection user_collection);
+
 
 #endif

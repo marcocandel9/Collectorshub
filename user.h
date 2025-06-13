@@ -68,6 +68,8 @@ int delete_user(user* my_user);
 
 int print_user(user my_user);
 
+int user_overview(user my_user);
+
 
 //funzioni wrapper che incapsulano le funzioni di collections 
 int insert_user_collections_list(user my_user, collections new_collections_list_head);
@@ -79,5 +81,7 @@ int modify_user_collection(user my_user, char key_collection_name[MAX_STR_LEN], 
 int delete_user_collection(user my_user, char key_collection_name[MAX_STR_LEN]);
 
 int delete_user_collections(user my_user);
+
+
 
 #endif

@@ -1,5 +1,6 @@
 #include "user.h"
 
+
 const char allowed_symbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
 
@@ -555,4 +556,78 @@ int delete_user_collection(user my_user, char key_collection_name[MAX_STR_LEN]){
         case 2: return 2; // non è stata trovata una corrispondenza
         default: return 0; //eliminazione effettuata con successo
     }
+}
+
+
+
+
+/*
+Elimina una collezione appartenente all’utente specificato, sulla base del nome fornito
+
+Parametri:
+- my_user: puntatore alla struttura utente
+
+Valori di ritorno:
+- 1 -> utente non inizializzato o lista collezioni vuota/non valida
+- 2 -> lista collezioni dell'utente già vuota
+- 0 -> eliminazione totale avvenuta con successo
+*/
+int delete_user_collections(user my_user){
+    if(my_user == NULL) return 1;
+
+    int del_result = free_collections(&(my_user->collections_list_head));
+    if(del_result == 1) return 2;
+    return 0;
+}
+
+
+
+
+/*
+Stampa una panoramica di tutte le collezioni e tutti i prodotti ad esse associati di un utente. Se l'utente non ha creato alcuna collezione, stamperà
+"Non hai ancora creato nessuna collezione. Non c'è nulla da visualizzare nella tua panoramica."
+
+Restituisce: 
+- 1: utente non inizializzato
+- 0: Stampando correttamente la panoramica
+*/
+int user_overview(user my_user){
+
+    if(my_user == NULL) return 1;
+    collections collections_list_head = my_user->collections_list_head;
+    
+    if(collections_list_head == NULL){
+        printf("\x1b[35m" "Non hai ancora creato nessuna collezione. Non c'e' nulla da visualizzare nella tua panoramica.\n" "\x1b[0m");
+        printf("\n");
+        return 1;
+    }
+   
+    int collection_counter = 1;
+    //Stampa la panoramica: Per ogni collezione, stampa la lista dei prodotti. Se la collezione è ancora vuota, verrà stampata la stringa informativa apposita.
+    while(collections_list_head != NULL){
+        
+        char collection_name[MAX_STR_LEN];
+        get_collection_name(collections_list_head->collection_elem, collection_name);
+        
+
+        printf("\x1b[34m");
+        printf("================================ [ %d: %s ] ================================\n", collection_counter, collection_name);
+        printf("\x1b[0m");
+
+        printf("\x1b[36m");
+        print_collection(collections_list_head->collection_elem);
+        printf("\x1b[0m");
+            
+        if(collections_list_head->collection_elem->products_list_head == NULL){
+           printf("La collezione non contiene ancora alcun prodotto.\n");
+        }
+            
+        else print_products(collections_list_head->collection_elem->products_list_head);
+        printf("\n");
+        collection_counter = collection_counter + 1;
+        collections_list_head = collections_list_head->next;
+    }
+
+    return 0;
+
 }
