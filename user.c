@@ -71,7 +71,6 @@ int create_user(user* new_user, char new_username[MAX_STR_LEN], char new_passwor
         - compare_user_privilege(ADMIN, USER)  → 0
         - compare_user_privilege(ADMIN, ADMIN) → 2
 */
-
 int compare_user_privilege(user_role this_user_role, user_role that_user_role){
     
     // Se il primo ruolo è inferiore al secondo, restituisce 1 
@@ -376,7 +375,7 @@ int get_collection_list(user my_user, collections* user_collection){
 Funzione che copia il ruolo dell'utente nell'array di caratteri my_user_role passato in ingresso
 
 Restituisce:
-- 1 Se l'utente non è stato ancora inizializzato e quindi non esiste (puntatore a null)
+- 1 Se l'utente non è stato ancora inizializzato e quindi non esiste (puntatore null)
 - 0 Se tutto va a buon fine
 */
 int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]){
@@ -397,6 +396,25 @@ int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]){
 
     return 0;
 }
+
+
+
+
+/*
+Restituisce il ruolo dell'utente come tipo enum ruolo tramite il parametro di ingresso return_role_value
+
+Restituisce: 
+- 1: Se l'utente non è stato ancora inizializzato (puntatore == null)
+- 0: Se il ruolo viene restituito correttamente
+*/
+int get_user_role_enum(user my_user, user_role* return_role_value){
+
+    if(my_user == NULL) return 1;
+
+    *return_role_value = my_user -> role;
+    return 0;
+}
+
 
 
 

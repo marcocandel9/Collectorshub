@@ -14,6 +14,13 @@ Restituisce:
     - 0 in caso di successo e stampa la lista utenti
 */
 int sys_admin_print_users(user logged_user, users users_list_head) {
+
+    user_role logged_user_role = USER; 
+    get_user_role_enum(logged_user, &(logged_user_role));
+    char username[MAX_STR_LEN];
+    get_username(logged_user,username);
+
+    
     printf(ANSI_COLOR_BLUE ANSI_BOLD);
     division_break_lines("ADMIN: LISTA UTENTI", 60);
     printf(ANSI_COLOR_RESET BOLD_OFF);
@@ -25,7 +32,9 @@ int sys_admin_print_users(user logged_user, users users_list_head) {
     }
 
     // Controllo sul privilegio
-    int is_admin = compare_user_privilege(logged_user->role, ADMIN);
+
+    int is_admin = compare_user_privilege(logged_user_role, ADMIN);
+    
     if (is_admin != 2) {
         printf("\n" ANSI_COLOR_RED);
         printf("Errore critico, l'utente loggato non e' admin! Contattare un amministratore.\n");
@@ -40,7 +49,7 @@ int sys_admin_print_users(user logged_user, users users_list_head) {
     }
 
     // Stampa lista
-    printf("\nAdmin %s, ecco di seguito la lista degli utenti e i loro ruoli.\n", logged_user->username);
+    printf("\nAdmin %s, ecco di seguito la lista degli utenti e i loro ruoli.\n", username);
 
     printf(ANSI_COLOR_CYAN);
     int print_result = print_users(users_list_head);
@@ -76,6 +85,9 @@ Restituisce:
     - 0 in caso di eliminazione dell'utente inserito in input avvenuta con successo
 */
 int sys_admin_delete_user(user logged_user, users* users_list_head){
+
+    user_role logged_user_role = USER;
+    get_user_role_enum(logged_user,&(logged_user_role));
 
     int string_checker_result;
     char objuser_io_string[MAX_STR_LEN];
@@ -121,8 +133,17 @@ int sys_admin_delete_user(user logged_user, users* users_list_head){
         //controllo che l'utente che è stato trovato non sia un admin.
         user found_user = NULL;
         int found = search_user(*users_list_head, objuser_io_string, &(found_user));
-        if(found!= 0) return 2;
-        int compare_privilege = compare_user_privilege(logged_user->role, found_user ->role);
+        if(found!= 0) return 2; //ERRORE CRITICO
+
+        //Prelevo il ruolo e l'username dell'utente trovato per il successivo utilizzo
+        user_role found_user_role = USER;
+        char found_username[MAX_STR_LEN];
+        get_username(found_user,found_username);
+        get_user_role_enum(logged_user,&(found_user_role));
+
+
+        int compare_privilege = compare_user_privilege(logged_user_role, found_user_role);
+
 
         switch(compare_privilege){
             case 1: 
@@ -132,7 +153,7 @@ int sys_admin_delete_user(user logged_user, users* users_list_head){
                 continue; // Riparte il ciclo while
             case 2:
                 printf("\n" ANSI_COLOR_RED);
-                printf("Impossibile eliminare l'utente %s, e' un amministratore! Inserisci un nuovo utente o annulla l'operazione.\n", found_user->username);
+                printf("Impossibile eliminare l'utente %s, e' un amministratore! Inserisci un nuovo utente o annulla l'operazione.\n", found_username);
                 printf("\n" ANSI_COLOR_RESET);
                 continue;
             default:
@@ -141,7 +162,7 @@ int sys_admin_delete_user(user logged_user, users* users_list_head){
         }
 
 
-        printf(ANSI_COLOR_MAGENTA"Stai per eliminare definitivamente l'utente %s, e tutti i dati a lui associati. Sei sicuro di voler proseguire?\n", found_user->username );
+        printf(ANSI_COLOR_MAGENTA"Stai per eliminare definitivamente l'utente %s, e tutti i dati a lui associati. Sei sicuro di voler proseguire?\n", found_username );
         printf("Inserisci 0 per confermare, 1 per annullare l'operazione.\n");
         printf(ANSI_COLOR_RESET);
         int confirm = ask_confirmation();
@@ -195,6 +216,12 @@ Restituisce:
 */
 int sys_admin_promote_base_user(user logged_user, users* users_list_head){
     
+    user_role logged_user_role;
+    char username[MAX_STR_LEN];
+    get_user_role_enum(logged_user, &(logged_user_role));
+    get_username(logged_user,username);
+    
+
     int string_checker_result;
     char objuser_io_string[MAX_STR_LEN];
 
@@ -238,8 +265,15 @@ int sys_admin_promote_base_user(user logged_user, users* users_list_head){
         //controllo che l'utente che è stato trovato non sia un admin.
         user found_user = NULL;
         int found = search_user(*users_list_head, objuser_io_string, &(found_user));
-        if(found!= 0) return 2;
-        int compare_privilege = compare_user_privilege(logged_user->role, found_user ->role);
+        if(found!= 0) return 2; //errore critico
+
+        //prelevo i dati dell'utente trovato per utilizzo successivo
+        char found_username[MAX_STR_LEN];
+        user_role found_user_role = USER;
+        get_username(found_user,found_username);
+        get_user_role_enum(found_user,&(found_user_role));
+
+        int compare_privilege = compare_user_privilege(logged_user_role, found_user_role);
 
         switch(compare_privilege){
             case 1: 
@@ -249,7 +283,7 @@ int sys_admin_promote_base_user(user logged_user, users* users_list_head){
                 continue; // Riparte il ciclo while
             case 2:
                 printf("\n" ANSI_COLOR_RED);
-                printf("Impossibile promuovere l'utente %s, e' gia' un amministratore! Inserisci un nuovo utente o annulla l'operazione.\n", found_user->username);
+                printf("Impossibile promuovere l'utente %s, e' gia' un amministratore! Inserisci un nuovo utente o annulla l'operazione.\n", found_username);
                 printf("\n" ANSI_COLOR_RESET);
                 continue;
             default:
@@ -258,7 +292,7 @@ int sys_admin_promote_base_user(user logged_user, users* users_list_head){
         }
 
 
-        printf(ANSI_COLOR_MAGENTA"Stai per promuovere l'utente %s. Sei sicuro di voler proseguire?\n", found_user->username );
+        printf(ANSI_COLOR_MAGENTA"Stai per promuovere l'utente %s. Sei sicuro di voler proseguire?\n", found_username );
         printf("Inserisci 0 per confermare, 1 per annullare l'operazione.\n");
         printf(ANSI_COLOR_RESET);
         int confirm = ask_confirmation();

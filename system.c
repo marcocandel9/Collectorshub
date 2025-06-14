@@ -2657,7 +2657,7 @@ int sys_access_admin_menu(user logged_user, users* users_list_head){
         return 4;
     }
 
-    printf(ANSI_COLOR_MAGENTA"Adesso il tuo utente gode dei privilegi admin. Verrai reindirizzato al menu richiesto...\n"ANSI_COLOR_RESET);
+    printf(ANSI_COLOR_MAGENTA"Adesso godi dei privilegi admin. Verrai reindirizzato al menu richiesto...\n"ANSI_COLOR_RESET);
     return 0;
 
 }

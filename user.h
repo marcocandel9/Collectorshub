@@ -62,6 +62,8 @@ int get_collection_list(user my_user, collections* user_collection);
 
 int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]);
 
+int get_user_role_enum(user my_user, user_role* return_role_value);
+
 int role_checker(user my_user, user_role required_role);
 
 int delete_user(user* my_user); 
