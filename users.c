@@ -513,7 +513,7 @@ int free_users(users* users_list_head){
     while(q != NULL){
         r = q;
         q = q -> next;
-        delete_user(&(q->user_elem));
+        delete_user(&(r->user_elem));
         free(r);
     }
 

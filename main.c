@@ -59,7 +59,8 @@ int main() {
 
 
     //WIP SALVATAGGIO
-    return 0;
+	free_users(&(users_list));
+	return 0;
 
     
 }
