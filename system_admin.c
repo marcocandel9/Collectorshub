@@ -139,7 +139,7 @@ int sys_admin_delete_user(user logged_user, users* users_list_head){
         user_role found_user_role = USER;
         char found_username[MAX_STR_LEN];
         get_username(found_user,found_username);
-        get_user_role_enum(logged_user,&(found_user_role));
+        get_user_role_enum(found_user,&(found_user_role));
 
 
         int compare_privilege = compare_user_privilege(logged_user_role, found_user_role);
