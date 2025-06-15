@@ -195,7 +195,6 @@ Restituisce:
 */
 user sys_register_user(users* users_list_head){
 
-    int valid_password; 
     int valid_username;
 
     //variabili per il controllo della stringa in input
@@ -674,13 +673,10 @@ Restituisce:
 */
 int sys_modify_credentials(user* my_user, users* users_list_head){
 
-    
     int string_checker_result;
-    int auth_username;
     int auth_password;
 
     char password_io_string[MAX_STR_LEN];
-    char username_io_string[MAX_STR_LEN];
 
     bool check_space = true;
 
@@ -697,7 +693,7 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
     printf("\n"ANSI_COLOR_RESET);
     printf("Benvenuto nell'area di modifica delle credenziali. \n");
     printf("Per poter procedere, e' necessario riconfermare l'autenticazione tramite password. \n" BOLD_OFF);
-    
+
 
     while(1){
 
@@ -709,7 +705,7 @@ int sys_modify_credentials(user* my_user, users* users_list_head){
         printf("\n");
 
         string_checker_result = sys_input_string_checker(password_io_string,check_space,MIN_STR_LEN,MAX_STR_LEN);
-        
+
         switch(string_checker_result){
             case 1:
                 printf("\n");
@@ -1001,7 +997,6 @@ int sys_access_user_collection(user logged_user, collection* user_collection){
 
     int string_checker_result;
     char collection_name_io_string[MAX_STR_LEN];
-    bool check_space = false;
     *user_collection = NULL;
 
     collections collections_list = NULL;
@@ -1218,7 +1213,6 @@ int sys_modify_collection(user logged_user){
 
     //Stringa utilizzata per l'inserimento del nome della collezione che l'utente desidera modificare
     char collection_name_io_string[MAX_STR_LEN];
-    char collection_type_io_string[MAX_STR_LEN];
 
     //Sringhe utilizzate per l'inserimento del NUOVO nome e NUOVO tipo della collezione che l'utente desidera modificare
     char collection_new_name_io_string[MAX_STR_LEN];
@@ -1436,9 +1430,9 @@ int sys_delete_collection(user logged_user){
     collections user_collections = NULL;
     get_collection_list(logged_user,&(user_collections));
 
-    printf(ANSI_COLOR_CYAN,ANSI_BOLD);
+    printf(ANSI_COLOR_CYAN ANSI_BOLD);
     division_break_lines("AREA CANCELLAZIONE COLLEZIONE", 54);
-    printf(ANSI_COLOR_RESET, BOLD_OFF);
+    printf(ANSI_COLOR_RESET  BOLD_OFF);
 
     if((user_collections) == NULL){
 
@@ -2044,7 +2038,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
     while(1){
         //altrimenti stampa la lista dei prodotti
         printf("\n" ANSI_BOLD);
-        printf("Inserisci il nome del prodotto della collezione \"%s\" che desideri modificare. \n",username, collection_name);
+        printf("Inserisci il nome del prodotto della collezione \"%s\" che desideri modificare. \n", collection_name);
         printf("Inserisci una stringa vuota per annullare l'operazione di modifica. \n");
         printf("\n" BOLD_OFF);
 
@@ -2517,7 +2511,6 @@ int sys_delete_user_products(user logged_user, collection user_collection){
     products products_list = NULL;
     get_products_list(user_collection,&(products_list));
 
-    int string_checker_result;
 
     printf(ANSI_COLOR_CYAN ANSI_BOLD);
     division_break_lines("AREA ELIMINAZIONE PRODOTTI",54);
@@ -2551,7 +2544,7 @@ int sys_delete_user_products(user logged_user, collection user_collection){
     //altrimenti procedo all'eliminazione.
     printf(ANSI_COLOR_MAGENTA"\nHai confermato l'eliminazione...\n"ANSI_COLOR_RESET);
     int result = delete_collection_products(user_collection);
-    
+
     switch(result){
         case 1:
             printf(ANSI_COLOR_RED"\nLa lista risulta vuota quando non dovrebbe. Errore critico (codice 4). Contattare un amministratore.\n"ANSI_COLOR_RESET);
@@ -2561,8 +2554,7 @@ int sys_delete_user_products(user logged_user, collection user_collection){
             break;
          }
 
-    return 0;
-    
+    return 0; 
 }
 
 
@@ -2674,8 +2666,6 @@ Restituisce:
 */
 int sys_user_overview(user logged_user){
 
-    char collection_name[MAX_STR_LEN];
-    
     printf(ANSI_COLOR_MAGENTA ANSI_BOLD);
     division_break_lines("PANORAMICA UTENTE", 56);
     printf(ANSI_COLOR_RESET BOLD_OFF);
@@ -2684,7 +2674,7 @@ int sys_user_overview(user logged_user){
 
     printf(ANSI_COLOR_CYAN"La tua panoramica dati e' la seguente:\n\n"ANSI_COLOR_RESET);
 
-    
+
     user_overview(logged_user);
 
     return 0; //Success, overview printato correttamente

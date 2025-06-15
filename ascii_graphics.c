@@ -133,9 +133,7 @@ void superuser_menu_header(){
 */
 
 void division_break_lines(const char *central_text,int lateral_padding_width){
-    
-    int len = strlen(central_text);
-    
+
     //stampo la linea di sinistra
     for(int i = 0; i < lateral_padding_width; i++){
         printf("=");

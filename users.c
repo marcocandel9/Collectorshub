@@ -508,7 +508,6 @@ int free_users(users* users_list_head){
     //Puntatori di appoggio per scorrere la lista ordinata
     users r = NULL;
     users q = *users_list_head;
-    char my_username[MAX_STR_LEN];
 
     while(q != NULL){
         r = q;

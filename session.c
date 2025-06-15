@@ -439,7 +439,7 @@ int products_menu_session(user* user, collection* collection){
                 if(user_choice_result == 0 || user_choice_result == 1 || user_choice_result == 3) continue;
                 return -1; //Altrimenti ho un errore critico, restituisco -1
             case 6:
-                *collection == NULL; //inizializzo a NULL il puntatore collezione (devo annullare l'accesso a questa collezione!)
+                *collection = NULL; //inizializzo a NULL il puntatore collezione (devo annullare l'accesso a questa collezione!)
                 return 6; //desidero tornare al menu collezioni
         }
     }

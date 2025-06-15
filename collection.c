@@ -350,6 +350,6 @@ int delete_collection_products(collection user_collection){
 
     if(user_collection == NULL) return 1; //Collezione non inizializzata
 
-    int result = free_products(&(user_collection->products_list_head));
+    free_products(&(user_collection->products_list_head));
     return 0;
 }
