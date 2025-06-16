@@ -649,3 +649,80 @@ int user_overview(user my_user){
     return 0;
 
 }
+
+
+
+/*    
+Salva su file l'utente della struttura dati, incapsulando anche il salvataggio della lista delle collezioni e quindi dei prodotti associati a ciascuna di essa. 
+[N.B: è compito del chiamante impostare il puntatore a file in modalità append e di chiuderlo dopo l'utilizzo. Se la lista prodotti
+della collezione/prodotti è vuota, non scriverà nulla tra le relative parentesi graffe]
+
+Parametri: 
+    - fptr: puntatore al file in cui scrivere i dati
+    - my_user: utente di cui si vogliono salvare i dati
+    - user_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 3 e maggiore di 0)
+    - collection_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 4 e maggiore di 0)
+    - products_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della lista prodotti (max 5 e maggiore di 0)
+
+Restituisce: 
+    - 1: puntatore a file == NULL o user == NULL
+    - 2: errore, inserimento di un livello di indentazione UTENTI non supportato (MAGGIORE DI MAX_INDENTATION == 3 O MINORE DI 0 (NEGATIVO))
+    - 3: errore, inserimento di un livello di indentazione COLLEZIONI non supportato (negativo o maggiore di qunato definito in save_collection (default: 4))
+    - 4: errore, inserimento di un livello di indentazione PRODOTTI non supportato (negativo o maggiore di qunato definito in save_product (default: 5))
+    - 0: salvataggio avvenuto con successo
+
+ESEMPIO DI OUTPUT: (user_indentation_level = 1, collection = 2, product = 3)
+	{
+	username
+	password
+	ADMIN
+		{
+		Collection name
+		Collection type
+			{
+			Product name
+			Product type
+			condition
+			99.99
+			}
+		}
+	}
+
+*/
+int save_user(FILE *fptr, user my_user, int user_indentation_level, int collection_indentation_level, int product_indentation_level){
+
+    if(fptr == NULL || my_user == NULL) return 1;
+
+    //Numero di tabulati di indentazione massimi possibile per il salvataggio su file del campo utente
+    int const user_max_indentation_level = 3;
+
+    if(user_indentation_level > user_max_indentation_level || user_indentation_level < 0) return 2; //numero di tabulati invalidi (negativi o maggiori di max default = 3)
+    char user_indentation_string[MAX_STR_LEN] = "";
+
+    for(int i = 0; i < user_indentation_level; i++){
+        strcat(user_indentation_string,"\t");
+    }
+
+    char username[MAX_STR_LEN];
+    char password[MAX_STR_LEN];
+    char user_role[MAX_STR_LEN];
+
+    get_username(my_user,username);
+    get_user_role(my_user,user_role);
+    get_password(my_user,password);
+
+    fprintf(fptr,"%s{\n",user_indentation_string);
+    fprintf(fptr,"%s%s\n",user_indentation_string,username);
+    fprintf(fptr,"%s%s\n",user_indentation_string,password);
+    fprintf(fptr,"%s%s\n",user_indentation_string,user_role);
+    int result = save_collections(fptr, my_user->collections_list_head, collection_indentation_level,product_indentation_level);
+    switch(result){
+        case 1: return 1; 
+        case 2: return 3; //variabile di indentazione COLLEZIONE invalida
+        case 3: return 4; //variabile di indentazione PRODOTTI invalida
+        default: break;
+    }
+    fprintf(fptr,"%s}\n",user_indentation_string);
+
+    return 0;
+}

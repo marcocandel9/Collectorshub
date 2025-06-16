@@ -255,3 +255,64 @@ int print_product(product myproduct){
 }
 
 
+
+/*
+Salva su file i campi informativi di un prodotto.
+[ NOTA BENE: NON SI OCCUPA NÈ DI COLLEGARE IL PUNTATORE AL FILE CORRETTO, NÈ DI DEREFERENZIARE IL PUNTATORE, NÈ 
+ DI INIZIALIZZARLO IN MODALITÀ APPEND. SPETTA AL CHIAMANTE PRINCIPALE GESTIRLI. ]
+ Prevede una indentazione doppia per la scrittura delle informazioni dei prodotti
+Parametri: 
+    - fptr: puntatore a file passato in ingresso 
+    - myproduct: puntatore a struct product
+    - indentation_level: numero di tabulazioni da inserire prima di ogni campo del prodotto (massimo supportato: max_indentation = 5) (minimo == 0, non accetta numeri negativi)
+Restituisce: 
+    - 2: errore, inserimento di un livello di indentazione non supportato (MAGGIORE DI MAX_INDENTATION == 5 O MINORE DI 0 (NEGATIVO))
+    - 1: errore, il puntatore a file o product è uguale a NULL
+    - 0: se il file è stato scritto correttamente
+
+ESEMPIO: (product_indentation_level = 1)
+    {
+    Nome prodotto
+    Tipologia prodotto
+    Condizioni prodotto
+    Prezzo di acquisto prodotto
+    }
+*/
+int save_product(FILE *fptr, product myproduct, int product_indentation_level){
+
+    if(myproduct == NULL || fptr == NULL) return 1;
+
+    //questa variabile indicherà il livello massimo di indentanzioni supportate dalla funzione. È possibile modificarlo per aumentare il numero max
+    // di indentanzioni
+    int const max_indentation = 5; 
+
+    if(product_indentation_level > max_indentation || product_indentation_level < 0) return 2;
+    char indentations_string[MAX_STR_LEN] = "";
+    
+    //Se voglio un livello di indentazione diverso da 0, devo aggiungere il numero corretto di tab
+    if(product_indentation_level != 0){
+        for(int i = 0; i < product_indentation_level; i++){
+            strcat(indentations_string, "\t");
+            }
+    }
+
+    char product_name[MAX_STR_LEN];
+    char product_type[MAX_STR_LEN];
+    char product_condition[MAX_STR_LEN];
+    float product_buyprice;
+
+    get_product_name(myproduct, product_name);
+    get_product_type(myproduct, product_type);
+    get_product_condition(myproduct, product_condition);
+    get_product_buyprice(myproduct, &product_buyprice);
+    
+    fprintf(fptr, "%s{\n",indentations_string);
+    fprintf(fptr, "%s%s\n",indentations_string,product_name);
+    fprintf(fptr, "%s%s\n",indentations_string,product_type);
+    fprintf(fptr, "%s%s\n",indentations_string,product_condition);
+    fprintf(fptr, "%s%.2f\n",indentations_string,product_buyprice);
+    fprintf(fptr, "%s}\n",indentations_string);
+
+
+    return 0;
+}

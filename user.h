@@ -72,6 +72,7 @@ int print_user(user my_user);
 
 int user_overview(user my_user);
 
+int save_user(FILE *fptr, user my_user, int user_indentation_level, int collection_indentation_level, int product_indentation_level);
 
 //funzioni wrapper che incapsulano le funzioni di collections 
 int insert_user_collections_list(user my_user, collections new_collections_list_head);

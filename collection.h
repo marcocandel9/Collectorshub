@@ -30,6 +30,8 @@ int delete_collection(collection* my_collection);
 
 int print_collection(collection my_collection);
 
+int save_collection(FILE *fptr, collection my_collection, int collection_indentation_level, int product_indentation_level);
+
 //funzioni wrapper che incapsulano le funzioni di products 
 
 int insert_collection_product(collection user_collection, char product_name[MAX_STR_LEN], char product_type[MAX_STR_LEN], char product_condition[MAX_STR_LEN], float product_buyprice);
@@ -39,6 +41,8 @@ int modify_collection_product(collection user_collection, char key_product_name[
 int delete_collection_product(collection user_collection, char key_product_name[MAX_STR_LEN]);
 
 int delete_collection_products(collection user_collection);
+
+
 
 
 #endif

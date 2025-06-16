@@ -122,4 +122,9 @@ Restituisce:
 int print_users(users users_list_head);
 
 
+//FUNZIONI DI SALVATAGGIO E CARICAMENTO SU FILE
+
+int save_users(FILE *fptr, users users_list_head, int user_indentation_level, int collection_indentation_level, int product_indentation_level);
+
+
 #endif

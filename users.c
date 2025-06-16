@@ -552,3 +552,43 @@ int print_users(users users_list_head){
     }
     return 0; //Success, lista printata
 }
+
+
+
+/*
+Scorre la lista degli utenti e per ciascun elemento ne salva il contenuto informativo in un file, incapsulando anche le funzioni di salvataggio delle singole collezioni (e quindi dei prodotti)
+[ NOTA BENE: NON SI OCCUPA NÈ DI COLLEGARE IL PUNTATORE AL FILE CORRETTO, NÈ DI DEREFERENZIARE IL PUNTATORE, NÈ 
+ DI INIZIALIZZARLO IN MODALITÀ APPEND. SPETTA AL CHIAMANTE PRINCIPALE GESTIRLI. ]
+
+Parametri: 
+    - fptr: puntatore al file in cui scrivere i dati
+    - users_list_head: puntatore alla testa della lista utenti
+    - user_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 3 e maggiore di 0)
+    - collection_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 4 e maggiore di 0)
+    - products_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della lista prodotti (max 5 e maggiore di 0)
+
+Restituisce: 
+    - 1: se il puntatore al file è invalido (NULL) 
+    - 2: errore, inserimento di un livello di indentazione UTENTI non supportato (MAGGIORE DI MAX_INDENTATION == 3 O MINORE DI 0 (NEGATIVO))
+    - 3: errore, inserimento di un livello di indentazione COLLEZIONI non supportato (negativo o maggiore di qunato definito in save_collection (default: 4))
+    - 4: errore, inserimento di un livello di indentazione PRODOTTI non supportato (negativo o maggiore di qunato definito in save_product (default: 5))
+    - 0: salvataggio avvenuto con successo
+*/
+int save_users(FILE *fptr, users users_list_head, int user_indentation_level, int collection_indentation_level, int product_indentation_level){
+
+    if(fptr == NULL) return 1;
+
+    while(users_list_head != NULL){
+        int result = save_user(fptr, users_list_head->user_elem, user_indentation_level,collection_indentation_level,product_indentation_level);
+        switch(result){
+            case 1: return 1;
+            case 2: return 2;
+            case 3: return 3;
+            case 4: return 4;
+            default: break;
+        }
+        users_list_head = users_list_head->next;
+    }
+
+    return 0;
+}

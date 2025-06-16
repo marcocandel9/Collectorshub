@@ -353,3 +353,51 @@ int delete_collection_products(collection user_collection){
     free_products(&(user_collection->products_list_head));
     return 0;
 }
+
+
+/*    
+Salva su file una collezione della struttura dati, incapsulando anche il salvataggio della lista prodotti sottostante. 
+[N.B: è compito del chiamante impostare il puntatore a file in modalità append e di chiuderlo dopo l'utilizzo. Se la lista prodotti
+della collezione è vuota, non scriverà nulla tra le relative parentesi graffe]
+
+Parametri: 
+    - fptr: puntatore al file in cui scrivere i dati
+    - my_collection: collezione di cui si vogliono salvare i dati
+    - collection_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 4 e maggiore di 0)
+    - products_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della lista prodotti (max 5 e maggiore di 0)
+
+Restituisce: 
+    - 1: puntatore a file == NULL o collezione == NULL
+    - 2: errore, inserimento di un livello di indentazione COLLEZIONI non supportato (MAGGIORE DI MAX_INDENTATION == 5 O MINORE DI 0 (NEGATIVO))
+    - 3: errore, inserimento di un livello di indentazione PRODOTTI non supportato (negativo o maggiore di qunato definito in save_product (default: 5))
+    - 0: salvataggio avvenuto con successo
+*/
+int save_collection(FILE *fptr, collection my_collection, int collection_indentation_level, int product_indentation_level){
+
+    if(fptr == NULL || my_collection == NULL) return 1;
+    
+    int const indentation_max_level = 4;
+    if(collection_indentation_level > 4 || collection_indentation_level < 0) return 2;
+
+    char collection_indentation_string[MAX_STR_LEN] = "";
+
+    if(collection_indentation_level > 0){
+        for(int i = 0; i < collection_indentation_level; i++){
+            strcat(collection_indentation_string,"\t");
+            }
+    }
+    
+    char collection_name[MAX_STR_LEN];
+    char collection_type[MAX_STR_LEN];
+    get_collection_name(my_collection,collection_name);
+    get_collection_type(my_collection,collection_type);
+
+    fprintf(fptr,"%s{\n",collection_indentation_string);
+    fprintf(fptr,"%s%s\n",collection_indentation_string,collection_name);
+    fprintf(fptr,"%s%s\n",collection_indentation_string,collection_type);
+    int result = save_products(fptr, my_collection->products_list_head, product_indentation_level);
+    if(result == 1) return 1;
+    if(result == 2) return 3;
+    fprintf(fptr,"%s}\n",collection_indentation_string);
+    return 0;
+}

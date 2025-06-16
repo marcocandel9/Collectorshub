@@ -44,4 +44,6 @@ int modify_product(product* myproduct, char new_name[MAX_STR_LEN], char new_type
 
 int print_product(product myproduct);
 
+int save_product(FILE *fptr, product myproduct, int product_indentation_level);
+
 #endif
