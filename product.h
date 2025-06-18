@@ -44,6 +44,6 @@ int print_product(product myproduct);
 
 int save_product(FILE *fptr, product myproduct);
 
-int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_product_type[MAX_STR_LEN], char read_product_condition[MAX_STR_LEN], float* read_buyprice);
+int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_product_type[MAX_STR_LEN], char read_product_condition[MAX_STR_LEN], float* read_buyprice, char next_line[MAX_STR_LEN]);
 
 #endif

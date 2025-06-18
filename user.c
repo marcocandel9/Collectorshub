@@ -701,9 +701,15 @@ ADMIN
 Giochi PS1
 Videogiochi
 ###Product
-Silent Hill 2, PAL ITA, Nuovo, 29.99 
+Silent Hill 2 
+PAL ITA 
+Nuovo 
+29.99 
 ###Product
-Silent Hill 3, PAL ITA, Nuovo, 29.99 
+Silent Hill 3
+PAL ITA 
+Nuovo
+29.99 
 ##Collection
 Giochi PS2
 Videogiochi
@@ -757,7 +763,7 @@ Valori di ritorno:
     - 3: Ho raggiunto l'EOF
     - 0: Lettura avvenuta con successo. Adesso il puntatore a file punterà all'inizio della linea successiva a quella dell'utente letto pronto per un eventuale nuovo tag (o EOF)
 */
-int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN], char user_role[MAX_STR_LEN]){
+int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN], char user_role[MAX_STR_LEN], char next_line[MAX_STR_LEN]){
 
     /*controlli iniziali ----------*/
     if(fptr == NULL) return 1;
@@ -770,6 +776,7 @@ int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN]
     if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 3; //EOF
     buf[strcspn(buf, "\n")] = '\0';
     if(strcmp(buf,"#USER") != 0){
+        strcpy(next_line,buf);
         fseek(fptr,init_pos,SEEK_SET);
         return 2;                           
     }                                   /*tag diverso da USER*/

@@ -34,4 +34,6 @@ int collection_exists(collections collections_list_head, char key_name[MAX_STR_L
 
 int save_collections(FILE *fptr, collections collections_list_head);
 
+int load_collections(FILE *fptr, collections* collections_list, char next_line[MAX_STR_LEN]);
+
 #endif

@@ -605,123 +605,77 @@ int save_users(FILE *fptr, users users_list_head){
     return 0;
 }
 
+/*
+Permette il caricamento da file di tutti gli utenti presenti nel file, insieme alle loro collezioni e relativi prodotti. 
+La funzione si aspetta che il puntatore al file sia già inizializzato e posizionato in corrispondenza del primo tag utente `#USER`.
+Ad ogni ciclo, la funzione utilizza `read_user` per leggere i dati dell'utente e `load_collections` per caricare le collezioni e i prodotti associati.
+Il processo termina quando si raggiunge l'EOF o quando viene incontrato un tag diverso da `#USER` (non valido in quella posizione).
 
+La funzione gestisce in modo difensivo eventuali anomalie nei dati (tag errati, allocazioni fallite, duplicati, ruoli non validi),
+e aggiorna dinamicamente la lista `users_list` passata come riferimento.
 
-int load_users(users* users_list){
+Dopo l’esecuzione, il file pointer sarà posizionato sul prossimo tag utente (se presente), oppure sull’EOF.
 
-    FILE *fptr = fopen("data.txt", "r");
+Parametri: 
+    - fptr: puntatore a file già inizializzato e posizionato sul primo tag utente da leggere (`#USER`)
+    - users_list: puntatore alla lista utenti, che verrà popolata dinamicamente
+
+Valori di ritorno: 
+    - 1: Errore critico (file NULL oppure `ftell`/`fgets` falliscono)
+    - 2: Valore di ritorno non previsto da `load_collections` (errore di struttura del parsing)
+    - 3: EOF raggiunto (file terminato correttamente)
+    - 4: Allocazione dinamica fallita durante l’inserimento di un utente o una collezione
+    - 5: Dati corrotti (tag errato, duplicati, ruolo non valido)
+    - 6: Struttura dati inconsistente (errore interno di ricerca dopo inserimento)
+    - 7: Nuovo utente trovato: continua il ciclo
+    - -1: Punto teoricamente irraggiungibile 
+    */
+int load_users(FILE *fptr, users* users_list){
+
     if(fptr == NULL) return 1;
 
-    /*lista vuota: programma aperto per la prima volta ----------------------------- */
-    if(fptr == EOF) return 2;
-
-
-    /*preparazione buffers lettura file ---------------------------------------------------- */
-    char buf[MAX_STR_LEN];
     char username[MAX_STR_LEN];
     char password[MAX_STR_LEN];
-    char role[MAX_STR_LEN];
+    char user_role_str[MAX_STR_LEN];
+    char next_line[MAX_STR_LEN];
 
-    char coll_name[MAX_STR_LEN];
-    char coll_type[MAX_STR_LEN];
+    user new_user = NULL;
 
-    char prod_name[MAX_STR_LEN];
-    char prod_type[MAX_STR_LEN];
-    char prod_cond[MAX_STR_LEN];
-    float buy_price;
-
-    while(fptr != EOF){
+    do{
         
-        int next_user = read_user(fptr,username,password,role);
-        if(next_user == 1) return 1;                                         /* dati corrotti: fptr == NULL || ftell fallisce */
+        int us_read_result = read_user(fptr,username,password,user_role_str,next_line);
+        switch(us_read_result){
+            case 1: return 1;  /* fptr == NULL || ftell fallisce  (errore critico)*/
+            case 2: return 5;     /* Se incontro un tag diverso da user quando riaprte il ciclo i dati sono corrotti */
+            case 3:
+                return 3;                           /* Ho raggiunto l'EOF */
+            default:
+                
+                user_role user_role_enum;
+                int conv_result = convert_user_role_to_enum(user_role_str,user_role_enum);
+                if(conv_result == 1) return 5;                       /* Ruolo utente memorizzato nel file data invalido, dati corrotti*/
 
-        /*lettura utente avvenuta con successo -> passo al caricamento  -------------- */
-        if(next_user == 0){
-            
-            /*caricamento utente nella lista utenti ----------------------------------  */
-            user_role user_role;
-            if(convert_user_role_to_enum(role, user_role) == 1) return 1;    /* dati corrotti: ruolo invalido */
-            int user_insert_result = insert_user_sorted(users_list,username,password,user_role);
-            switch(user_insert_result){
-                case 1: return 2;                                            /* errore: allocazione dinamica*/
-                case 2: return 1;                                            /* dati corrotti: password invalida */
-                case 3: return 1;                                            /* dati corrotti: duplicato */
-                default: break;
-            }
+                int ins_result = insert_user_sorted(users_list, username, password,user_role_enum);
+                if(ins_result == 1) return 4;                       /* Errore di allocazione dinamica */
+                if(ins_result == 2 || ins_result == 3) return 5;    /* Dati corrotti */
 
-            /* preparo l'utente in questione nel caso in cui debba caricare collezioni e prodotti a lui associati */
-            user this_user = NULL;
-            int search_result = search_user(*users_list, username, this_user);
-            switch(search_result){
-                case 1: return 3;                                            /* errore: allocazione inconsistente */
-                case 2: return 3;                                            /* errore: allocazione inconsistente */
-                default: break;
-            }
+                int ser_result = search_user(*users_list,username, &(new_user));
+                if(ser_result == 1 || ins_result == 2) return 6;    /* Ricerca fallita: struttura dati inconsistente  */
 
-            /*Salvo la posizione del puntatore nel file, leggo la prossima stringa, se è una collezione continuo a leggere altrimenti passo ai prodotti e ristabilisco la posizione corrente */
-            long curr_pos = ftell(fptr);
-            if(curr_pos == -1L) return 1;                                   /* dati corrotti: fptr == NULL || ftell fallisce */
-            if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 1;               /* dati corrotti: fptr == NULL || ftell fallisce */
-
-            while((strcmp(buf, "##COLLECTION") == 0)){
-
-                /*ristabilisco la posizione precedente e leggo la collezione, se esistente */
-                fseek(fptr,curr_pos,SEEK_SET);          
-                int next_collection = read_collection(fptr, coll_name, coll_type);
-                if(next_collection == 1) return 1;                              /* dati corrotti: fptr == NULL || ftell fallisce */
-
-                if(next_collection == 0){
-
-                    /*caricamento collezione dell'utente ----------------------------------------*/
-                    int ins_coll_result = insert_collection(&(this_user ->collections_list_head),coll_name,coll_type);
-                    switch(ins_coll_result){
-                        case 1: return 2;                                   /* errore: allocazione dinamica*/
-                        case 2: return 2;                                   /* dati corrotti: duplicato */
-                        default: break;
-                    }
-
-                    /* preparo la collezione in questione nel caso in cui debba caricare prodotti a lei associati */
-                    collection this_collection = NULL;
-                    int search_result = search_collection(this_user->collections_list_head,coll_name,&(this_collection));
-                    switch(search_result){
-                        case 1: return 3;                                            /* errore: allocazione inconsistente */
-                        case 2: return 3;                                            /* errore: allocazione inconsistente */
-                        default: break;
-                    }
-
-                    /*Salvo la posizione del puntatore nel file, leggo la prossima stringa, se è una collezione continuo a leggere altrimenti passo ai prodotti e ristabilisco la posizione corrente */
-                    long curr_pos = ftell(fptr);
-                    if(curr_pos == -1L) return 1;                                   /* dati corrotti: fptr == NULL || ftell fallisce */
-                    if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 1;               /* dati corrotti: fptr == NULL || ftell fallisce */
-
-                    while((strcmp(buf, "#PRODUCT")) == 0){
-
-                        /*ristabilisco la posizione precedente e leggo la collezione, se esistente */
-                        fseek(fptr,curr_pos,SEEK_SET);          
-                        int next_product = read_product(fptr, prod_name, prod_type,prod_cond,&(buy_price));
-                        
-                        if(next_product == 1) return 1;                              /* dati corrotti: fptr == NULL || ftell fallisce */
-
-                        if(next_product == 0){
-
-                            /*caricamento collezione dell'utente ----------------------------------------*/
-                            int ins_prod_result = insert_product(&(this_collection->products_list_head),prod_name,prod_type,prod_cond,buy_price);
-                            switch(ins_coll_result){
-                                case 1: return 2;                                   /* errore: allocazione dinamica*/
-                                case 2: return 2;                                   /* dati corrotti: duplicato */
-                                default: break;
-                            }
-                        }
-                        if(next_product == 3 || next_product == 2) break;
-                    }
-
-                if(next_collection == 2 || next_collection == 3) break;
+                int coll_load_result = load_collections(fptr, &(new_user->collections_list_head),next_line);
+                switch(coll_load_result){
+                    case 1: return 1;
+                    case 2: return -2;              /* Valore di ritorno impossibile */
+                    case 3: return 3;               /* Ho raggiunto l'EOF */
+                    case 4: return 4;               /* Errore di allocazione dinamica */
+                    case 5: return 5;               /* Duplicato incontrato, Dati corrotti */
+                    case 6: return 6;               /*  Allocazione con effetti inaspettati, struttura dati inconsistente  */
+                    case 7: continue;               /* Incontro un altro tag utente, ricomincio il ciclo while */
                 }
-           
         }
-        if(next_user == 2 || next_user == 3) break; 
-    }
-    break;
-    }
-return 0;
+
+    } while (strcmp(next_line,"#USER"));
+
+    // Questo punto non dovrebbe mai essere raggiunto
+    return -1;
 }

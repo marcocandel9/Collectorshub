@@ -304,7 +304,7 @@ Permette LA LETTURA dei campi informativi di prodotto da file. Al caricamento si
 La funzione, durante il parsing del file, controlla che la prima stringa letta dal puntatore al file, passato come parametro,
 sia la stringa di tag prodotto (###PRODOTTO). Se così non fosse, restituisce un errore e ripristina la posizione del puntatore prima
 della chiamata alla funzione stessa. La funzione si aspetta dunque che il puntatore al file sia già posizionato al tag del prodotto 
-da caricare, inoltre è ruolo del chiamante deallocare il puntatore al file stesso. 
+da caricare, inoltre è ruolo del chiamante deallocare il puntatore al file stesso. Nel caso in cui la lettura fallisce a causa di un tag diverso da un prodotto letto, next_line viene popolato con il nuovo tag per i confronti superiori. 
 Dopo il successo, il cursore è posizionato sulla riga successiva all’ultima letta, quindi pronto per un eventuale nuovo tag (o EOF)
 
 Parametri: 
@@ -313,13 +313,14 @@ Parametri:
     - read_product_type: array dei caratteri che conterrà la tipologia del prodotto letto
     - read_product_condition: array dei caratteri che conterrà le condizioni del prodotto letto
     - read_buyprice: float(pass. come rif.) che conterrà il prezzo di acquisto del prodotto letto
+    - next_line: se la lettura fallisce (in caso di lettura di una newline con tag diverso da prodotto) allora questo array di caratteri conterrà il nuovo tag per il confronto delle funzioni superiori
 Valori di ritorno: 
     - 1: Puntatore al file == NULL (errore critico) , ftell fallisce (errore critico)
     - 2: Puntatore a file punta ad un'area del file che non corrisponde ad un prodotto (LA PRIMA STRINGA CHE LEGGE NON È IL TAG PRODOTTO 
     - 3: Ho raggiunto l'EOF
     - 0: Lettura e allocazione avvenute con successo. Adesso il puntatore a file punterà all'inizio della linea successiva a quella del prodotto letto pronto per un eventuale nuovo tag (o EOF)
 */
-int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_product_type[MAX_STR_LEN], char read_product_condition[MAX_STR_LEN], float* read_buyprice){
+int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_product_type[MAX_STR_LEN], char read_product_condition[MAX_STR_LEN], float* read_buyprice, char next_line[MAX_STR_LEN]){
 
     if(fptr == NULL) return 1;
 
@@ -333,6 +334,7 @@ int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_prod
 
     
     if(strcmp(buf,"###PRODUCT") != 0) {          //Se la stringa buf non è uguale al tag #PRODUCT, la funzione ripristina la posizione del puntatore iniziale passato come parametro con fseek (stdlib) e restituisce 2 (IL PUNTATORE A FILE NON PUNTA AD UN PRODOTTO VALIDO!)                                
+        strcpy(next_line, buf);
         fseek(fptr, initial_position, SEEK_SET); //Seek set indica alla funzione fseek che deve spostare il puntatore fptr di un numero di byte pari a current_position rispetto L'INIZIO (SEEK_SET).
         return 2;
     }
@@ -354,3 +356,9 @@ int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_prod
 
     return 0;
 }
+
+
+
+
+
+

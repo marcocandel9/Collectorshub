@@ -468,3 +468,84 @@ int save_collections(FILE *fptr, collections collections_list_head){
 
 
 
+/*
+Legge e carica le collezioni da file e gerarchicamente anche i prodotti, se esistenti, a ciascuna collezione trovata
+La funzione utilizza `read_collection` per leggere i dati di ciascuna collezione e `load_products` per caricarne i prodotti associati. 
+    Gestisce il passaggio tra tag, uscendo automaticamente in caso di tag superiore (es. `#USER`).
+
+    Parametri:
+        - FILE *fptr: puntatore a file già inizializzato e posizionato.
+        - collections *collections_list: puntatore alla lista di collezioni (passato per riferimento).
+        - char next_line[MAX_STR_LEN]: array di caratteri che conterrà l'eventuale tag successivo (es. `#USER`) non relativo a collezioni o prodotti, per consentire il parsing di livello superiore.
+
+    Valori di ritorno:
+        - 1: errore critico (fptr NULL o fallimento ftell/fgets).
+        - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        - 3: EOF raggiunto.
+        - 4: errore di allocazione memoria durante l'inserimento della collezione o dei prodotti.
+        - 5: inserimento duplicato (dato corrotto).
+        - 6: Allocazione con effetti inaspettati, problema di allocazione  
+        - 7: tag `#USER` incontrato (fine delle collezioni per un dato utente, `next_line` conterrà il tag e il puntatore a file sarà correttamente posizionato).
+
+    Note:
+        - In caso di errore in `load_products`, la funzione interrompe l’inserimento e propaga il codice errore.
+        - Il valore `next_line` viene aggiornato ogni volta che un tag non atteso viene incontrato
+        - La funzione può gestire correttamente più collezioni in sequenza
+*/
+int load_collections(FILE *fptr, collections* collections_list, char next_line[MAX_STR_LEN]){
+
+    if (fptr == NULL) return 1;
+
+    char coll_name[MAX_STR_LEN];
+    char coll_type[MAX_STR_LEN];
+
+    collection new_coll = NULL;
+
+    do{
+        int read_result = read_collection(fptr, coll_name, coll_type, next_line);
+        switch(read_result){
+            case 1: return 1;   /* fptr == NULL || ftell fallisce  (errore critico)*/
+            case 2: 
+                if(strcmp(next_line, "#USER") == 0) return 7;   /* ho incontrato un tag utente, devo uscire dalla funzione (next_line conterrà il nuovo tag e fptr punterà a tale tag)*/    
+            case 3: return 3;   /* Ho raggiunto l'EOF */
+            default: 
+                collection new_collection = NULL;
+                int ins_result = insert_collection(collections_list, coll_name, coll_type);
+                switch (ins_result){
+                    case 1: return 4;     /*  Allocazione memoria fallita  */
+                    case 2: return 5;     /*  Inserimento duplicato (impossibile, dati corrotti )*/
+                    default: break;
+                }
+
+                int search_result = search_collection(*collections_list, coll_name, &(new_collection));
+                switch(search_result){
+                    case 1: return 6;    /*  Allocazione con effetti inaspettati, problema di allocazione  */
+                    case 2: return 6;    /*  Allocazione con effetti inaspettati, problema di allocazione  */
+                    default: break;
+                }
+
+                int prod_load_result = load_products(fptr,&(new_collection->products_list_head),next_line);
+                switch(prod_load_result){
+                    case 1: return 1;       /* fptr == NULL || ftell fallisce  (errore critico)*/
+                    case 2: 
+                        if(strcmp(next_line, "##COLLECTION") == 0) continue;    /* se incontro un tag diverso da prodotto, e tale tag è collezione, riparte il ciclo while */
+                        if(strcmp(next_line, "#USER") == 0) return 7;           /* ho incontrato un tag utente, devo uscire dalla funzione (next_line conterrà il nuovo tag e fptr punterà a tale tag)*/
+                    case 3: return 3;           /* Ho raggiunto l'EOF */
+                    case 4: return 4;       /*  Allocazione memoria fallita  */  
+                    case 5: return 5;       /*  Inserimento duplicato (impossibile, dati corrotti )*/
+                    default: continue;         /*  default difensivo, non dovrebbe accadere*/
+
+                }
+
+        }
+    } while (strcmp(next_line,"##COLLECTION"));    /* ogni caso ha i propri valori di ritorno, il while è forzato e difensivamente aggiuntivo. Se il ciclo non si comporta come dovrebbe, restituirò -1. */
+
+    // Questo punto non dovrebbe mai essere raggiunto
+    return -1;
+
+
+}
+
+
+
+

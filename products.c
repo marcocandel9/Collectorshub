@@ -404,4 +404,50 @@ int save_products(FILE *fptr, products products_list_head){
 
 
 
+/*
+Permette il la lettura da file e il caricamento in memoria dinamica di un nuovo prodotto. Utilizza la funzione read_product di product.h. Il file pointer si presume
+venga passato già inizializzato e impostato sulla lettura del file corretto, oltre che alla posizione desiderata. 
 
+Parametri: 
+    - fptr: puntatore a file (si presume sia già inizializzato e che punti alla posizione del file corretta da leggere del prodotto(CIOÈ SUBITO PRIMA DEL TAG))
+    - products_list: lista utenti passata come riferimento
+   - next_line: se la lettura fallisce (in caso di lettura di una newline con tag diverso da prodotto) allora questo array di caratteri conterrà il nuovo tag per il confronto delle funzioni superiori
+
+Restituisce: 
+    - 1:  fptr == NULL || ftell fallisce  (errore critico
+    - 2:  incontro tag diverso dal prodotto, tale tag sarà contenuto in next_line, esco dal ciclo while ( con lettura eseguita correttamente ed eventualmente anche caricamento )
+    - 3:  Ho raggiunto l'EOF
+    - 4:  Allocazione memoria fallita 
+    - 5:  Inserimento duplicato (impossibile, dati corrotti )
+
+
+*/
+int load_products(FILE *fptr, products* products_list, char next_line[MAX_STR_LEN]){
+
+    if(fptr == NULL) return 1;
+
+    char prod_name[MAX_STR_LEN];
+    char prod_type[MAX_STR_LEN];
+    char prod_cond[MAX_STR_LEN];
+    float buyprice;
+
+    do{
+        int read_result = read_product(fptr,prod_name,prod_type,prod_cond,&(buyprice),next_line);
+        switch(read_result){
+            case 1: return 1;   /* fptr == NULL || ftell fallisce  (errore critico)*/
+            case 2: break;      /* incontro tag diverso dal prodotto, tale tag sarà contenuto in next_line, esco dal ciclo while */
+            case 3: return 3;   /* Ho raggiunto l'EOF */
+            default: 
+
+                int ins_result = insert_product(products_list, prod_name,prod_type,prod_cond, buyprice);
+                switch (ins_result){
+                    case 1: return 4;     /*  Allocazione memoria fallita  */
+                    case 2: return 5;     /*  Inserimento duplicato (impossibile, dati corrotti )*/
+                    default: continue;
+                }
+        }
+    } while ( strcmp( next_line, "###PRODUCT"));
+
+    return 2;
+
+}

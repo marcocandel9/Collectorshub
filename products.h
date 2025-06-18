@@ -31,4 +31,6 @@ int free_products(products* products_list_head);
 
 int save_products(FILE *fptr, products products_list_head);
 
+int load_products(FILE *fptr, products* products_list, char next_line[MAX_STR_LEN]);
+
 #endif

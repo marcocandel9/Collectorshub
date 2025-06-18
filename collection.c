@@ -400,6 +400,7 @@ Parametri:
     - fptr: puntatore a file (si presume sia già inizializzato e che punti alla posizione del file corretta da leggere del collezione(CIOÈ SUBITO PRIMA DEL TAG))
     - collection_name: array dei caratteri che conterrà il nome della collezione letta
     - collection_type: array dei caratteri che conterrà la tipologia della collezione
+    - next_line: se la lettura fallisce (in caso di lettura di una newline con tag diverso da collezione) allora questo array di caratteri conterrà il nuovo tag per il confronto delle funzioni superiori
     
 Valori di ritorno: 
     - 1: Puntatore al file == NULL (errore critico) , ftell fallisce (errore critico)
@@ -407,7 +408,7 @@ Valori di ritorno:
     - 3: Ho raggiunto l'EOF
     - 0: Lettura avvenuta con successo. Adesso il puntatore a file punterà all'inizio della linea successiva a quella della collezione letto pronto per un eventuale nuovo tag (o EOF)
 */
-int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collection_type[MAX_STR_LEN]){
+int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collection_type[MAX_STR_LEN], char next_line[MAX_STR_LEN]){
 
     /*controlli iniziali ----------*/
     if(fptr == NULL) return 1;
@@ -419,7 +420,9 @@ int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collecti
     char buf[MAX_STR_LEN];
     if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 3; //EOF
     buf[strcspn(buf, "\n")] = '\0';
+
     if(strcmp(buf,"##COLLECTION") != 0){
+        strcpy(next_line,buf);          /* Prelevo il tag successivo */
         fseek(fptr,init_pos,SEEK_SET);
         return 2;                           
     }                                   /*tag diverso da collezione*/
@@ -435,3 +438,5 @@ int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collecti
 
     return 0;
 }
+
+

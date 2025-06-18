@@ -76,7 +76,7 @@ int user_overview(user my_user);
 
 int save_user(FILE *fptr, user my_user);
 
-int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN], char user_role[MAX_STR_LEN]);
+int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN], char user_role[MAX_STR_LEN], char next_line[MAX_STR_LEN]);
 
 //funzioni wrapper che incapsulano le funzioni di collections 
 int insert_user_collections_list(user my_user, collections new_collections_list_head);

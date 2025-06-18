@@ -126,6 +126,6 @@ int print_users(users users_list_head);
 
 int save_users(FILE *fptr, users users_list_head);
 
-int load_users(users* users_list);
+int load_users(FILE *fptr, users* users_list);
 
 #endif
