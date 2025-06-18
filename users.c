@@ -563,23 +563,35 @@ Scorre la lista degli utenti e per ciascun elemento ne salva il contenuto inform
 Parametri: 
     - fptr: puntatore al file in cui scrivere i dati
     - users_list_head: puntatore alla testa della lista utenti
-    - user_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 3 e maggiore di 0)
-    - collection_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 4 e maggiore di 0)
-    - products_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della lista prodotti (max 5 e maggiore di 0)
 
 Restituisce: 
     - 1: se il puntatore al file è invalido (NULL) 
-    - 2: errore, inserimento di un livello di indentazione UTENTI non supportato (MAGGIORE DI MAX_INDENTATION == 3 O MINORE DI 0 (NEGATIVO))
-    - 3: errore, inserimento di un livello di indentazione COLLEZIONI non supportato (negativo o maggiore di qunato definito in save_collection (default: 4))
-    - 4: errore, inserimento di un livello di indentazione PRODOTTI non supportato (negativo o maggiore di qunato definito in save_product (default: 5))
     - 0: salvataggio avvenuto con successo
+
+#USER
+Marco
+Prova123!
+ADMIN
+##Collection
+Giochi PS1
+Videogiochi
+###Product
+Silent Hill 2, PAL ITA, Nuovo, 29.99 
+###Product
+Silent Hill 3, PAL ITA, Nuovo, 29.99 
+##Collection
+Giochi PS2
+Videogiochi
+
+#USER
+[...]
 */
-int save_users(FILE *fptr, users users_list_head, int user_indentation_level, int collection_indentation_level, int product_indentation_level){
+int save_users(FILE *fptr, users users_list_head){
 
     if(fptr == NULL) return 1;
 
     while(users_list_head != NULL){
-        int result = save_user(fptr, users_list_head->user_elem, user_indentation_level,collection_indentation_level,product_indentation_level);
+        int result = save_user(fptr, users_list_head->user_elem);
         switch(result){
             case 1: return 1;
             case 2: return 2;
@@ -591,4 +603,125 @@ int save_users(FILE *fptr, users users_list_head, int user_indentation_level, in
     }
 
     return 0;
+}
+
+
+
+int load_users(users* users_list){
+
+    FILE *fptr = fopen("data.txt", "r");
+    if(fptr == NULL) return 1;
+
+    /*lista vuota: programma aperto per la prima volta ----------------------------- */
+    if(fptr == EOF) return 2;
+
+
+    /*preparazione buffers lettura file ---------------------------------------------------- */
+    char buf[MAX_STR_LEN];
+    char username[MAX_STR_LEN];
+    char password[MAX_STR_LEN];
+    char role[MAX_STR_LEN];
+
+    char coll_name[MAX_STR_LEN];
+    char coll_type[MAX_STR_LEN];
+
+    char prod_name[MAX_STR_LEN];
+    char prod_type[MAX_STR_LEN];
+    char prod_cond[MAX_STR_LEN];
+    float buy_price;
+
+    while(fptr != EOF){
+        
+        int next_user = read_user(fptr,username,password,role);
+        if(next_user == 1) return 1;                                         /* dati corrotti: fptr == NULL || ftell fallisce */
+
+        /*lettura utente avvenuta con successo -> passo al caricamento  -------------- */
+        if(next_user == 0){
+            
+            /*caricamento utente nella lista utenti ----------------------------------  */
+            user_role user_role;
+            if(convert_user_role_to_enum(role, user_role) == 1) return 1;    /* dati corrotti: ruolo invalido */
+            int user_insert_result = insert_user_sorted(users_list,username,password,user_role);
+            switch(user_insert_result){
+                case 1: return 2;                                            /* errore: allocazione dinamica*/
+                case 2: return 1;                                            /* dati corrotti: password invalida */
+                case 3: return 1;                                            /* dati corrotti: duplicato */
+                default: break;
+            }
+
+            /* preparo l'utente in questione nel caso in cui debba caricare collezioni e prodotti a lui associati */
+            user this_user = NULL;
+            int search_result = search_user(*users_list, username, this_user);
+            switch(search_result){
+                case 1: return 3;                                            /* errore: allocazione inconsistente */
+                case 2: return 3;                                            /* errore: allocazione inconsistente */
+                default: break;
+            }
+
+            /*Salvo la posizione del puntatore nel file, leggo la prossima stringa, se è una collezione continuo a leggere altrimenti passo ai prodotti e ristabilisco la posizione corrente */
+            long curr_pos = ftell(fptr);
+            if(curr_pos == -1L) return 1;                                   /* dati corrotti: fptr == NULL || ftell fallisce */
+            if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 1;               /* dati corrotti: fptr == NULL || ftell fallisce */
+
+            while((strcmp(buf, "##COLLECTION") == 0)){
+
+                /*ristabilisco la posizione precedente e leggo la collezione, se esistente */
+                fseek(fptr,curr_pos,SEEK_SET);          
+                int next_collection = read_collection(fptr, coll_name, coll_type);
+                if(next_collection == 1) return 1;                              /* dati corrotti: fptr == NULL || ftell fallisce */
+
+                if(next_collection == 0){
+
+                    /*caricamento collezione dell'utente ----------------------------------------*/
+                    int ins_coll_result = insert_collection(&(this_user ->collections_list_head),coll_name,coll_type);
+                    switch(ins_coll_result){
+                        case 1: return 2;                                   /* errore: allocazione dinamica*/
+                        case 2: return 2;                                   /* dati corrotti: duplicato */
+                        default: break;
+                    }
+
+                    /* preparo la collezione in questione nel caso in cui debba caricare prodotti a lei associati */
+                    collection this_collection = NULL;
+                    int search_result = search_collection(this_user->collections_list_head,coll_name,&(this_collection));
+                    switch(search_result){
+                        case 1: return 3;                                            /* errore: allocazione inconsistente */
+                        case 2: return 3;                                            /* errore: allocazione inconsistente */
+                        default: break;
+                    }
+
+                    /*Salvo la posizione del puntatore nel file, leggo la prossima stringa, se è una collezione continuo a leggere altrimenti passo ai prodotti e ristabilisco la posizione corrente */
+                    long curr_pos = ftell(fptr);
+                    if(curr_pos == -1L) return 1;                                   /* dati corrotti: fptr == NULL || ftell fallisce */
+                    if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 1;               /* dati corrotti: fptr == NULL || ftell fallisce */
+
+                    while((strcmp(buf, "#PRODUCT")) == 0){
+
+                        /*ristabilisco la posizione precedente e leggo la collezione, se esistente */
+                        fseek(fptr,curr_pos,SEEK_SET);          
+                        int next_product = read_product(fptr, prod_name, prod_type,prod_cond,&(buy_price));
+                        
+                        if(next_product == 1) return 1;                              /* dati corrotti: fptr == NULL || ftell fallisce */
+
+                        if(next_product == 0){
+
+                            /*caricamento collezione dell'utente ----------------------------------------*/
+                            int ins_prod_result = insert_product(&(this_collection->products_list_head),prod_name,prod_type,prod_cond,buy_price);
+                            switch(ins_coll_result){
+                                case 1: return 2;                                   /* errore: allocazione dinamica*/
+                                case 2: return 2;                                   /* dati corrotti: duplicato */
+                                default: break;
+                            }
+                        }
+                        if(next_product == 3 || next_product == 2) break;
+                    }
+
+                if(next_collection == 2 || next_collection == 3) break;
+                }
+           
+        }
+        if(next_user == 2 || next_user == 3) break; 
+    }
+    break;
+    }
+return 0;
 }

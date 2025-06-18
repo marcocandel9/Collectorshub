@@ -64,9 +64,8 @@ int main() {
     perror("Errore nell'apertura del file");
     return 1;
     }
-    int user_indentation_level = 0, collection_indentation_level = 1, product_indentation_level = 2;
 
-    save_users(fptr,users_list,user_indentation_level,collection_indentation_level,product_indentation_level);
+    save_users(fptr,users_list);
     fclose(fptr);
 	free_users(&(users_list));
 	return 0;

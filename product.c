@@ -264,37 +264,20 @@ Salva su file i campi informativi di un prodotto.
 Parametri: 
     - fptr: puntatore a file passato in ingresso 
     - myproduct: puntatore a struct product
-    - indentation_level: numero di tabulazioni da inserire prima di ogni campo del prodotto (massimo supportato: max_indentation = 5) (minimo == 0, non accetta numeri negativi)
 Restituisce: 
-    - 2: errore, inserimento di un livello di indentazione non supportato (MAGGIORE DI MAX_INDENTATION == 5 O MINORE DI 0 (NEGATIVO))
     - 1: errore, il puntatore a file o product è uguale a NULL
     - 0: se il file è stato scritto correttamente
 
-ESEMPIO: (product_indentation_level = 1)
-    {
-    Nome prodotto
-    Tipologia prodotto
-    Condizioni prodotto
-    Prezzo di acquisto prodotto
-    }
+ESEMPIO:
+###PRODUCT
+Nome prodotto
+Tipologia prodotto
+Condizioni prodotto
+Prezzo di acquisto prodotto
 */
-int save_product(FILE *fptr, product myproduct, int product_indentation_level){
+int save_product(FILE *fptr, product myproduct){
 
     if(myproduct == NULL || fptr == NULL) return 1;
-
-    //questa variabile indicherà il livello massimo di indentanzioni supportate dalla funzione. È possibile modificarlo per aumentare il numero max
-    // di indentanzioni
-    int const max_indentation = 5; 
-
-    if(product_indentation_level > max_indentation || product_indentation_level < 0) return 2;
-    char indentations_string[MAX_STR_LEN] = "";
-    
-    //Se voglio un livello di indentazione diverso da 0, devo aggiungere il numero corretto di tab
-    if(product_indentation_level != 0){
-        for(int i = 0; i < product_indentation_level; i++){
-            strcat(indentations_string, "\t");
-            }
-    }
 
     char product_name[MAX_STR_LEN];
     char product_type[MAX_STR_LEN];
@@ -306,13 +289,68 @@ int save_product(FILE *fptr, product myproduct, int product_indentation_level){
     get_product_condition(myproduct, product_condition);
     get_product_buyprice(myproduct, &product_buyprice);
     
-    fprintf(fptr, "%s{\n",indentations_string);
-    fprintf(fptr, "%s%s\n",indentations_string,product_name);
-    fprintf(fptr, "%s%s\n",indentations_string,product_type);
-    fprintf(fptr, "%s%s\n",indentations_string,product_condition);
-    fprintf(fptr, "%s%.2f\n",indentations_string,product_buyprice);
-    fprintf(fptr, "%s}\n",indentations_string);
+    fprintf(fptr, "###PRODUCT\n");
+    fprintf(fptr, "%s\n",product_name);
+    fprintf(fptr, "%s\n",product_type);
+    fprintf(fptr, "%s\n",product_condition);
+    fprintf(fptr, "%.2f\n",product_buyprice);
 
+    return 0;
+}
+
+
+/*
+Permette LA LETTURA dei campi informativi di prodotto da file. Al caricamento si occuperà invece la funzione load_products di products.h. 
+La funzione, durante il parsing del file, controlla che la prima stringa letta dal puntatore al file, passato come parametro,
+sia la stringa di tag prodotto (###PRODOTTO). Se così non fosse, restituisce un errore e ripristina la posizione del puntatore prima
+della chiamata alla funzione stessa. La funzione si aspetta dunque che il puntatore al file sia già posizionato al tag del prodotto 
+da caricare, inoltre è ruolo del chiamante deallocare il puntatore al file stesso. 
+Dopo il successo, il cursore è posizionato sulla riga successiva all’ultima letta, quindi pronto per un eventuale nuovo tag (o EOF)
+
+Parametri: 
+    - fptr: puntatore a file (si presume sia già inizializzato e che punti alla posizione del file corretta da leggere del prodotto(CIOÈ SUBITO PRIMA DEL TAG))
+    - read_product_name: array dei caratteri che conterrà il nome del prodotto letto
+    - read_product_type: array dei caratteri che conterrà la tipologia del prodotto letto
+    - read_product_condition: array dei caratteri che conterrà le condizioni del prodotto letto
+    - read_buyprice: float(pass. come rif.) che conterrà il prezzo di acquisto del prodotto letto
+Valori di ritorno: 
+    - 1: Puntatore al file == NULL (errore critico) , ftell fallisce (errore critico)
+    - 2: Puntatore a file punta ad un'area del file che non corrisponde ad un prodotto (LA PRIMA STRINGA CHE LEGGE NON È IL TAG PRODOTTO 
+    - 3: Ho raggiunto l'EOF
+    - 0: Lettura e allocazione avvenute con successo. Adesso il puntatore a file punterà all'inizio della linea successiva a quella del prodotto letto pronto per un eventuale nuovo tag (o EOF)
+*/
+int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_product_type[MAX_STR_LEN], char read_product_condition[MAX_STR_LEN], float* read_buyprice){
+
+    if(fptr == NULL) return 1;
+
+    char buf[MAX_STR_LEN];
+    long initial_position = ftell(fptr);
+    if(initial_position == -1L) return 1; //ftell fallisce
+
+    /*Tag  ------------------------------------------------------------------ */
+    if (fgets(buf, MAX_STR_LEN, fptr) == NULL) return 3;   // EOF 
+    buf[strcspn(buf, "\n")] = '\0';
+
+    
+    if(strcmp(buf,"###PRODUCT") != 0) {          //Se la stringa buf non è uguale al tag #PRODUCT, la funzione ripristina la posizione del puntatore iniziale passato come parametro con fseek (stdlib) e restituisce 2 (IL PUNTATORE A FILE NON PUNTA AD UN PRODOTTO VALIDO!)                                
+        fseek(fptr, initial_position, SEEK_SET); //Seek set indica alla funzione fseek che deve spostare il puntatore fptr di un numero di byte pari a current_position rispetto L'INIZIO (SEEK_SET).
+        return 2;
+    }
+
+    /*Parsing 4 campi -----------------------------------------------------*/
+    if (fgets(read_product_name, MAX_STR_LEN, fptr)==NULL ||
+        fgets(read_product_type, MAX_STR_LEN, fptr)==NULL ||
+        fgets(read_product_condition, MAX_STR_LEN, fptr)==NULL ||
+        fgets(buf , MAX_STR_LEN , fptr)==NULL)
+        return 1;  
+ 
+    read_product_name[strcspn(read_product_name,"\n")] = '\0';
+    read_product_type[strcspn(read_product_type,"\n")] = '\0';
+    read_product_condition[strcspn(read_product_condition,"\n")] = '\0';
+    buf [strcspn(buf ,"\n")] = '\0';
+    // srtof converte una stringa in un float. In caso di corretta conversione, restituisce il float
+    char *endptr;
+    *read_buyprice = strtof(buf,&endptr);
 
     return 0;
 }

@@ -360,40 +360,39 @@ int free_products(products* products_list_head){
 
 
 /*
-Scorre la lista dei prodotti e per ciascun elemento ne salva il contenuto informativo in un file. 
+Scorre la lista dei prodotti e per ciascun elemento ne salva il contenuto informativo in un file, immettendo una stringa iniziale di identificazione della gerarchia prodotti (vedi esempio). 
 [ NOTA BENE: NON SI OCCUPA NÈ DI COLLEGARE IL PUNTATORE AL FILE CORRETTO, NÈ DI DEREFERENZIARE IL PUNTATORE, NÈ 
  DI INIZIALIZZARLO IN MODALITÀ APPEND. SPETTA AL CHIAMANTE PRINCIPALE GESTIRLI. ]
 
     Parametri:
         - fptr: puntatore a file in cui scrivere
         - products_list_head: puntatore alla testa della lista dei prodotti
-        - indentation_level: numero di tabulazioni da inserire prima di ogni campo del prodotto (massimo supportato: max_indentation = 5)
     Restituisce: 
-        - 2: product_indentation_level ha un valore invalido (negativo o maggiore di quanto definito in save_product(default: 5))
         - 1: In caso di puntatore a file uguale a null
-        - 0: In caso di scrittura avvenuta correttamente (anche la lista è vuota, non scrive semplicemente nulla)
+        - 0: In caso di scrittura avvenuta correttamente (anche se la lista è vuota, non scrive alcun prodotto in quel caso)
 
-ESEMPIO: (product_indentation_level = 1)
-    {
-    Nome prodotto
-    Tipologia prodotto
-    Condizioni prodotto
-    Prezzo di acquisto prodotto
-    }
-    {
-    Nome prodotto
-    Tipologia prodotto
-    Condizioni prodotto
-    Prezzo di acquisto prodotto
-    }
+ESEMPIO: 
+
+###PRODUCT
+Gioco
+Italiano
+Ottime
+29.99
+###PRODUCT
+Gioco2 
+Italiano 
+Discrete 
+29.99
+###PRODUCT
+... 
+
 */
-int save_products(FILE *fptr, products products_list_head, int product_indentation_level){
+int save_products(FILE *fptr, products products_list_head){
 
     if(fptr == NULL) return 1;
 
-
     while(products_list_head != NULL){
-        int result = save_product(fptr, products_list_head->product_elem, product_indentation_level);
+        int result = save_product(fptr, products_list_head->product_elem);
         if(result == 1) return 1;
         if(result == 2) return 2;
         products_list_head = products_list_head -> next;
@@ -401,3 +400,8 @@ int save_products(FILE *fptr, products products_list_head, int product_indentati
 
     return 0;
 }
+
+
+
+
+

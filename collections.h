@@ -32,6 +32,6 @@ int search_collection(collections collections_list_head, char key_name[MAX_STR_L
 
 int collection_exists(collections collections_list_head, char key_name[MAX_STR_LEN]);
 
-int save_collections(FILE *fptr, collections collections_list_head, int collection_indentation_level, int product_indentation_level);
+int save_collections(FILE *fptr, collections collections_list_head);
 
 #endif

@@ -398,6 +398,32 @@ int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]){
 }
 
 
+/*
+Converte il ruolo di un utente in ingresso pasasto come stringa in type enum user_role. 
+Parametri: 
+    role_string (in): array di caratteri contenente il ruolo dell'utente
+    role (out): tipo enum user_role passato come riferimento 
+
+Restituisce:
+    0: se la conversione è valida
+    1: in caso contrario
+
+*/
+int convert_user_role_to_enum(char role_string[MAX_STR_LEN], user_role* role){
+
+    user_role role;
+
+    if(strcmp(role_string,"USER") == 0){
+        *role = USER;
+        return 0;
+    }
+
+    if(strcmp(role_string,"ADMIN") == 0){
+        *role = ADMIN;
+        return 0;
+    } else return 1; //error invalid role
+}
+
 
 
 /*
@@ -660,48 +686,32 @@ della collezione/prodotti è vuota, non scriverà nulla tra le relative parentes
 Parametri: 
     - fptr: puntatore al file in cui scrivere i dati
     - my_user: utente di cui si vogliono salvare i dati
-    - user_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 3 e maggiore di 0)
-    - collection_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 4 e maggiore di 0)
-    - products_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della lista prodotti (max 5 e maggiore di 0)
 
 Restituisce: 
     - 1: puntatore a file == NULL o user == NULL
-    - 2: errore, inserimento di un livello di indentazione UTENTI non supportato (MAGGIORE DI MAX_INDENTATION == 3 O MINORE DI 0 (NEGATIVO))
-    - 3: errore, inserimento di un livello di indentazione COLLEZIONI non supportato (negativo o maggiore di qunato definito in save_collection (default: 4))
-    - 4: errore, inserimento di un livello di indentazione PRODOTTI non supportato (negativo o maggiore di qunato definito in save_product (default: 5))
     - 0: salvataggio avvenuto con successo
 
-ESEMPIO DI OUTPUT: (user_indentation_level = 1, collection = 2, product = 3)
-	{
-	username
-	password
-	ADMIN
-		{
-		Collection name
-		Collection type
-			{
-			Product name
-			Product type
-			condition
-			99.99
-			}
-		}
-	}
+ESEMPIO
+
+#USER
+Marco
+Prova123!
+ADMIN
+##Collection
+Giochi PS1
+Videogiochi
+###Product
+Silent Hill 2, PAL ITA, Nuovo, 29.99 
+###Product
+Silent Hill 3, PAL ITA, Nuovo, 29.99 
+##Collection
+Giochi PS2
+Videogiochi
 
 */
-int save_user(FILE *fptr, user my_user, int user_indentation_level, int collection_indentation_level, int product_indentation_level){
+int save_user(FILE *fptr, user my_user){
 
     if(fptr == NULL || my_user == NULL) return 1;
-
-    //Numero di tabulati di indentazione massimi possibile per il salvataggio su file del campo utente
-    int const user_max_indentation_level = 3;
-
-    if(user_indentation_level > user_max_indentation_level || user_indentation_level < 0) return 2; //numero di tabulati invalidi (negativi o maggiori di max default = 3)
-    char user_indentation_string[MAX_STR_LEN] = "";
-
-    for(int i = 0; i < user_indentation_level; i++){
-        strcat(user_indentation_string,"\t");
-    }
 
     char username[MAX_STR_LEN];
     char password[MAX_STR_LEN];
@@ -711,18 +721,69 @@ int save_user(FILE *fptr, user my_user, int user_indentation_level, int collecti
     get_user_role(my_user,user_role);
     get_password(my_user,password);
 
-    fprintf(fptr,"%s{\n",user_indentation_string);
-    fprintf(fptr,"%s%s\n",user_indentation_string,username);
-    fprintf(fptr,"%s%s\n",user_indentation_string,password);
-    fprintf(fptr,"%s%s\n",user_indentation_string,user_role);
-    int result = save_collections(fptr, my_user->collections_list_head, collection_indentation_level,product_indentation_level);
+    fprintf(fptr,"#USER\n");
+    fprintf(fptr,"%s\n",username);
+    fprintf(fptr,"%s\n",password);
+    fprintf(fptr,"%s\n",user_role);
+    int result = save_collections(fptr, my_user->collections_list_head);
     switch(result){
         case 1: return 1; 
-        case 2: return 3; //variabile di indentazione COLLEZIONE invalida
-        case 3: return 4; //variabile di indentazione PRODOTTI invalida
         default: break;
     }
-    fprintf(fptr,"%s}\n",user_indentation_string);
+    fprintf(fptr,"\n");
+    return 0;
+}
+
+
+
+
+/*
+Permette LA LETTURA dei campi informativi di un utentee da file. 
+La funzione, durante il parsing del file, controlla che la prima stringa letta dal puntatore al file, passato come parametro,
+sia la stringa di tag utente (#USER). Se così non fosse, restituisce un errore e ripristina la posizione del puntatore prima
+della chiamata alla funzione stessa. La funzione si aspetta dunque che il puntatore al file sia già posizionato al tag del prodotto 
+da caricare, inoltre è ruolo del chiamante deallocare il puntatore al file stesso. 
+Dopo il successo, il cursore è posizionato sulla riga successiva all’ultima letta, quindi pronto per un eventuale nuovo tag (o EOF)
+
+Parametri: 
+    - fptr: puntatore a file (si presume sia già inizializzato e che punti alla posizione del file corretta da leggere dell'utente(CIOÈ SUBITO PRIMA DEL TAG))
+    - username: array dei caratteri che conterrà l'username dell'utente letto
+    - password: array di caratteri che conterrà la password dell'utente letto
+    - user_role: array di caratteri che conterrà il ruolo dell'utente letto
+    
+Valori di ritorno: 
+    - 1: Puntatore al file == NULL (errore critico) , ftell fallisce (errore critico)
+    - 2: Puntatore a file punta ad un'area del file che non corrisponde ad un utente (LA PRIMA STRINGA CHE LEGGE NON È IL TAG UTENTE)
+    - 3: Ho raggiunto l'EOF
+    - 0: Lettura avvenuta con successo. Adesso il puntatore a file punterà all'inizio della linea successiva a quella dell'utente letto pronto per un eventuale nuovo tag (o EOF)
+*/
+int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN], char user_role[MAX_STR_LEN]){
+
+    /*controlli iniziali ----------*/
+    if(fptr == NULL) return 1;
+
+    long init_pos = ftell(fptr);
+    if(init_pos == -1L) return 1;
+
+    /*tag----------------------------------*/
+    char buf[MAX_STR_LEN];
+    if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 3; //EOF
+    buf[strcspn(buf, "\n")] = '\0';
+    if(strcmp(buf,"#USER") != 0){
+        fseek(fptr,init_pos,SEEK_SET);
+        return 2;                           
+    }                                   /*tag diverso da USER*/
+
+    /*leggo i dati------------------------------*/
+    if  (fgets(username,MAX_STR_LEN,fptr) == NULL  ||
+        fgets(password,MAX_STR_LEN,fptr) == NULL  ||
+        fgets(user_role,MAX_STR_LEN,fptr) == NULL ) 
+        return 1;                           /*errore critico di lettura del buffer*/
+    
+    /*rimuovo i caratteri di newline-------------*/
+    username[strcspn(username,"\n")] = '\0';
+    password[strcspn(password,"\n")] = '\0';
+    user_role[strcspn(user_role,"\n")] = '\0';
 
     return 0;
 }

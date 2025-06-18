@@ -30,7 +30,9 @@ int delete_collection(collection* my_collection);
 
 int print_collection(collection my_collection);
 
-int save_collection(FILE *fptr, collection my_collection, int collection_indentation_level, int product_indentation_level);
+int save_collection(FILE *fptr, collection my_collection);
+
+int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collection_type[MAX_STR_LEN]);  
 
 //funzioni wrapper che incapsulano le funzioni di products 
 

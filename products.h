@@ -29,7 +29,6 @@ int print_products(products products_list_head);
 
 int free_products(products* products_list_head);
 
-int save_products(FILE *fptr, products products_list_head, int product_indentation_level);
-
+int save_products(FILE *fptr, products products_list_head);
 
 #endif

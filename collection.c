@@ -363,41 +363,75 @@ della collezione è vuota, non scriverà nulla tra le relative parentesi graffe]
 Parametri: 
     - fptr: puntatore al file in cui scrivere i dati
     - my_collection: collezione di cui si vogliono salvare i dati
-    - collection_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della collezione (max 4 e maggiore di 0)
-    - products_indentation_level: numero di tabulati di indentazione desiderato per le informazioni della lista prodotti (max 5 e maggiore di 0)
 
 Restituisce: 
     - 1: puntatore a file == NULL o collezione == NULL
-    - 2: errore, inserimento di un livello di indentazione COLLEZIONI non supportato (MAGGIORE DI MAX_INDENTATION == 5 O MINORE DI 0 (NEGATIVO))
-    - 3: errore, inserimento di un livello di indentazione PRODOTTI non supportato (negativo o maggiore di qunato definito in save_product (default: 5))
     - 0: salvataggio avvenuto con successo
 */
-int save_collection(FILE *fptr, collection my_collection, int collection_indentation_level, int product_indentation_level){
+int save_collection(FILE *fptr, collection my_collection){
 
     if(fptr == NULL || my_collection == NULL) return 1;
-    
-    int const indentation_max_level = 4;
-    if(collection_indentation_level > 4 || collection_indentation_level < 0) return 2;
 
-    char collection_indentation_string[MAX_STR_LEN] = "";
-
-    if(collection_indentation_level > 0){
-        for(int i = 0; i < collection_indentation_level; i++){
-            strcat(collection_indentation_string,"\t");
-            }
-    }
-    
     char collection_name[MAX_STR_LEN];
     char collection_type[MAX_STR_LEN];
     get_collection_name(my_collection,collection_name);
     get_collection_type(my_collection,collection_type);
 
-    fprintf(fptr,"%s{\n",collection_indentation_string);
-    fprintf(fptr,"%s%s\n",collection_indentation_string,collection_name);
-    fprintf(fptr,"%s%s\n",collection_indentation_string,collection_type);
-    int result = save_products(fptr, my_collection->products_list_head, product_indentation_level);
+    fprintf(fptr,"##COLLECTION\n");
+    fprintf(fptr,"%s\n",collection_name);
+    fprintf(fptr,"%s\n",collection_type);
+    int result = save_products(fptr, my_collection->products_list_head);
     if(result == 1) return 1;
-    if(result == 2) return 3;
-    fprintf(fptr,"%s}\n",collection_indentation_string);
+
+    return 0;
+}
+
+
+
+/*
+Permette LA LETTURA dei campi informativi di una collezione da file. Al caricamento si occuperà invece la funzione load_collections di products.h. 
+La funzione, durante il parsing del file, controlla che la prima stringa letta dal puntatore al file, passato come parametro,
+sia la stringa di tag collezione (##COLLEZIONE). Se così non fosse, restituisce un errore e ripristina la posizione del puntatore prima
+della chiamata alla funzione stessa. La funzione si aspetta dunque che il puntatore al file sia già posizionato al tag del collezione 
+da caricare, inoltre è ruolo del chiamante deallocare il puntatore al file stesso. 
+Dopo il successo, il cursore è posizionato sulla riga successiva all’ultima letta, quindi pronto per un eventuale nuovo tag (o EOF)
+
+Parametri: 
+    - fptr: puntatore a file (si presume sia già inizializzato e che punti alla posizione del file corretta da leggere del collezione(CIOÈ SUBITO PRIMA DEL TAG))
+    - collection_name: array dei caratteri che conterrà il nome della collezione letta
+    - collection_type: array dei caratteri che conterrà la tipologia della collezione
+    
+Valori di ritorno: 
+    - 1: Puntatore al file == NULL (errore critico) , ftell fallisce (errore critico)
+    - 2: Puntatore a file punta ad un'area del file che non corrisponde ad una collezione (LA PRIMA STRINGA CHE LEGGE NON È IL TAG COLLEZIONE 
+    - 3: Ho raggiunto l'EOF
+    - 0: Lettura avvenuta con successo. Adesso il puntatore a file punterà all'inizio della linea successiva a quella della collezione letto pronto per un eventuale nuovo tag (o EOF)
+*/
+int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collection_type[MAX_STR_LEN]){
+
+    /*controlli iniziali ----------*/
+    if(fptr == NULL) return 1;
+
+    long init_pos = ftell(fptr);
+    if(init_pos == -1L) return 1;
+
+    /*tag----------------------------------*/
+    char buf[MAX_STR_LEN];
+    if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 3; //EOF
+    buf[strcspn(buf, "\n")] = '\0';
+    if(strcmp(buf,"##COLLECTION") != 0){
+        fseek(fptr,init_pos,SEEK_SET);
+        return 2;                           
+    }                                   /*tag diverso da collezione*/
+
+    /*leggo i dati------------------------------*/
+    if  (fgets(collection_name,MAX_STR_LEN,fptr) == NULL ||
+        fgets(collection_type,MAX_STR_LEN,fptr) == NULL )
+        return 1;                           /*errore critico di lettura del buffer*/
+    
+    /*rimuovo i caratteri di newline-------------*/
+    collection_name[strcspn(collection_name,"\n")] = '\0';
+    collection_type[strcspn(collection_type,"\n")] = '\0';
+
     return 0;
 }

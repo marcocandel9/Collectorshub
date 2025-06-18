@@ -62,6 +62,8 @@ int get_collection_list(user my_user, collections* user_collection);
 
 int get_user_role(user my_user, char my_user_role[MAX_STR_LEN]);
 
+int convert_user_role_to_enum(char role_string[MAX_STR_LEN], user_role* role);
+
 int get_user_role_enum(user my_user, user_role* return_role_value);
 
 int role_checker(user my_user, user_role required_role);
@@ -72,7 +74,9 @@ int print_user(user my_user);
 
 int user_overview(user my_user);
 
-int save_user(FILE *fptr, user my_user, int user_indentation_level, int collection_indentation_level, int product_indentation_level);
+int save_user(FILE *fptr, user my_user);
+
+int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN], char user_role[MAX_STR_LEN]);
 
 //funzioni wrapper che incapsulano le funzioni di collections 
 int insert_user_collections_list(user my_user, collections new_collections_list_head);

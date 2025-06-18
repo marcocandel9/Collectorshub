@@ -431,42 +431,32 @@ Scorre la lista delle collezioni e per ciascun elemento ne salva il contenuto in
     Parametri:
         - fptr: puntatore a file in cui scrivere
         - products_list_head: puntatore alla testa della lista dei prodotti
-        - collection_indentation_level: numero di tabulazioni da inserire prima di ogni campo della collezione (massimo supportato: max_indentation = 4)
-        - products_indentation_level: numero di tabulazioni da inserire prima di ogni campo del prodotto (massimo supportato: max_indentation = 5)
     Restituisce: 
-        - 3: product_indentation_level ha un valore invalido (negativo o maggiore di quanto definito in save_product(default: 5))
-        - 2: collection_indentation_level ha un valore invalido (negativo o maggiore di quanto definito in save_collection(default: 4))
         - 1: In caso di puntatore a file uguale a null
-        - 0: In caso di scrittura avvenuta correttamente (anche la lista è vuota, non scrive semplicemente nulla)
+        - 0: In caso di scrittura avvenuta correttamente (Se la lista è vuota, non scrive semplicemente nulla)
 
-ESEMPIO: (product_indentation_level = 2) , (collection_indentation_level = 1)
-    
-    {
-    nome collezione
-    tipologia collezione
-    }
-        {
-        Nome prodotto
-        Tipologia prodotto
-        Condizioni prodotto
-        Prezzo di acquisto prodotto
-        }
-        {
-        Nome prodotto
-        Tipologia prodotto
-        Condizioni prodotto
-        Prezzo di acquisto prodotto
-        }
+ESEMPIO: 
+
+##Collection
+Giochi PS1
+Videogiochi
+###Product
+Silent Hill 2, PAL ITA, Nuovo, 29.99 
+###Product
+Silent Hill 3, PAL ITA, Nuovo, 29.99 
+##Collection
+Giochi PS2
+Videogiochi
+[...]
+
 */
-int save_collections(FILE *fptr, collections collections_list_head, int collection_indentation_level, int product_indentation_level){
+int save_collections(FILE *fptr, collections collections_list_head){
 
     if(fptr == NULL) return 1;
 
     while(collections_list_head != NULL){
-        int result = save_collection(fptr, collections_list_head->collection_elem,collection_indentation_level,product_indentation_level);
+        int result = save_collection(fptr, collections_list_head->collection_elem);
         if(result == 1) return 1;
-        if(result == 2) return 2; //tabulato indentazione COLLEZIONE invalido
-        if(result == 3) return 3; //tabulato indentazione PRODOTTO invalido
         collections_list_head = collections_list_head->next;
     }
 
@@ -474,3 +464,7 @@ int save_collections(FILE *fptr, collections collections_list_head, int collecti
 
 
 }
+
+
+
+

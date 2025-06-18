@@ -18,10 +18,8 @@ struct product
 
 typedef struct product* product;
 
-//crea un nuovo prodotto
 int create_product(product* new_product, char new_name[MAX_STR_LEN], char new_type[MAX_STR_LEN], char new_condition[MAX_STR_LEN], float new_buy_price);
 
-//elimina un prodotto liberandone l'area di memoria nell'heap
 int delete_product(product* product_todelete);
 
 int get_product_name(product myproduct, char myproduct_name[MAX_STR_LEN]);
@@ -44,6 +42,8 @@ int modify_product(product* myproduct, char new_name[MAX_STR_LEN], char new_type
 
 int print_product(product myproduct);
 
-int save_product(FILE *fptr, product myproduct, int product_indentation_level);
+int save_product(FILE *fptr, product myproduct);
+
+int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_product_type[MAX_STR_LEN], char read_product_condition[MAX_STR_LEN], float* read_buyprice);
 
 #endif
