@@ -411,8 +411,6 @@ Restituisce:
 */
 int convert_user_role_to_enum(char role_string[MAX_STR_LEN], user_role* role){
 
-    user_role role;
-
     if(strcmp(role_string,"USER") == 0){
         *role = USER;
         return 0;
@@ -736,7 +734,6 @@ int save_user(FILE *fptr, user my_user){
         case 1: return 1; 
         default: break;
     }
-    fprintf(fptr,"\n");
     return 0;
 }
 

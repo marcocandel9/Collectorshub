@@ -1,0 +1,40 @@
+#USER
+Caccamo88
+Prova123!
+USER
+##COLLECTION
+Giochi Xbox Serie X
+Videogiochi
+##COLLECTION
+Giochi Xbox360
+Videogiochi
+###PRODUCT
+Gears Of War 2
+PAL ITA
+Nuovo boxed
+29.99
+###PRODUCT
+Halo 3 Ann. Edition
+PAL MULTI
+Usato (Ottime)\
+49.99
+#USER
+Marco01
+Prova123!
+USER
+##COLLECTION
+Giochi PS1
+Videogiochi
+###PRODUCT
+Silent Hill 2
+PAL ITA
+Nuovo boxed
+19.99
+##COLLECTION
+Giochi PS2
+Videogiochi
+#USER
+Marcus9
+Xbox360!
+USER
+

@@ -15,7 +15,16 @@ int main() {
     products products = NULL;
 
     bool force_logout = false;
+
+    FILE *fptr = fopen("data.txt", "r");
+    if (fptr == NULL) {
+    perror("Errore nell'apertura del file");
+    return 1;
+    }
+
+    load_users(fptr,&(users_list));
     
+    fclose(fptr);
     //Inizio ciclo del programma: Accedo al menu login, se l'utente desidera uscira dal programma, esco dal ciclo while
 
     //Menu login (WHILE LOOP 1)
@@ -59,7 +68,7 @@ int main() {
 
 
     //WIP SALVATAGGIO
-    FILE *fptr = fopen("data.txt", "at");
+    fptr = fopen("data.txt", "w");
     if (fptr == NULL) {
     perror("Errore nell'apertura del file");
     return 1;

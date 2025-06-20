@@ -652,10 +652,10 @@ int load_users(FILE *fptr, users* users_list){
             default:
                 
                 user_role user_role_enum;
-                int conv_result = convert_user_role_to_enum(user_role_str,user_role_enum);
+                int conv_result = convert_user_role_to_enum(user_role_str,&(user_role_enum));
                 if(conv_result == 1) return 5;                       /* Ruolo utente memorizzato nel file data invalido, dati corrotti*/
 
-                int ins_result = insert_user_sorted(users_list, username, password,user_role_enum);
+                int ins_result = insert_user_sorted(users_list, username, password, user_role_enum);
                 if(ins_result == 1) return 4;                       /* Errore di allocazione dinamica */
                 if(ins_result == 2 || ins_result == 3) return 5;    /* Dati corrotti */
 
