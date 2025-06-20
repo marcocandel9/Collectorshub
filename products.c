@@ -431,12 +431,24 @@ int load_products(FILE *fptr, products* products_list, char next_line[MAX_STR_LE
     char prod_cond[MAX_STR_LEN];
     float buyprice;
 
-    do{
+    while(1){
+        //printf("[DEBUG] Ciclo load_products - next_line: '%s'\n", next_line);
         int read_result = read_product(fptr,prod_name,prod_type,prod_cond,&(buyprice),next_line);
+        //printf("[DEBUG] Ciclo load_products - prod_name: '%s'\n", prod_name);
         switch(read_result){
-            case 1: return 1;   /* fptr == NULL || ftell fallisce  (errore critico)*/
-            case 2: break;      /* incontro tag diverso dal prodotto, tale tag sarà contenuto in next_line, esco dal ciclo while */
-            case 3: return 3;   /* Ho raggiunto l'EOF */
+
+            /*caso 1: fptr == NULL || ftell fallisce  (errore critico)*/
+            case 1: return 1;   
+
+            /*caso 2: incontro tag diverso dal prodotto, tale tag sarà contenuto in next_line, esco dal ciclo while */
+            case 2: return 2;
+
+            /*caso 3: Ho raggiunto l'EOF */
+            case 3: 
+            //printf("[DEBUG] eof reached in products\n");
+            return 3;   /* Ho raggiunto l'EOF */
+
+            /*caso 4: inserisco il prodotto trovato nella lista dei prodotti */
             default: 
 
                 int ins_result = insert_product(products_list, prod_name,prod_type,prod_cond, buyprice);
@@ -446,8 +458,8 @@ int load_products(FILE *fptr, products* products_list, char next_line[MAX_STR_LE
                     default: continue;
                 }
         }
-    } while ( strcmp( next_line, "###PRODUCT"));
+    };
 
-    return 2;
+    return -1; //non dovrebbe accadere
 
 }

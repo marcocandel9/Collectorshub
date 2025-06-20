@@ -641,31 +641,38 @@ int load_users(FILE *fptr, users* users_list){
 
     user new_user = NULL;
 
-    do{
+    while (1){
         
         int us_read_result = read_user(fptr,username,password,user_role_str,next_line);
         switch(us_read_result){
-            case 1: return 1;  /* fptr == NULL || ftell fallisce  (errore critico)*/
-            case 2: return 5;     /* Se incontro un tag diverso da user quando riaprte il ciclo i dati sono corrotti */
+
+            /*caso 1: fptr == NULL || ftell fallisce  (errore critico) ----------------------------------------------------------------*/
+            case 1: return 1;
+
+            /*caso 2: Se incontro un tag diverso da user quando riaprte il ciclo i dati sono corrotti -------------------------------- */
+            case 2: return 5;     
+
+            /*caso 3: Ho raggiunto l'EOF */
             case 3:
-                return 3;                           /* Ho raggiunto l'EOF */
+                return 3;   
+            
+            /*caso 4: incontro un tag utente-> carico utente -> collezioni (se esistenti) -> prodotti (se esistenti) ------------------*/
             default:
                 
                 user_role user_role_enum;
                 int conv_result = convert_user_role_to_enum(user_role_str,&(user_role_enum));
-                if(conv_result == 1) return 5;                       /* Ruolo utente memorizzato nel file data invalido, dati corrotti*/
+                if(conv_result == 1) return 5;                              /* Ruolo utente memorizzato nel file data invalido, dati corrotti*/
 
                 int ins_result = insert_user_sorted(users_list, username, password, user_role_enum);
-                if(ins_result == 1) return 4;                       /* Errore di allocazione dinamica */
-                if(ins_result == 2 || ins_result == 3) return 5;    /* Dati corrotti */
+                if(ins_result == 1) return 4;                               /* Errore di allocazione dinamica */
+                if(ins_result == 2 || ins_result == 3) return 5;            /* Dati corrotti */
 
                 int ser_result = search_user(*users_list,username, &(new_user));
-                if(ser_result == 1 || ins_result == 2) return 6;    /* Ricerca fallita: struttura dati inconsistente  */
+                if(ser_result == 1 || ins_result == 2) return 6;            /* Ricerca fallita: struttura dati inconsistente  */
 
                 int coll_load_result = load_collections(fptr, &(new_user->collections_list_head),next_line);
                 switch(coll_load_result){
                     case 1: return 1;
-                    case 2: return -2;              /* Valore di ritorno impossibile */
                     case 3: return 3;               /* Ho raggiunto l'EOF */
                     case 4: return 4;               /* Errore di allocazione dinamica */
                     case 5: return 5;               /* Duplicato incontrato, Dati corrotti */
@@ -674,7 +681,7 @@ int load_users(FILE *fptr, users* users_list){
                 }
         }
 
-    } while (strcmp(next_line,"#USER"));
+    } 
 
     // Questo punto non dovrebbe mai essere raggiunto
     return -1;

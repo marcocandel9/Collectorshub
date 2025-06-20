@@ -354,6 +354,8 @@ int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_prod
     char *endptr;
     *read_buyprice = strtof(buf,&endptr);
 
+    //printf("[DEBUG] : read name: %s \n", read_product_name);
+
     return 0;
 }
 

@@ -18,9 +18,14 @@ int main() {
 
     FILE *fptr = fopen("data.txt", "r");
     if (fptr == NULL) {
-    perror("Errore nell'apertura del file");
-    return 1;
+        printf("File non trovato, lo creo nuovo...\n");
+        fptr = fopen("data.txt", "w");
+        if (fptr == NULL) {
+            perror("Impossibile creare il file");
+            return 1;
+        }   
     }
+
 
     load_users(fptr,&(users_list));
     

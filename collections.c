@@ -486,6 +486,7 @@ La funzione utilizza `read_collection` per leggere i dati di ciascuna collezione
         - 5: inserimento duplicato (dato corrotto).
         - 6: Allocazione con effetti inaspettati, problema di allocazione  
         - 7: tag `#USER` incontrato (fine delle collezioni per un dato utente, `next_line` conterrà il tag e il puntatore a file sarà correttamente posizionato).
+        - 8: Valore di ritorno di debug: flusso invalido, incontro un tag prodotto prima di aver letto almeno un tag collezione
 
     Note:
         - In caso di errore in `load_products`, la funzione interrompe l’inserimento e propaga il codice errore.
@@ -498,18 +499,39 @@ int load_collections(FILE *fptr, collections* collections_list, char next_line[M
 
     char coll_name[MAX_STR_LEN];
     char coll_type[MAX_STR_LEN];
-
     collection new_coll = NULL;
 
-    do{
+    while (1){ 
         int read_result = read_collection(fptr, coll_name, coll_type, next_line);
         switch(read_result){
-            case 1: return 1;   /* fptr == NULL || ftell fallisce  (errore critico)*/
-            case 2: 
-                if(strcmp(next_line, "#USER") == 0) return 7;   /* ho incontrato un tag utente, devo uscire dalla funzione (next_line conterrà il nuovo tag e fptr punterà a tale tag)*/    
-            case 3: return 3;   /* Ho raggiunto l'EOF */
+
+            /*caso 1: * fptr == NULL || ftell fallisce  (errore critico)*/
+            case 1: return 1;   
+
+            /*caso 2: tag diverso da collezione trovato -> se il tag è utente, esco dalla funzione, se è prodotto, carico i prodotti associati------------------------------*/
+            case 2:                                                                                     
+                if(strcmp(next_line, "#USER") == 0) return 7;                                           /*tag incontrato == #USER -> esco dalla funzione -------------------*/
+                if(new_coll == NULL) return 8;                                                          /*flusso invalido, incontro un tag prodotto prima di aver letto almeno un tag collezione*/
+                int prod_load_result = load_products(fptr,&(new_coll->products_list_head),next_line);   /*tag incontrato == ###PRODUCT -> carico i prodotti ----------------*/
+
+
+                switch(prod_load_result){
+                    case 1: return 1;       /* fptr == NULL || ftell fallisce  (errore critico)*/
+                    case 2: 
+                        if(strcmp(next_line, "##COLLECTION") == 0) continue;    /*tag collezione incontrato dopo aver caricato i prodotti -> carico nuovamente la collezione*/
+                        if(strcmp(next_line, "#USER") == 0) return 7;           /*tag utente incontrato dopo aver caricato i prodotti -> esco dalla funzione ---------------*/
+                    case 3: return 3;                                           /* Ho raggiunto l'EOF */
+                    case 4: return 4;                                           /*  Allocazione memoria fallita  */  
+                    case 5: return 5;                                           /*  Inserimento duplicato (impossibile, dati corrotti )*/
+                    default: continue;                                          /*  default difensivo, non dovrebbe accadere*/
+
+                }
+
+            /*caso 3: Ho raggiunto l'EOF */
+            case 3: return 3;
+            
+            /*caso 4: *Tag collezione incontrato -> carico la collezione e ne prendo il puntatore nel caso in cui ci siano prodotti da caricarci dentro in seguito ------------------*/
             default: 
-                collection new_collection = NULL;
                 int ins_result = insert_collection(collections_list, coll_name, coll_type);
                 switch (ins_result){
                     case 1: return 4;     /*  Allocazione memoria fallita  */
@@ -517,33 +539,16 @@ int load_collections(FILE *fptr, collections* collections_list, char next_line[M
                     default: break;
                 }
 
-                int search_result = search_collection(*collections_list, coll_name, &(new_collection));
+                int search_result = search_collection(*collections_list, coll_name, &(new_coll));
                 switch(search_result){
                     case 1: return 6;    /*  Allocazione con effetti inaspettati, problema di allocazione  */
                     case 2: return 6;    /*  Allocazione con effetti inaspettati, problema di allocazione  */
-                    default: break;
+                    default: continue;
                 }
-
-                int prod_load_result = load_products(fptr,&(new_collection->products_list_head),next_line);
-                switch(prod_load_result){
-                    case 1: return 1;       /* fptr == NULL || ftell fallisce  (errore critico)*/
-                    case 2: 
-                        if(strcmp(next_line, "##COLLECTION") == 0) continue;    /* se incontro un tag diverso da prodotto, e tale tag è collezione, riparte il ciclo while */
-                        if(strcmp(next_line, "#USER") == 0) return 7;           /* ho incontrato un tag utente, devo uscire dalla funzione (next_line conterrà il nuovo tag e fptr punterà a tale tag)*/
-                    case 3: return 3;           /* Ho raggiunto l'EOF */
-                    case 4: return 4;       /*  Allocazione memoria fallita  */  
-                    case 5: return 5;       /*  Inserimento duplicato (impossibile, dati corrotti )*/
-                    default: continue;         /*  default difensivo, non dovrebbe accadere*/
-
-                }
-
         }
-    } while (strcmp(next_line,"##COLLECTION"));    /* ogni caso ha i propri valori di ritorno, il while è forzato e difensivamente aggiuntivo. Se il ciclo non si comporta come dovrebbe, restituirò -1. */
-
+    }    
     // Questo punto non dovrebbe mai essere raggiunto
     return -1;
-
-
 }
 
 

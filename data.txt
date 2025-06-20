@@ -1,40 +1,47 @@
 #USER
-Caccamo88
+Marco01
 Prova123!
-USER
+ADMIN
 ##COLLECTION
-Giochi Xbox Serie X
+Giochi PS1
 Videogiochi
+###PRODUCT
+Resident Evil 2
+PAL ITA
+Usato (Discrete)
+49.99
+###PRODUCT
+Silent Hill 2
+PAL ITA
+Usato (Ottime)
+29.99
+##COLLECTION
+PokemonTCG
+Carte Collez.
+###PRODUCT
+Bundle 151
+Italiano
+Nuovo (Sealed)
+35.99
+###PRODUCT
+Bundle ev.Prism
+Italiano
+Nuovo (Sealed)
+35.99
+###PRODUCT
+ETB Rivali Pred
+Italiano
+Nuovo(Sealed)
+49.99
+#USER
+Marco02
+Prova123!
+ADMIN
 ##COLLECTION
 Giochi Xbox360
 Videogiochi
 ###PRODUCT
 Gears Of War 2
-PAL ITA
-Nuovo boxed
-29.99
-###PRODUCT
-Halo 3 Ann. Edition
 PAL MULTI
-Usato (Ottime)\
+Nuovo (Sealed)
 49.99
-#USER
-Marco01
-Prova123!
-USER
-##COLLECTION
-Giochi PS1
-Videogiochi
-###PRODUCT
-Silent Hill 2
-PAL ITA
-Nuovo boxed
-19.99
-##COLLECTION
-Giochi PS2
-Videogiochi
-#USER
-Marcus9
-Xbox360!
-USER
-

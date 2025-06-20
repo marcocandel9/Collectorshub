@@ -426,7 +426,7 @@ int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collecti
         fseek(fptr,init_pos,SEEK_SET);
         return 2;                           
     }                                   /*tag diverso da collezione*/
-
+ 
     /*leggo i dati------------------------------*/
     if  (fgets(collection_name,MAX_STR_LEN,fptr) == NULL ||
         fgets(collection_type,MAX_STR_LEN,fptr) == NULL )
