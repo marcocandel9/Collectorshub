@@ -417,8 +417,8 @@ int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collecti
     if(init_pos == -1L) return 1;
 
     /*tag----------------------------------*/
-    char buf[MAX_STR_LEN];
-    if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 3; //EOF
+    char buf[MAX_STR_LEN+2];
+    if(fgets(buf,MAX_STR_LEN+2,fptr) == NULL) return 3; //EOF
     buf[strcspn(buf, "\n")] = '\0';
 
     if(strcmp(buf,"##COLLECTION") != 0){
@@ -428,8 +428,8 @@ int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collecti
     }                                   /*tag diverso da collezione*/
  
     /*leggo i dati------------------------------*/
-    if  (fgets(collection_name,MAX_STR_LEN,fptr) == NULL ||
-        fgets(collection_type,MAX_STR_LEN,fptr) == NULL )
+    if  (fgets(collection_name,MAX_STR_LEN+2,fptr) == NULL ||
+        fgets(collection_type,MAX_STR_LEN+2,fptr) == NULL )
         return 1;                           /*errore critico di lettura del buffer*/
     
     /*rimuovo i caratteri di newline-------------*/

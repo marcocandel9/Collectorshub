@@ -22,16 +22,44 @@ int main() {
         fptr = fopen("data.txt", "w");
         if (fptr == NULL) {
             perror("Impossibile creare il file");
-            return 1;
+            return -2;          /*errore critico: errore apertura file*/
         }   
     }
 
+    printf("Caricamento dati in corso...\n");
+    int load_res = load_users(fptr,&(users_list));
 
-    load_users(fptr,&(users_list));
-    
+    switch (load_res) {
+        case 1:
+            printf("[ERRORE] Errore critico: apertura file o ftell fallito.\n");
+            return -2;
+
+        case 2:
+            printf("[ERRORE] Struttura dati del file non valida (errore di parsing).\n");
+            return -3;
+
+        case 3:
+            printf("Caricamento completato correttamente [Raggiunto EOF].\n");
+            break;
+
+        case 4:
+            printf("[ERRORE] Allocazione dinamica fallita durante l’inserimento.\n");
+            return -4;
+
+        case 5:
+            printf("[ERRORE] Dati corrotti nel file di input.\n");
+            return -5;
+
+        case 6:
+            printf("[ERRORE] Struttura dati inconsistente.\n");
+            return -6;
+
+        default:
+            printf("Caricamento completato.\n");
+            break;
+    }
+
     fclose(fptr);
-    //Inizio ciclo del programma: Accedo al menu login, se l'utente desidera uscira dal programma, esco dal ciclo while
-
     //Menu login (WHILE LOOP 1)
     while (1) {
         force_logout = false;
@@ -76,13 +104,16 @@ int main() {
     fptr = fopen("data.txt", "w");
     if (fptr == NULL) {
     perror("Errore nell'apertura del file");
-    return 1;
+    return -1;
     }
 
-    save_users(fptr,users_list);
+    printf("Salvataggio dati in corso...\n");
+    int save_res = save_users(fptr,users_list);
+    if(save_res == 1) return -1; /*errore critico: errore apertura file / funzioni ftell falliscono */
     fclose(fptr);
 	free_users(&(users_list));
+
+    printf("Salvataggio dati completato! Arrivederci.\n");
 	return 0;
 
-    
 }

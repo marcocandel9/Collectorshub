@@ -769,8 +769,8 @@ int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN]
     if(init_pos == -1L) return 1;
 
     /*tag----------------------------------*/
-    char buf[MAX_STR_LEN];
-    if(fgets(buf,MAX_STR_LEN,fptr) == NULL) return 3; //EOF
+    char buf[MAX_STR_LEN+2];
+    if(fgets(buf,MAX_STR_LEN+2,fptr) == NULL) return 3; //EOF
     buf[strcspn(buf, "\n")] = '\0';
     if(strcmp(buf,"#USER") != 0){
         strcpy(next_line,buf);
@@ -779,9 +779,9 @@ int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN]
     }                                   /*tag diverso da USER*/
 
     /*leggo i dati------------------------------*/
-    if  (fgets(username,MAX_STR_LEN,fptr) == NULL  ||
-        fgets(password,MAX_STR_LEN,fptr) == NULL  ||
-        fgets(user_role,MAX_STR_LEN,fptr) == NULL ) 
+    if  (fgets(username,MAX_STR_LEN+2,fptr) == NULL  ||
+        fgets(password,MAX_STR_LEN+2,fptr) == NULL  ||
+        fgets(user_role,MAX_STR_LEN+2,fptr) == NULL ) 
         return 1;                           /*errore critico di lettura del buffer*/
     
     /*rimuovo i caratteri di newline-------------*/

@@ -59,12 +59,6 @@ int sys_delete_user_product(user logged_user, collection user_collection);
 
 int sys_delete_user_products(user logged_user, collection user_collection);
 
-
-
-
-
-
-
 int sys_access_admin_menu(user logged_user, users* users_list_head);
 
 #endif

@@ -4,7 +4,7 @@
 
 #ifndef PRODUCT_H
 #define PRODUCT_H
-#define MAX_STR_LEN 20  //Definisce la dimensione massima degli array di caratteri (20 CARATTERI)
+#define MAX_STR_LEN 36  //Definisce la dimensione massima degli array di caratteri (30 CARATTERI)
 #define MIN_STR_LEN 8 //Definisce la dimensione minima degli array di caratteri (8 CARATTERI)
 
 //definizione struct product, sarà il campo informativo dei nodi della lista products

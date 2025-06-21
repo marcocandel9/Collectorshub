@@ -3,45 +3,78 @@ Marco01
 Prova123!
 ADMIN
 ##COLLECTION
-Giochi PS1
+Console
 Videogiochi
 ###PRODUCT
-Resident Evil 2
-PAL ITA
-Usato (Discrete)
-49.99
+Nintendo 3DS XL Hyrule Edition
+The Legend Of Zelda Limited Edition
+Usata (Ottime, come nuova)
+249.99
 ###PRODUCT
-Silent Hill 2
-PAL ITA
-Usato (Ottime)
-29.99
+PSP 3000 Limited Edition
+Ghost Of Sparta Colors
+Usata (Discrete)
+214.99
+###PRODUCT
+Steam Deck OLED 512GB
+OLED (Bianca) Limited Edition
+Ottime (Come nuovo)
+519.99
 ##COLLECTION
-PokemonTCG
-Carte Collez.
+Giochi PS2
+Videogiochi
+###PRODUCT
+Grand Theft Auto San Andreas
+PAL Multilingua
+Usato (Discrete)
+19.99
+###PRODUCT
+Grand Theft Auto Vice City
+Pal Multilingua
+Usato (Ottime)
+14.99
+###PRODUCT
+Ratchet e clank Gladiators
+PAL Multilingua
+Usato (Buone)
+19.99
+###PRODUCT
+Resident Evil IV
+PAL Multi
+Nuovo (Boxato)
+39.99
+##COLLECTION
+Pokemon TCG
+Trading Card Game
 ###PRODUCT
 Bundle 151
 Italiano
 Nuovo (Sealed)
 35.99
 ###PRODUCT
-Bundle ev.Prism
-Italiano
-Nuovo (Sealed)
-35.99
-###PRODUCT
-ETB Rivali Pred
+Bundle Evoluzioni Prismatiche
 Italiano
 Nuovo(Sealed)
-49.99
-#USER
-Marco02
-Prova123!
-ADMIN
-##COLLECTION
-Giochi Xbox360
-Videogiochi
+35.99
 ###PRODUCT
-Gears Of War 2
-PAL MULTI
+ETB Rivali Predestinati
+Italiano
 Nuovo (Sealed)
 49.99
+#USER
+Utente_01
+Prova123!
+USER
+##COLLECTION
+Giochi Nintendo DS
+Videogiochi
+###PRODUCT
+Pokemon Platino
+PAL Multilingua
+Usato (Ottime)
+39.99
+###PRODUCT
+Pokemon Versione Nera 2
+PAL Multilingua
+Usato (Ottime)
+39.99

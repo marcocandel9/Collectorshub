@@ -289,6 +289,11 @@ int save_product(FILE *fptr, product myproduct){
     get_product_condition(myproduct, product_condition);
     get_product_buyprice(myproduct, &product_buyprice);
     
+    if (strlen(product_name) < MIN_STR_LEN || strlen(product_type) < MIN_STR_LEN || strlen(product_condition) < MIN_STR_LEN || product_buyprice < 0) {
+    printf("[ERRORE] Dati del prodotto incompleti o non validi, prodotto non salvato.\n");
+    return 2;
+}
+
     fprintf(fptr, "###PRODUCT\n");
     fprintf(fptr, "%s\n",product_name);
     fprintf(fptr, "%s\n",product_type);
@@ -324,12 +329,15 @@ int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_prod
 
     if(fptr == NULL) return 1;
 
-    char buf[MAX_STR_LEN];
+    char buf[MAX_STR_LEN+2];
     long initial_position = ftell(fptr);
     if(initial_position == -1L) return 1; //ftell fallisce
 
     /*Tag  ------------------------------------------------------------------ */
-    if (fgets(buf, MAX_STR_LEN, fptr) == NULL) return 3;   // EOF 
+    if (fgets(buf, MAX_STR_LEN+2, fptr) == NULL) {
+        return 3;
+        }   // EOF 
+
     buf[strcspn(buf, "\n")] = '\0';
 
     
@@ -340,21 +348,28 @@ int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_prod
     }
 
     /*Parsing 4 campi -----------------------------------------------------*/
-    if (fgets(read_product_name, MAX_STR_LEN, fptr)==NULL ||
-        fgets(read_product_type, MAX_STR_LEN, fptr)==NULL ||
-        fgets(read_product_condition, MAX_STR_LEN, fptr)==NULL ||
-        fgets(buf , MAX_STR_LEN , fptr)==NULL)
+    if (fgets(read_product_name, MAX_STR_LEN+2, fptr)==NULL ||
+        fgets(read_product_type, MAX_STR_LEN+2, fptr)==NULL ||
+        fgets(read_product_condition, MAX_STR_LEN+2, fptr)==NULL ||
+        fgets(buf , MAX_STR_LEN+2, fptr)==NULL)
         return 1;  
- 
+
     read_product_name[strcspn(read_product_name,"\n")] = '\0';
     read_product_type[strcspn(read_product_type,"\n")] = '\0';
     read_product_condition[strcspn(read_product_condition,"\n")] = '\0';
-    buf [strcspn(buf ,"\n")] = '\0';
+    buf[strcspn(buf ,"\n")] = '\0';
     // srtof converte una stringa in un float. In caso di corretta conversione, restituisce il float
     char *endptr;
     *read_buyprice = strtof(buf,&endptr);
+    if(endptr == buf || *endptr != '\0') return 1;
 
-    //printf("[DEBUG] : read name: %s \n", read_product_name);
+    /*
+    printf("[DEBUG] : read name: %s \n", read_product_name);
+    printf("[DEBUG] : read name: %s \n", read_product_type);
+    printf("[DEBUG] : read name: %s \n", read_product_condition);
+    printf("[DEBUG] : read name: %f \n", *read_buyprice);
+    */
+
 
     return 0;
 }

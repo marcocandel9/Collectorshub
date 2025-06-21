@@ -627,7 +627,6 @@ Valori di ritorno:
     - 4: Allocazione dinamica fallita durante l’inserimento di un utente o una collezione
     - 5: Dati corrotti (tag errato, duplicati, ruolo non valido)
     - 6: Struttura dati inconsistente (errore interno di ricerca dopo inserimento)
-    - 7: Nuovo utente trovato: continua il ciclo
     - -1: Punto teoricamente irraggiungibile 
     */
 int load_users(FILE *fptr, users* users_list){
