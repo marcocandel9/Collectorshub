@@ -11,8 +11,6 @@ int main() {
     user logged_user = NULL;
     collection collection = NULL;
     collections collections = NULL;
-    product product = NULL;
-    products products = NULL;
 
     bool force_logout = false;
 
