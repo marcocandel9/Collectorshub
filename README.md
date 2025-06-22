@@ -11,6 +11,13 @@
 - Salvataggio dei dati su file per la persistenza tra sessioni
 - Privilegi amministratore per la gestione avanzata degli utenti
 
+### Documentazione tecnica dettagliata
+
+È possibile visualizzare una documentazione tecnica dettagliata dell'intero programma, con tutte le funzionalità dimostrate e spiegate nel dettaglio, al seguente documento di progetto:
+[Documento_di_progetto_CandelaMarco_Collectorshub_1.0.docx](https://github.com/user-attachments/files/20854681/Documento_di_progetto_CandelaMarco_Collectorshub_1.0.docx)
+
+
+
 ## Compilazione (Ambienti Linux)
 
 Per compilare il progetto è sufficiente seguire i seguenti passaggi:
@@ -76,6 +83,7 @@ Prezzo
 
 **Menu Admin**
 ![image](https://github.com/user-attachments/assets/04894ea0-5136-4f42-82dc-23c9df69a9c2)
+
 
 
 
