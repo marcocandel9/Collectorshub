@@ -6,10 +6,10 @@
 
 - Gestione multiutente con autenticazione (privilegi utente e admin)
 - Possibilità di creare, modificare ed eliminare collezioni personali
-- Gestione di prodotti all’interno delle collezioni, con dettagli (nome, descrizione, condizioni, prezzo, ecc.)
-- Interfaccia testuale user-friendly e menu interattivi
+- Gestione di prodotti all’interno delle collezioni, con dettagli (nome, descrizione, condizioni, prezzo)
+- Interfaccia testuale intuitiva 
 - Salvataggio dei dati su file per la persistenza tra sessioni
-- Privilegi amministratore per la gestione avanzata degli utenti
+- Privilegi amministratore per la gestione avanzata degli utenti (cancellazione e promozione ad admin)
 
 ### Documentazione tecnica dettagliata
 
