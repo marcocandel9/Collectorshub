@@ -29,7 +29,7 @@ gh repo clone marcocandel9/Collectorshub
 ```sh
 make
 ```
-(Nella cartella del progetto è presente uno script makerfile che permette di compilare velocemente il programma su ambienti Linux).
+(Nella cartella del progetto è presente uno script makefile che permette di compilare velocemente il programma su ambienti Linux).
 
 ## Compilazione (Windows o sistemi con compilazione gcc)
 In ambienti windows è possibile semplicemente utilizzare il comando per la compilazione:
