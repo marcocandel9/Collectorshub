@@ -424,17 +424,27 @@ int read_collection(FILE *fptr, char collection_name[MAX_STR_LEN], char collecti
     if(strcmp(buf,"##COLLECTION") != 0){
         strcpy(next_line,buf);          /* Prelevo il tag successivo */
         fseek(fptr,init_pos,SEEK_SET);
-        return 2;                           
+        return 2;
     }                                   /*tag diverso da collezione*/
- 
+
+
+	/*preparo le stringhe di buffer-------------*/
+	char buff_coll_name[MAX_STR_LEN+2];
+	char buff_coll_type[MAX_STR_LEN+2];
+
+
     /*leggo i dati------------------------------*/
-    if  (fgets(collection_name,MAX_STR_LEN+2,fptr) == NULL ||
-        fgets(collection_type,MAX_STR_LEN+2,fptr) == NULL )
+    if  (fgets(buff_coll_name,MAX_STR_LEN+2,fptr) == NULL ||
+        fgets(buff_coll_type,MAX_STR_LEN+2,fptr) == NULL )
         return 1;                           /*errore critico di lettura del buffer*/
-    
+
     /*rimuovo i caratteri di newline-------------*/
-    collection_name[strcspn(collection_name,"\n")] = '\0';
-    collection_type[strcspn(collection_type,"\n")] = '\0';
+    buff_coll_name[strcspn(buff_coll_name,"\n")] = '\0';
+    buff_coll_type[strcspn(buff_coll_type,"\n")] = '\0';
+
+	/*copio le stringhe sicure finali in quelle di ritorno*/
+	strcpy(collection_name,buff_coll_name);
+	strcpy(collection_type,buff_coll_type);
 
     return 0;
 }

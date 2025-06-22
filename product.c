@@ -340,28 +340,44 @@ int read_product(FILE *fptr, char read_product_name[MAX_STR_LEN], char read_prod
 
     buf[strcspn(buf, "\n")] = '\0';
 
-    
+
     if(strcmp(buf,"###PRODUCT") != 0) {          //Se la stringa buf non è uguale al tag #PRODUCT, la funzione ripristina la posizione del puntatore iniziale passato come parametro con fseek (stdlib) e restituisce 2 (IL PUNTATORE A FILE NON PUNTA AD UN PRODOTTO VALIDO!)                                
         strcpy(next_line, buf);
         fseek(fptr, initial_position, SEEK_SET); //Seek set indica alla funzione fseek che deve spostare il puntatore fptr di un numero di byte pari a current_position rispetto L'INIZIO (SEEK_SET).
         return 2;
     }
 
-    /*Parsing 4 campi -----------------------------------------------------*/
-    if (fgets(read_product_name, MAX_STR_LEN+2, fptr)==NULL ||
-        fgets(read_product_type, MAX_STR_LEN+2, fptr)==NULL ||
-        fgets(read_product_condition, MAX_STR_LEN+2, fptr)==NULL ||
-        fgets(buf , MAX_STR_LEN+2, fptr)==NULL)
-        return 1;  
+	/*preparo le stringhe di buffer --------------------------------------*/
+	char buff_name[MAX_STR_LEN+2];
+	char buff_type[MAX_STR_LEN+2];
+	char buff_cond[MAX_STR_LEN+2];
+	char buff_price[MAX_STR_LEN+2];
 
-    read_product_name[strcspn(read_product_name,"\n")] = '\0';
-    read_product_type[strcspn(read_product_type,"\n")] = '\0';
-    read_product_condition[strcspn(read_product_condition,"\n")] = '\0';
-    buf[strcspn(buf ,"\n")] = '\0';
-    // srtof converte una stringa in un float. In caso di corretta conversione, restituisce il float
+
+
+
+    /*Parsing 4 campi -----------------------------------------------------*/
+    if (fgets(buff_name, MAX_STR_LEN+2, fptr)==NULL ||
+        fgets(buff_type, MAX_STR_LEN+2, fptr)==NULL ||
+        fgets(buff_cond, MAX_STR_LEN+2, fptr)==NULL ||
+        fgets(buff_price , MAX_STR_LEN+2, fptr)==NULL)
+        return 1;
+
+    buff_name[strcspn(buff_name,"\n")] = '\0';
+    buff_type[strcspn(buff_type,"\n")] = '\0';
+    buff_cond[strcspn(buff_cond,"\n")] = '\0';
+    buff_price[strcspn(buff_price ,"\n")] = '\0';
+
+
+	/*copio i le stringhe sicure nelle stringhe di ritorno*/
+	strcpy(read_product_name,buff_name);
+	strcpy(read_product_type,buff_type);
+	strcpy(read_product_condition,buff_cond);
+
+	// srtof converte una stringa in un float. In caso di corretta conversione, restituisce il float
     char *endptr;
-    *read_buyprice = strtof(buf,&endptr);
-    if(endptr == buf || *endptr != '\0') return 1;
+    *read_buyprice = strtof(buff_price,&endptr);
+    if(endptr == buff_price || *endptr != '\0') return 1;
 
     /*
     printf("[DEBUG] : read name: %s \n", read_product_name);

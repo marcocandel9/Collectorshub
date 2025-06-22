@@ -11,10 +11,10 @@ The Legend Of Zelda Limited Edition
 Usata (Ottime, come nuova)
 249.99
 ###PRODUCT
-PSP 3000 Limited Edition
-Ghost Of Sparta Colors
-Usata (Discrete)
-214.99
+Sony Playstation 5
+Fat Bianca
+Usato (Buone)
+499.99
 ###PRODUCT
 Steam Deck OLED 512GB
 OLED (Bianca) Limited Edition
@@ -66,15 +66,10 @@ Utente_01
 Prova123!
 USER
 ##COLLECTION
-Giochi Nintendo DS
+Giochi PS3
 Videogiochi
 ###PRODUCT
-Pokemon Platino
-PAL Multilingua
-Usato (Ottime)
-39.99
-###PRODUCT
-Pokemon Versione Nera 2
-PAL Multilingua
-Usato (Ottime)
-39.99
+God Of War 3
+PAL MUltilingua
+Nuovo (Sealed)
+49.99

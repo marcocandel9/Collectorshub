@@ -778,28 +778,18 @@ int read_user(FILE *fptr, char username[MAX_STR_LEN], char password[MAX_STR_LEN]
         return 2;                           
     }                                   /*tag diverso da USER*/
 
-	/*preparo buffer temporanei ----------------*/
-	char buff_username[MAX_STR_LEN+2];
-	char buff_password[MAX_STR_LEN+2];
-	char buff_user_role[MAX_STR_LEN+2];
-
 
 
     /*leggo i dati------------------------------*/
-    if  (fgets(buff_username,MAX_STR_LEN+2,fptr) == NULL  ||
-        fgets(buff_password,MAX_STR_LEN+2,fptr) == NULL  ||
-        fgets(buff_user_role,MAX_STR_LEN+2,fptr) == NULL ) 
+    if  (fgets(username,MAX_STR_LEN+2,fptr) == NULL  ||
+        fgets(password,MAX_STR_LEN+2,fptr) == NULL  ||
+        fgets(user_role,MAX_STR_LEN+2,fptr) == NULL ) 
         return 1;                           /*errore critico di lettura del buffer*/
-
+    
     /*rimuovo i caratteri di newline-------------*/
-    buff_username[strcspn(buff_username,"\n")] = '\0';
-    buff_password[strcspn(buff_password,"\n")] = '\0';
-    buff_user_role[strcspn(buff_user_role,"\n")] = '\0';
-
-	/*copio le stringhe finali, sicure nelle stringhe di ritorno*/
-	strcpy(username,buff_username);
-	strcpy(password,buff_password);
-	strcpy(user_role,buff_user_role);
+    username[strcspn(username,"\n")] = '\0';
+    password[strcspn(password,"\n")] = '\0';
+    user_role[strcspn(user_role,"\n")] = '\0';
 
     return 0;
 }
