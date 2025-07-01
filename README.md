@@ -49,6 +49,13 @@ Dopo aver compilato il progetto, è sufficiente lanciare il programma dalla cart
 ./Collectorshub
 ```
 
+##Ricompilazione
+
+Se si desidera cancellare l'eseguibile tramite un comando specifico da terminale, è possibile eseguire il seguente comando da terminale
+```sh
+make clean
+```
+
 ## File di dati
 Il programma salva tutte le informazioni in un file di testo (data.txt) che contiene utenti, collezioni e prodotti in formato leggibile e strutturato.Un esempio di struttura dati (file data.txt):
 **NB: il programma si occupa in automatico di creare il file nel caso in cui non esista e di modificarlo durante il salvataggio dei dati, non deve essere modificando manualmente!**
