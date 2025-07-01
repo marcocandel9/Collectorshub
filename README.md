@@ -49,7 +49,7 @@ Dopo aver compilato il progetto, è sufficiente lanciare il programma dalla cart
 ./Collectorshub
 ```
 
-##Ricompilazione
+## Ricompilazione
 
 Se si desidera cancellare l'eseguibile tramite un comando specifico da terminale, è possibile eseguire il seguente comando da terminale
 ```sh
