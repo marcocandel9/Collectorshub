@@ -32,7 +32,7 @@ make
 (Nella cartella del progetto è presente uno script makefile che permette di compilare velocemente il programma su ambienti Linux).
 Nel caso in cui il comando make non è eseguibile, è possibile installare il pacchetto tramite terminale con il seguente comando:
 ```sh
-sudo apt-get install
+sudo apt-get install make
 ```
 
 ## Compilazione (Windows o sistemi con compilazione gcc)
