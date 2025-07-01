@@ -25,11 +25,15 @@ Per compilare il progetto è sufficiente seguire i seguenti passaggi:
 ```sh
 gh repo clone marcocandel9/Collectorshub
 ```
-- eseguire da terminale, nella cartella principale:
+- eseguire da terminale, nella cartella principale del progetto:
 ```sh
 make
 ```
 (Nella cartella del progetto è presente uno script makefile che permette di compilare velocemente il programma su ambienti Linux).
+Nel caso in cui il comando make non è eseguibile, è possibile installare il pacchetto tramite terminale con il seguente comando:
+```sh
+sudo apt-get install
+```
 
 ## Compilazione (Windows o sistemi con compilazione gcc)
 In ambienti windows è possibile semplicemente utilizzare il comando per la compilazione:
