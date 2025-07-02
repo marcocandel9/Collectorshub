@@ -114,10 +114,12 @@ int user_menu_session(user* user, users* users_list, collection* collection, col
             
             //CASO 3: CANCELLAZIONE DELL'UTENTE
             case 3:
+		{
                 char username[MAX_STR_LEN] = "";
                 get_username(*user,username);
                 user_choice_result = sys_delete_user(users_list,username);
-                switch(user_choice_result){
+                }
+		switch(user_choice_result){
                     //l'utente ha annullato l'operazione, torno al menu utenti
                     case 1:
                         user_choice_result = 0;
@@ -157,10 +159,12 @@ int user_menu_session(user* user, users* users_list, collection* collection, col
             case 5:
                 return 4;
             case 6: // [PANORAMICA UTENTE]
+		{
                 int result = sys_user_overview(*user);
                 if (result == 2) return -1; //errore critico
                 continue; //altrimenti torno al menu utenti dopo aver stampato
-        }
+        	}
+	}
 
     }
 }

@@ -1,4 +1,16 @@
 #USER
+EsameEsempio
+Prova123!
+USER
+##COLLECTION
+Giochi PS1
+Videogiochi
+###PRODUCT
+Crash Bandicoot
+Videogiochi
+Nuovo(Sealed)
+29.99
+#USER
 Marco01
 Prova123!
 ADMIN
@@ -10,6 +22,11 @@ Nintendo 3DS XL Hyrule Edition
 The Legend Of Zelda Limited Edition
 Usata (Ottime, come nuova)
 249.99
+###PRODUCT
+Nintendo switch
+Console FAT
+Usata (Ottime)
+199.99
 ###PRODUCT
 Sony Playstation 5
 Fat Bianca
@@ -62,6 +79,20 @@ Italiano
 Nuovo (Sealed)
 49.99
 #USER
+Marco02
+Prova123!
+USER
+#USER
+Marco03
+Prova123!
+USER
+##COLLECTION
+JIDOASAJASJDIOSJACIASOCADIOJASJCA
+IFCJCFIOACJCFIAS
+##COLLECTION
+Prova123
+TIpo123
+#USER
 Utente_01
 Prova123!
 USER
@@ -69,7 +100,7 @@ USER
 Giochi PS3
 Videogiochi
 ###PRODUCT
-God Of War 3
-PAL MUltilingua
-Nuovo (Sealed)
-49.99
+Crash bandicoot
+PAL ITA
+Nuovo sealed
+20.00

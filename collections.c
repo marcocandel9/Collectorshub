@@ -529,15 +529,17 @@ int load_collections(FILE *fptr, collections* collections_list, char next_line[M
 
             /*caso 3: Ho raggiunto l'EOF */
             case 3: return 3;
-            
+ 
             /*caso 4: *Tag collezione incontrato -> carico la collezione e ne prendo il puntatore nel caso in cui ci siano prodotti da caricarci dentro in seguito ------------------*/
-            default: 
+            default:
+		{
                 int ins_result = insert_collection(collections_list, coll_name, coll_type);
                 switch (ins_result){
                     case 1: return 4;     /*  Allocazione memoria fallita  */
                     case 2: return 5;     /*  Inserimento duplicato (impossibile, dati corrotti )*/
                     default: break;
-                }
+		}
+            }
 
                 int search_result = search_collection(*collections_list, coll_name, &(new_coll));
                 switch(search_result){

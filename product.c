@@ -289,9 +289,13 @@ int save_product(FILE *fptr, product myproduct){
     get_product_condition(myproduct, product_condition);
     get_product_buyprice(myproduct, &product_buyprice);
     
-    if (strlen(product_name) < MIN_STR_LEN || strlen(product_type) < MIN_STR_LEN || strlen(product_condition) < MIN_STR_LEN || product_buyprice < 0) {
+    if (strlen(product_name) < MIN_STR_LEN-1 || strlen(product_type) < MIN_STR_LEN-1 || strlen(product_condition) < MIN_STR_LEN-1 || product_buyprice < 0) {
     printf("[ERRORE] Dati del prodotto incompleti o non validi, prodotto non salvato.\n");
-    return 2;
+	printf("[DEBUG] save_product: name='%s' (%lu), type='%s' (%lu), cond='%s' (%lu), price=%.2f\n", product_name, strlen(product_name),
+       product_type, strlen(product_type),
+       product_condition, strlen(product_condition),
+       product_buyprice);
+   return 2;
 }
 
     fprintf(fptr, "###PRODUCT\n");

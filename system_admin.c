@@ -120,12 +120,14 @@ int sys_admin_delete_user(user logged_user, users* users_list_head){
                 printf("\n" ANSI_COLOR_RESET);
                 return 4;
             default:
+		{
                 int exists = user_exists(*users_list_head, objuser_io_string);
                 if (exists != 0){
                     printf(ANSI_COLOR_MAGENTA);
                     printf("L'utente non e' stato trovato all'interno della lista utenti. Riprova.\n" ANSI_COLOR_RESET);
                     continue;
-                }
+		}
+	 }
                 //altrimenti è stato trovato, esco dallo switch case
                 break;
         }
@@ -252,12 +254,14 @@ int sys_admin_promote_base_user(user logged_user, users* users_list_head){
                 printf("\n" ANSI_COLOR_RESET);
                 return 4;
             default:
+		{
                 int exists = user_exists(*users_list_head, objuser_io_string);
                 if (exists != 0){
                     printf(ANSI_COLOR_MAGENTA);
                     printf("L'utente non e' stato trovato all'interno della lista utenti. Riprova.\n" ANSI_COLOR_RESET);
                     continue;
-                }
+		}
+            }
                 //altrimenti è stato trovato, esco dallo switch case
                 break;
         }

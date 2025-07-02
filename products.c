@@ -450,13 +450,14 @@ int load_products(FILE *fptr, products* products_list, char next_line[MAX_STR_LE
 
             /*caso 4: inserisco il prodotto trovato nella lista dei prodotti */
             default: 
-
+		{
                 int ins_result = insert_product(products_list, prod_name,prod_type,prod_cond, buyprice);
                 switch (ins_result){
                     case 1: return 4;     /*  Allocazione memoria fallita  */
                     case 2: return 5;     /*  Inserimento duplicato (impossibile, dati corrotti )*/
                     default: continue;
-                }
+		}
+            }
         }
     };
 

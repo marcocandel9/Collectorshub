@@ -1210,7 +1210,6 @@ Valori di ritorno:
 int sys_modify_collection(user logged_user){
 
     int string_checker_result;
-
     //Stringa utilizzata per l'inserimento del nome della collezione che l'utente desidera modificare
     char collection_name_io_string[MAX_STR_LEN];
 
@@ -1254,10 +1253,8 @@ int sys_modify_collection(user logged_user){
                 return 2;
             default:
                 //verifico che la collezione esista nella lista collezioni dell'utente loggato
-                
-
+		{
                 int collection_found = collection_exists(user_collections, collection_name_io_string);
-                
                 switch(collection_found){
                     case 1:
                         printf("\n" ANSI_COLOR_RED ANSI_BOLD);
@@ -1274,7 +1271,8 @@ int sys_modify_collection(user logged_user){
                         printf("Collezione (%s) trovata! Si procede con la modifica...\n",collection_name_io_string);
                         printf("\n" ANSI_COLOR_RESET BOLD_OFF);
                         break;
-                }        
+			}
+                }
             }
         break;
         }
@@ -1778,6 +1776,7 @@ int sys_insert_user_product(user logged_user, collection user_collection){
                 printf("\n" ANSI_COLOR_RESET);
                 return 2;
             default:
+		{
                 int exists = exist_sorted(products_list, product_name_io_string);
 
                 if (exists == 0){
@@ -1792,6 +1791,7 @@ int sys_insert_user_product(user logged_user, collection user_collection){
                     break;
                     }
                 break;
+		}
         }
     break;
     }
@@ -2107,9 +2107,10 @@ int sys_modify_user_product(user logged_user, collection user_collection){
                 printf("FATAL ERROR 2: errore della lettura del buffer di input. Contattare un amministratore.\n");
                 printf("\n" ANSI_COLOR_RESET);
                 return 2;
-            default: 
+            default:
+		{ 
                 int exists = exist_sorted(products_list,new_product_name_io_string); //controllo che l'input valido non sia occupato
-                switch(exists) {
+		switch(exists) {
                     case 1:
                         printf("\n" ANSI_COLOR_RED);
                         printf("La lista e' vuota quando non dovrebbe. Errore critico di lettura dati in memeria (Codice 4). Contattare un'amministratore. \n");
@@ -2126,6 +2127,7 @@ int sys_modify_user_product(user logged_user, collection user_collection){
                         printf("\n" ANSI_COLOR_RESET);
                         continue;
                     }
+		}
         }
         break;
     }
@@ -2629,11 +2631,13 @@ int sys_access_admin_menu(user logged_user, users* users_list_head){
                 printf("\n" ANSI_COLOR_RESET);
                 return 2;
             case 0:
+		{
                 int is_equal = strcmp(input_string,admin_access_secret_string);
                 if(is_equal != 0){
                     printf(ANSI_COLOR_RED"Chiave di accesso errata. Riprova.\n"ANSI_COLOR_RESET);
                     continue;
-                }
+		}
+            }
                 break; //altrimenti la chiave è corretta esco dallo switch case
         }
     

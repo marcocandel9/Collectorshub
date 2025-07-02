@@ -115,8 +115,8 @@ int compare_user_privilege(user_role this_user_role, user_role that_user_role){
         - password: array di caratteri contenente la password da validare
 
     Valori di ritorno:
-        - 0 -> la password è valida
-        - 1 -> la password non rispetta almeno uno dei requisiti
+        - 0 → la password è valida
+        - 1 → la password non rispetta almeno uno dei requisiti
 */
 int validate_password(char password[MAX_STR_LEN]){
 

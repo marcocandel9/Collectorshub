@@ -657,7 +657,7 @@ int load_users(FILE *fptr, users* users_list){
             
             /*caso 4: incontro un tag utente-> carico utente -> collezioni (se esistenti) -> prodotti (se esistenti) ------------------*/
             default:
-                
+ 	        {
                 user_role user_role_enum;
                 int conv_result = convert_user_role_to_enum(user_role_str,&(user_role_enum));
                 if(conv_result == 1) return 5;                              /* Ruolo utente memorizzato nel file data invalido, dati corrotti*/
@@ -677,7 +677,8 @@ int load_users(FILE *fptr, users* users_list){
                     case 5: return 5;               /* Duplicato incontrato, Dati corrotti */
                     case 6: return 6;               /*  Allocazione con effetti inaspettati, struttura dati inconsistente  */
                     case 7: continue;               /* Incontro un altro tag utente, ricomincio il ciclo while */
-                }
+        	}
+	    }
         }
 
     } 
